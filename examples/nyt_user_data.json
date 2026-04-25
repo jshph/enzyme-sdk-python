@@ -1,6 +1,816 @@
 {
   "entries": [
     {
+      "title": "Rigatoni And Cauliflower Al Forno",
+      "content": "NYT Cooking recipe: Rigatoni And Cauliflower Al Forno",
+      "notes": "\"Here's the recipe.\"  That was my response to my husband's  question, \"What would you like me to make for dinner on your birthday, Sweetie.\"   Pretty foolproof to make.  Pretty fantabulous flavors to eat.  We didn't find it dry as others suggest but my Italian hubby is Italian and it is the mode NOT to heavily sauce pastas in his heritage.  Paired with a nice glass of Arneis, I was a happy woman...in spite of having another year on my age.",
+      "tags": [
+        "cauliflower",
+        "vegetarian"
+      ],
+      "folder": "mains",
+      "created_at": "2015-11-05"
+    },
+    {
+      "title": "Scallops With Pomegranate Syrup And Foriana Sauce",
+      "content": "NYT Cooking recipe: Scallops With Pomegranate Syrup And Foriana Sauce",
+      "notes": "Unusual combination of ingredients beckoned.  Made per recipe with exception of substituting pistachios for pine nuts (allergy for latter).  Outcome was delicious.  Note ingredients list does not name pomegranate seeds are garnish although photo shows them on dish.  So seeded a fresh pomegranate and used them per photo.  A very nice addition for eye appeal, tartness and texture.  This made it to our \"keeper\" file.",
+      "tags": [
+        "scallops"
+      ],
+      "folder": "mains",
+      "created_at": "2015-12-25"
+    },
+    {
+      "title": "Farro And Bean Soup",
+      "content": "NYT Cooking recipe: Farro And Bean Soup",
+      "notes": "Easy to make, flavor rich, nutritious and makes the house smell wonderful while it simmers.  A keeper!  Made the vegetarian version, no pancetta but with parmesan rind.  Didn't have farro in the pantry and too lazy to run to the CoOp to fetch some, I used 1/2 cup fregola instead and added that in for the last 20 minutes or so of cooking time.  Splendid outcome.  But next time with farro!  PS - Even better the second day.",
+      "tags": [
+        "beans",
+        "soup"
+      ],
+      "folder": "soups-and-stews",
+      "created_at": "2016-01-03"
+    },
+    {
+      "title": "Pasta With Fried Lemons And Chile Flakes",
+      "content": "NYT Cooking recipe: Pasta With Fried Lemons And Chile Flakes",
+      "notes": "Winter citrus season is THE time to make this dish!  We've made it three times, last season and this one included, using thin skinned Meyer lemons and each time.  Splendid outcomes.  Be sure to watch the video for how to prep the lemons before caramelizing them.  Also while the recipe lists says he celery leaves and parsley are optional, they really do make a difference in the eye appeal and flavor of the dish.",
+      "tags": [
+        "butter",
+        "citrus",
+        "italian",
+        "olive-oil",
+        "pasta"
+      ],
+      "folder": "pasta-and-noodles",
+      "created_at": "2016-01-03"
+    },
+    {
+      "title": "Tricolor Salad Alla Splendido",
+      "content": "NYT Cooking recipe: Tricolor Salad Alla Splendido",
+      "notes": "Absent the tuna, I made the frisee /radicchio salad portion as a starter course for a seared scallop main dish.  Delicious and good enough to be a 'keeper' in the salad file.  Didn't have limes so used fresh Meyer lemon juice instead.  Cooled the dressing before tossing with the greens.  The Italian parsley in local organic market was so good, fresh and tender that I plucked the leaves and tossed them in whole with the greens.  Salad plates were practically licked clean. :-)",
+      "tags": [
+        "salad"
+      ],
+      "folder": "salads",
+      "created_at": "2016-01-03"
+    },
+    {
+      "title": "Slow Braised Lamb Shanks",
+      "content": "NYT Cooking recipe: Slow Braised Lamb Shanks",
+      "notes": "Brilliantly simple way to achieve outcome of tender lamb to reuse in other braises (like Bittman's Chinese flavored lamb dish) and ragus.  Don't try to short cut / skimp on the browning step.  Makes all the difference.  I used about half water and verjus for the braise liquid and braise time of 2 hours.  Worked swell.",
+      "tags": [
+        "braising",
+        "lamb"
+      ],
+      "folder": "mains",
+      "created_at": "2016-01-03"
+    },
+    {
+      "title": "Sour Cherry Old Fashioned",
+      "content": "NYT Cooking recipe: Sour Cherry Old Fashioned",
+      "notes": "Who knew?  Two of my favorits, sour cherries and bourbon, are tasty partners in this easy cocktail.  Canned or frozen (and thawed) sour cherries (available in groceries here on the west coast) work as well as fresh ones.  I find a teaspoon (or so) of simple syrup works better than trying to dissolve sugar.  If you go that route, try superfine sugar to dissolve easier than regular sugar.  A little squeeze of fresh juice from the orange from which the peel came is a nice add too sometimes.",
+      "tags": [
+        "cheese"
+      ],
+      "folder": "mains",
+      "created_at": "2016-01-31"
+    },
+    {
+      "title": "Cacio E Pepe",
+      "content": "NYT Cooking recipe: Cacio E Pepe",
+      "notes": "I'm a fan of Bittman.  I love Cacio de Pepe.  How could I lose?  Big time as it turns out had I followed his recipe for this dish.  See Peter and Michael's notes from two months ago.  Then follow their suggestions.  It will be a good outcome.  Following this recipe will not get to the dish you the silky dish want to eat.  Or look for the Bon Appetit / Epicurious published version from 2011.",
+      "tags": [
+        "cheese"
+      ],
+      "folder": "mains",
+      "created_at": "2016-02-15"
+    },
+    {
+      "title": "Colorful Chicory Salad With Anchovy Dressing",
+      "content": "NYT Cooking recipe: Colorful Chicory Salad With Anchovy Dressing",
+      "notes": "If you can find salt packed anchovies, all the better!  (They'll need to be soak, rinsed and drained first.) A simple and simply splendid salad.  I cut back on the anchovies by half, personal preference since I prefer the little guys to offer a soft kiss and not a big smooch in dressings.  I imagine you could eliminate them all together and this would still be great.  Maybe sub oil cured black olives finely chopped in their place.  Hmm...I might try round two with that edit tomorrow.",
+      "tags": [
+        "salad",
+        "umami"
+      ],
+      "folder": "salads",
+      "created_at": "2016-02-18"
+    },
+    {
+      "title": "Cardamom Scented Oatmeal Pancakes With Apricots And Almonds",
+      "content": "NYT Cooking recipe: Cardamom Scented Oatmeal Pancakes With Apricots And Almonds",
+      "notes": "My husband has made these several times since first seeing the recipe in 2011 and each time delicious.  California apricots are best here, not Turkish.  Hubby has even frozen leftovers then popped in toaster to reheat.",
+      "tags": [
+        "baking",
+        "breakfast"
+      ],
+      "folder": "baking-and-desserts",
+      "created_at": "2016-02-19"
+    },
+    {
+      "title": "Charlie Birds Farro Salad",
+      "content": "NYT Cooking recipe: Charlie Birds Farro Salad",
+      "notes": "...agree with others who recommend cutting back salt in the apple cider / water cooking stock.  I used the full amount the first time.  I thought it was better using half the salt the second time.  I also used extra lemon.  And cut the amount of dressing back by almost half.  A good dish.\n\nIf using pearled farro you can cook as per this recipe.  But in my experience it still takes 45 min, not 30, to tender stage.   If using non pearled farro, you'll need to soak overnight and then it will still take 45 min.  They cook differently and have a slightly different texture.  The outcome of the dish will be slightly different with each one.  (See Francine's earlier comment.)  Also...",
+      "tags": [
+        "citrus",
+        "salad"
+      ],
+      "folder": "salads",
+      "created_at": "2016-02-21"
+    },
+    {
+      "title": "Cuban Black Beans",
+      "content": "NYT Cooking recipe: Cuban Black Beans",
+      "notes": "More Latin inspired than pure Cuban w/ jalapeno and pork included?  Great sofrito absent bacon. Outcome very good flavors.  Beware salt lick if you follow recipe!   Soaked beans (always do) and they still took 1:45 to cook.  Skeptical beans  can cook in 1 hr per recipe when not soaked. Prep notes: 1) soaked beans overnight, 2) salted beans after cooking, 3) reduced salt by 2/3 overall, 4) no bacon.   Next time: I'll quarter green bell used in simmering stage so I can remove it - gets mushy.",
+      "tags": [
+        "beans",
+        "citrus",
+        "dutch-oven"
+      ],
+      "folder": "mains",
+      "created_at": "2016-03-07"
+    },
+    {
+      "title": "Cabbage And Potato Gratin",
+      "content": "NYT Cooking recipe: Cabbage And Potato Gratin",
+      "notes": "Made per recipe.  Easy. Delicious outcome.  Instructions don't specify how thick to slice potatoes.  Chose 1/4\" \"ish\" and seemed right based on result.  All liquid was absorbed nicely as the dish cooked. 1 hr + 15 minutes was perfect baking time.  Good news if serving as part of 'buffet table' meal - it is as good barely warm as hot. Next time thought:  I'll reduce gentle boil time from 5 to 4 min.",
+      "tags": [
+        "cabbage",
+        "citrus",
+        "french",
+        "potatoes",
+        "vegetarian"
+      ],
+      "folder": "mains",
+      "created_at": "2016-03-08"
+    },
+    {
+      "title": "Canlis Salad",
+      "content": "NYT Cooking recipe: Canlis Salad",
+      "notes": "Been making Canlis Salad from original recipe from WAY back in late 70's.  This is a little different and a lot better!  Omitting bacon still makes a great salad - use some olive oil to toast crutons. Noting some don't want to use coddled egg yolk (but it is safe to do), try Lidia Bastianich's trick of using a hard boiled yolk in blender with other dressing ingredients.  You can get by with @ 1.5 tsp dry oregano instead of fresh; whisk into dressing.  Fresh mint is essential.",
+      "tags": [
+        "salad"
+      ],
+      "folder": "salads",
+      "created_at": "2016-03-10"
+    },
+    {
+      "title": "Roasted Salmon Glazed With Brown Sugar And Mustard",
+      "content": "NYT Cooking recipe: Roasted Salmon Glazed With Brown Sugar And Mustard",
+      "notes": "Brilliantly simple and simply delicious.  Foolproof.  I tried this with Dijon and mustard per recipe the first time.  Then a second time used whole grain mustard spread over salmon and then used a Microplane grater to grate over some hard as a rock brown sugar that I was going to toss out.  That worked very well...in fact I may prefer that adaptation.  So an idea for the brown sugar you think is too hard to use.",
+      "tags": [
+        "citrus",
+        "dairy",
+        "heat",
+        "roasting",
+        "salmon"
+      ],
+      "folder": "mains",
+      "created_at": "2016-03-21"
+    },
+    {
+      "title": "Baked Cheesy Pasta With Wild Mushrooms",
+      "content": "NYT Cooking recipe: Baked Cheesy Pasta With Wild Mushrooms",
+      "notes": "Per recipe but for 10 oz pasta instead of 8, couple extra ounces of mushrooms and subbing fresh thyme for rosemary.  Watch video for the amount of time mushrooms should roast; that is key for texture.  This is so rich with the cheeses and cream, I think it would be AOK to use only creminis next time and save the spendy wild mushrooms for something where their flavors are more naked.  Needed @1/4C of pasta water to get to right consistency before baking.  Served 5 as main course.  Keeper!",
+      "tags": [
+        "baking",
+        "cheese",
+        "italian",
+        "mushrooms",
+        "pasta",
+        "vegetarian"
+      ],
+      "folder": "baking-and-desserts",
+      "created_at": "2016-03-28"
+    },
+    {
+      "title": "Slow Roasted Cherry Tomatoes With Basil Oil",
+      "content": "NYT Cooking recipe: Slow Roasted Cherry Tomatoes With Basil Oil",
+      "notes": "Made per recipe but without the addition of the basil oil because I was using this as a side for Melissa Clark's Baked Cheesy Wild Mushroom Casserole.  Easy technique and good outcome even if you don't want the basil oil included.  I think the little bit of sugar with the salt in this recipe intensifies tomato flavor.  Drizzled the juices from roasted tomatoes over them after arranging them on serving platter. Made these a couple of hours ahead and they were delicious room temperature.",
+      "tags": [
+        "butter",
+        "citrus",
+        "roasting",
+        "tomatoes",
+        "vegetarian"
+      ],
+      "folder": "mains",
+      "created_at": "2016-03-28"
+    },
+    {
+      "title": "Roasted Sweet Potatoes With Yogurt And Sesame Seeds",
+      "content": "NYT Cooking recipe: Roasted Sweet Potatoes With Yogurt And Sesame Seeds",
+      "notes": "I like fish sauce in many things but for my household's taste buds this recipe was better leaving that out and subbing salt instead.  Otherwise as written.  Used the pickled chiles option and not dried flakes.  Would not use sesame seeds next time.  Would increase 'salsa' next time. Japanese sweet potatoes do make a difference if you can find them.  We're fans of sweet potatoes and yams of all kinds so this recipe is added to the keeper file.",
+      "tags": [
+        "dairy",
+        "potatoes",
+        "roasting",
+        "vegetarian"
+      ],
+      "folder": "mains",
+      "created_at": "2016-04-26"
+    },
+    {
+      "title": "Gjelinas Roasted Yams",
+      "content": "NYT Cooking recipe: Gjelinas Roasted Yams",
+      "notes": "Fast food at it's finest!  So quick and easy to prepare.  Delicious to eat.  Even better that the ingredients are good for you.  First pass at the recipe made it as written and used crushed red pepper flakes.  In our household this was a main dish and enjoyed by all.  Next time we'll play with another crushed pepper, like Aleppo which is staple for us.  Not sure I'd add the olive oil to the yogurt next time.",
+      "tags": [
+        "roasting"
+      ],
+      "folder": "mains",
+      "created_at": "2016-04-26"
+    },
+    {
+      "title": "Pizza With Sweet And Hot Peppers",
+      "content": "NYT Cooking recipe: Pizza With Sweet And Hot Peppers",
+      "notes": "Used fresh pizza dough from local CoOp - Whole Foods or Pizzeria would have it too - to save time.  Tossed / stretched to fit jelly roll pan.  Cut the topping recipe in half (although I used the whole jalapeno anyway and it was just right heat level).  It was a perfect fit of topping to crust.  Serves four that way.  Recommend mixing fresh marjoram in with the onion mixture if you're using it so that fresh herb doesn't burn.",
+      "tags": [
+        "pizza"
+      ],
+      "folder": "mains",
+      "created_at": "2016-05-01"
+    },
+    {
+      "title": "Pasta Salad With Roasted Eggplant Chile And Mint",
+      "content": "NYT Cooking recipe: Pasta Salad With Roasted Eggplant Chile And Mint",
+      "notes": "1) Watch video...helpful to see cook color for eggplant...took mine 40 min to get there not 25.  2) Says serves 2, I think 3 as main, even 4 as side.  3) Made twice; first per recipe, second minus anchovies given one guest can't eat them.  Add a little more salt to compensate.  Delicious both ways. 4)  Prefer to chiffonade rather than tear herbs.  5) If skin on eggplant is a bit tough out of oven, no worries; softens to 'just right' when tossed in tomatoes. 6) Great room temp.",
+      "tags": [
+        "citrus",
+        "eggplant",
+        "eggs",
+        "italian",
+        "pasta",
+        "roasting",
+        "salad"
+      ],
+      "folder": "pasta-and-noodles",
+      "created_at": "2016-06-12"
+    },
+    {
+      "title": "Cinnamon Sugar Almonds",
+      "content": "NYT Cooking recipe: Cinnamon Sugar Almonds",
+      "notes": "Thnx to others' notes, made couple of changes.  Result just right dry sweet - salty - spicy treats.  1) Toasted raw nuts a little in saucepan first. 2) Removed pan from flame b/4 adding water, sugar etc to avoid splatter.  3) @1 tsp kosher salt cinnamon + @ 1/8 tsp New Mexico chili powder added to cinnmon.  4) Silicon spatula to stir gets sugar out pan edges so no burn.  5) @12 min for nice dry coating.  6) Lower flame as nuts cook to dry without burning sugar. 8) Sprinkle w/ Maldon salt.",
+      "tags": [
+        "butter",
+        "warm-spices"
+      ],
+      "folder": "mains",
+      "created_at": "2016-06-13"
+    },
+    {
+      "title": "North African Meatballs",
+      "content": "NYT Cooking recipe: North African Meatballs",
+      "notes": "Lyric of the Billy Joel classic comes to mind.  \"I love you just the way you are...\"  Well.  Almost.  I did bake the meatballs rather than fry them and sized them to get 28 total not 36.  Otherwise made per recipe, used ground lamb for protein, with result of splendidly seasoned, tender meatballs.  The sauce is brothy and perfect here.  Made the couscous but used fregola.  Golden raisins great counterpoint to spices in meat and broth.  Excellent day 2 too.  A Keeper!",
+      "tags": [
+        "meatballs"
+      ],
+      "folder": "mains",
+      "created_at": "2016-06-19"
+    },
+    {
+      "title": "Hot Honey Shrimp",
+      "content": "NYT Cooking recipe: Hot Honey Shrimp",
+      "notes": "Delicious as written.  I decided to play with it too.  Honey mixture makes splendid glaze for oven roasted salmon filet and then finished with the lime juice and sprinkled with jalapenos and scallions.  Ditto with cubed and baked sweet potatoes. (Seeing purists in the mix for whether 'cleaned' shrimp means deveined, peel the sweet potatoes first.) Toss with honey  mixture at last 5 or 10 minutes of baking to avoid honey burn then finish per recipe by tossing with the rest.",
+      "tags": [
+        "shrimp"
+      ],
+      "folder": "mains",
+      "created_at": "2016-06-26"
+    },
+    {
+      "title": "Avocado Tacos",
+      "content": "NYT Cooking recipe: Avocado Tacos",
+      "notes": "Made per recipe except I toasted pasillas in dry skillet over medium flame rather than charring them using tongs over open flame.  Simple reason is I'm a klutz with the tong technique.  Starting with pan toasted instead of flame charred chiles, remainder per recipe.  Fantabulous flavor in chili salsa with the avocado tacos.  I can think of all kinds of things to use with remaining salsa.  Note:  Tomatillos only took 7 min to cook, not 15 of recipe, for me.",
+      "tags": [
+        "mexican"
+      ],
+      "folder": "mains",
+      "created_at": "2016-06-30"
+    },
+    {
+      "title": "Pickleback Slaw",
+      "content": "NYT Cooking recipe: Pickleback Slaw",
+      "notes": "My household loves slaw of all kinds and in general prefer all salads lightly dressed.  Yet for this slaw we found ourselves wanting to increase the dressing by roughly half.  Also for balance of ingredients we wanted to reduce cabbage by about half.  In the \"what kind of pickle juice\" debate, we split the difference and used an artisan bread and butter pickle juice.  We liked the apples included here.  Good enough to have made once.  Not so good as to be a keeper for us.",
+      "tags": [
+        "dairy",
+        "olive-oil",
+        "pickling"
+      ],
+      "folder": "mains",
+      "created_at": "2016-07-04"
+    },
+    {
+      "title": "Crunchy Berry Almond Crumble",
+      "content": "NYT Cooking recipe: Crunchy Berry Almond Crumble",
+      "notes": "Keeper.  Made per recipe.  Weighed all ingredients where gram weights indicated.   10\" cake pan perfect size.  Topping not as expected for texture but very good.  Re filling: Blue, black and raspberries combo/ used 3 TBSP sugar from 2-4 range and @ 3/4 TBSP tapioca.  Seemed just right.  Re topping: Took @65 min in my oven to get crispness / color(vs recipe 55 min.). Texture was coarse-sandy not clumps as expected per recipe notes.  Crispy & stayed crisp but in fine not coarse crumb.",
+      "tags": [],
+      "folder": "mains",
+      "created_at": "2016-07-09"
+    },
+    {
+      "title": "Hummus From Jerusalem",
+      "content": "NYT Cooking recipe: Hummus From Jerusalem",
+      "notes": "Once read comments by Chef Ottolenghi that went like this:  hummus could be the glue that holds the Middle East together.  Clever given there are so many variations to enjoy across countries and faiths.  A Jordanian acquaintance taught me using baking soda, lots of tahini and lemon juice are secrets to great hummus.  But this recipe was not my fav.  Too much tahini and not enough lemon.  Much prefer the Zahav\u2019s Hummus \u2018Tehina\u2019 published by Melissa Clark.  It remains my 'go to'.",
+      "tags": [
+        "heat",
+        "middle-eastern"
+      ],
+      "folder": "mains",
+      "created_at": "2016-07-10"
+    },
+    {
+      "title": "Baingan Bharta",
+      "content": "NYT Cooking recipe: Baingan Bharta",
+      "notes": "Made per recipe.  Started with two eggplant, 1# each.  Using option to roast in oven at hottest possible heat, I chose 500 degrees.  Took just 25 min \"minus\" for it to be done.  Liked the flavors and pungency very much.  Added just a little more lime juice. Looked just like photo at outcome.  I'm a big fan of eggplant but not sure I liked the texture of the mashed (with fork) eggplant here.  No fault of the recipe.  Just different strokes for different palates.",
+      "tags": [
+        "heat"
+      ],
+      "folder": "mains",
+      "created_at": "2016-07-12"
+    },
+    {
+      "title": "Harira Soup",
+      "content": "NYT Cooking recipe: Harira Soup",
+      "notes": "Fantastic flavors.  Easy.  Made twice.  Per recipe & w/ \u2018quick cook\u2019 changes.  1) This is hot with specified cayenne.  Reduce by half if \u2018heat sensitive\u2019.  2) Sub parsley for those who don\u2019t like cilantro flavor.  We added 50% more cilantro.  3) Quick cook; sub good diced canned tomatoes for fresh & use can (15 oz) of drained & rinsed garbanzos for dried and soaked.  Starting w/ dry is better but if you forget to soak the beans, I did 2nd time, this works.",
+      "tags": [
+        "heat",
+        "soup"
+      ],
+      "folder": "soups-and-stews",
+      "created_at": "2016-07-19"
+    },
+    {
+      "title": "Cold Sesame Noodles With Sweet Peppers",
+      "content": "NYT Cooking recipe: Cold Sesame Noodles With Sweet Peppers",
+      "notes": "Made per recipe.  So many recipes so little time; likely not a repeat.  \"It's not you, it's me.\"  My palate wanted something more in dressing.  Maybe a clove of garlic Microplane grated into it.  Maybe a little honey.  Maybe lime juice instead of rice wine vinegar.  Different things please different palates.  Notes:  1) Microplane the ginger for similar intensity as juice w/ less work. 2) Brewed black tea can be subbed for broth / water. 3) Don't skip black sesame seeds!",
+      "tags": [
+        "cheese",
+        "noodles"
+      ],
+      "folder": "pasta-and-noodles",
+      "created_at": "2016-07-24"
+    },
+    {
+      "title": "Persian Tamarind Fish",
+      "content": "NYT Cooking recipe: Persian Tamarind Fish",
+      "notes": "Fantastic flavors and very easy to do.  The tamarind mixture elevates even lowly inexpensive rockfish, which I used, to be special.  Made per recipe.  Notes:  1) If using dried cranberries, find good ones, not 'craisin' quality, and coarse chop them...barberries are smaller.  2) Grating the garlic is best.  2) Used cilantro, chives, parsley and mint together. Great combo with the tamarind.  3) The squeeze of fresh lime and additional minced herbs as garnish are just right.",
+      "tags": [
+        "fish"
+      ],
+      "folder": "mains",
+      "created_at": "2016-07-24"
+    },
+    {
+      "title": "Basic Tahini Sauce",
+      "content": "NYT Cooking recipe: Basic Tahini Sauce",
+      "notes": "Using a Microplane to grate garlic into a tahini sauce as this recipe calls for makes all the difference to soften the edges of raw garlic flavor.  No need to do anything more complicated in steps than just grate.   Fan of  proportion of lemon juice to tahini here.  Have also omitted cumin at times and used ground Aleppo instead.  We use this sauce in so many ways.  Try it drizzled over oven roasted cauliflower \"steaks\" then sprinkle with sumac, sliced scallions and cilantro.",
+      "tags": [
+        "butter",
+        "middle-eastern"
+      ],
+      "folder": "mains",
+      "created_at": "2016-08-08"
+    },
+    {
+      "title": "Eleven Madison Park Granola",
+      "content": "NYT Cooking recipe: Eleven Madison Park Granola",
+      "notes": "Having made 3 times now, I'd offer 2 tips in addition to my first to reduce the salt to 2 tsp (or maybe  1 1/2).  Those tips are: 1) Watch the time closely and pay attention to color and aroma as this cooks.  In one pass at this, using someone else's kitchen, 25 minutes was plenty of time to get this done.  2) Stir in the coconut chips after the first 10 or 25 minutes of baking time.  They will brown up faster than the other ingredients.\n\nDelectable.  I prefer salt reduced to 2 teaspoons.  Otherwise as written.",
+      "tags": [],
+      "folder": "mains",
+      "created_at": "2016-08-22"
+    },
+    {
+      "title": "Tahini Ranch Dressing",
+      "content": "NYT Cooking recipe: Tahini Ranch Dressing",
+      "notes": "For people posting who are put off by the garlic powder, you might try grating a small garlic clove with a Microplane instead.  Thanks to a Melissa Clark recipe some time back, I learned this tip and it seems to make all the difference when using raw garlic to soften it.  It works 'magic' in a way pressing or mincing doesn't.   But the point of this particular recipe is to mimic Ranch'ish style so garlic powder would fit in with that.",
+      "tags": [
+        "beer-cooking",
+        "butter",
+        "middle-eastern",
+        "olive-oil"
+      ],
+      "folder": "mains",
+      "created_at": "2016-08-29"
+    },
+    {
+      "title": "Pasta With Roast Chicken Currants And Pine Nuts",
+      "content": "NYT Cooking recipe: Pasta With Roast Chicken Currants And Pine Nuts",
+      "notes": "Technique is easy and the outcome was delicious.  Currants are great texture and flavor point.  As much as I try to make 'per recipe' the first time through, I changed this to sub toasted chopped walnuts for pine nuts (guest preference) and I did not use the chicken skin.  \"It's not you it's me\"; not a skin fan unless crispy.   Glad we tried it and provides ideas for using leftover roast chicken and other herbs in similar dish keeping nuts and currants.",
+      "tags": [
+        "chicken",
+        "italian",
+        "pasta",
+        "roasting"
+      ],
+      "folder": "pasta-and-noodles",
+      "created_at": "2016-09-08"
+    },
+    {
+      "title": "Berry Clafoutis",
+      "content": "NYT Cooking recipe: Berry Clafoutis",
+      "notes": "Simple to make & simply delicious; reliable every time recipe delivers  dish as welcome at breakfast or teatime or dessert after dinner.  We enjoy the texture of the almond plus wheat flours used together. Neither too custardy nor cakey.  And just sweet enough but not too much.  Also tried with today with frozen boysenberries.  Didn't thaw berries first, reduced cook temp to 350 degrees and upped cook time to 60 min. \"ish\" for just right brown top & firm middle.",
+      "tags": [
+        "french"
+      ],
+      "folder": "mains",
+      "created_at": "2016-09-09"
+    },
+    {
+      "title": "Curried Waldorf Salad",
+      "content": "NYT Cooking recipe: Curried Waldorf Salad",
+      "notes": "My fav of all curried Waldorfs I've made; it is cumin that makes this especially delicious.  Notes:\n*For any Waldorf I like to mix all BUT nuts and parsley together to \"get to know each other\" as they chill in fridge a bit.  Did that here too.  It also helps hydrate raisins.\n*Adding nuts / parsley just before serving keeps both fresh\n*For dressing base used 2T mayo + 1/4 C yogurt + enough buttermilk (maybe 3T) to thin as desired\n*Broke up walnut halves after toasting",
+      "tags": [
+        "citrus",
+        "salad"
+      ],
+      "folder": "salads",
+      "created_at": "2016-09-14"
+    },
+    {
+      "title": "Rice Pilaf With Pistachios And Almonds",
+      "content": "NYT Cooking recipe: Rice Pilaf With Pistachios And Almonds",
+      "notes": "Having tried rosewater in several other dishes to learn it isn't a flavor my household enjoys, I omitted it here.   With that exception, made per recipe using dried apricots.  Used California apricots, which seem a little more difficult to find these days, and not Turkish ones as we like the more tart flavor provided by the California variety.  The aroma from the spices blooming in the ghee is luscious.    So is the flavor of this as side dish.  Great paired with lamb.",
+      "tags": [
+        "citrus"
+      ],
+      "folder": "mains",
+      "created_at": "2016-09-19"
+    },
+    {
+      "title": "White Peaches Pistachios Honey And Ricotta",
+      "content": "NYT Cooking recipe: White Peaches Pistachios Honey And Ricotta",
+      "notes": "Simply delicious.  The kind of ricotta used will make a big difference here.  If you can find Bel Gioioso's Ricotta Con Latte it is a delectable option in this recipe.  I prefer yellow stone fruits over white ones so used yellow nectarines.   Omitted the olive oil and it was still a winner.  Although I'm considering trying this with sectioned (supremed) blood oranges come citrus season and I may add the olive oil then.",
+      "tags": [
+        "cheese",
+        "wine-cooking"
+      ],
+      "folder": "mains",
+      "created_at": "2016-09-21"
+    },
+    {
+      "title": "Cant Miss Rice",
+      "content": "NYT Cooking recipe: Cant Miss Rice",
+      "notes": "An experienced cook but the world's worst cooker of rice, I managed have even this brilliantly fool proof recipe be not quite right. To it I say, \"It's not you.  It's me.\"  Used white long grain basmati and followed recipe.  Even good advice of some to use foil between the pot and lid for tight fit before putting in oven.  At 17 min baking /10 min rest it was perfectly fluffy but over cooked by just an eensie.  Next time,  I'll do 15 min in oven.",
+      "tags": [],
+      "folder": "mains",
+      "created_at": "2016-09-22"
+    },
+    {
+      "title": "Sauteed Brussels Sprouts And Apple With Prosciutto",
+      "content": "NYT Cooking recipe: Sauteed Brussels Sprouts And Apple With Prosciutto",
+      "notes": "As with all Melissa Clark recipes I've tried, this is reliable and flexible for the cook.  Used the Pecorino instead of the prosciutto for the vegetarian version only because I had the former in house and not the latter.  Subbed local orchard Honeycrisps that were gifts from friends for the specified Golden Delicious.  Outcome was delightful.  Although added less salt than recipe suggested as I knew cheese would add a fair amount at end.  A keeper.",
+      "tags": [
+        "brussels-sprouts",
+        "sauteing",
+        "vegetarian"
+      ],
+      "folder": "mains",
+      "created_at": "2016-09-22"
+    },
+    {
+      "title": "Savory Clafoutis With Corn And Swiss Chard",
+      "content": "NYT Cooking recipe: Savory Clafoutis With Corn And Swiss Chard",
+      "notes": "With nod to Fall equinox, I small diced Sugar Pie pumpkin and hot oven roasted the tiny cubes to be tender to sub for corn kernels (2C).  Omitted dill.  Otherwise, made per recipe.  In 10\u201d straight sided skillet.  Husband\u2019s review as he ate; \u201cThis is EXCELLENT.\u201d   Pretty too.  As usual for Melissa Clark recipes, reliable and versatile for home cooks.  A keeper I\u2019ll have fun \"playing with\" every season.  Next time may sub sour cream or full fat Greek Yogurt for cr\u00e8me fraiche.",
+      "tags": [
+        "corn",
+        "french",
+        "greens",
+        "vegetarian"
+      ],
+      "folder": "mains",
+      "created_at": "2016-09-24"
+    },
+    {
+      "title": "Ale Cheddar And Cauliflower Soup",
+      "content": "NYT Cooking recipe: Ale Cheddar And Cauliflower Soup",
+      "notes": "Very good, easy.  NOTES:  1) Some say too bitter.  Can mitigate in two ways.  a) choose lower IBU (International Bitterness Unit) beer.  Belgian style dark abbey as called for is pretty low; maybe 25 IBU.  Get above 40 IBU & bitterness will come out.  b) Use 1 bottle  +  8 oz water instead of 2 bottles.   Worked for me.  2) Remember cheddar will add lots of salt at end.  3) Cornstarch does NOT make this gummy.  It helps cheese melt evenly & creates smooth mouth feel.\n\n4) Omitted optional bacon.  5) Used stone ground brown mustard.",
+      "tags": [
+        "beer-cooking",
+        "cauliflower",
+        "cheese",
+        "soup",
+        "vegetarian"
+      ],
+      "folder": "soups-and-stews",
+      "created_at": "2016-10-09"
+    },
+    {
+      "title": "Crispy Lamb With Cumin Scallions And Red Chiles",
+      "content": "NYT Cooking recipe: Crispy Lamb With Cumin Scallions And Red Chiles",
+      "notes": "Made this per recipe.  Weighing in on the cumin debate as part of this thread, thought the amount of cumin called for was just right for the dish.  I'd use half the amount of salt called for in the lamb marinade if making again.",
+      "tags": [
+        "cheese",
+        "lamb",
+        "spices",
+        "warm-spices"
+      ],
+      "folder": "mains",
+      "created_at": "2016-10-16"
+    },
+    {
+      "title": "Baked Potatoes",
+      "content": "NYT Cooking recipe: Baked Potatoes",
+      "notes": "Can't think of anything simpler for a week day meal than the perfectly baked potatoes this recipe delivers.  Love the warm oven on a cool evening and the aroma of the potatoes baking.  The time they take is just enough time to change clothes and sip a glass of wine while chopping or prepping whatever it is you'll use for topping.  Only change for me from recipe is I make a little \"X\" in middle then push from both ends to open it up for maximum fluffy goodness.",
+      "tags": [
+        "baking",
+        "citrus",
+        "potatoes",
+        "vegetarian"
+      ],
+      "folder": "baking-and-desserts",
+      "created_at": "2016-10-17"
+    },
+    {
+      "title": "Cauliflower And Tomato Frittata With Feta",
+      "content": "NYT Cooking recipe: Cauliflower And Tomato Frittata With Feta",
+      "notes": "Made per recipe for ingredients & with 10\" skillet.  A splendid blend of flavors.  Great texture & color too.  Used thyme option to start then parsley & mint as fresh herb combo.  Take time needed to get tomato sauce to thick pasty texture.  Makes all the difference in outcome.  After step 5 I finished this in oven & not under broiler.  Approx 35 min or so at 325 degrees worked in my oven for being done all the way through and puffy.  Definitely a keeper!",
+      "tags": [
+        "breakfast",
+        "cauliflower",
+        "cheese",
+        "heat",
+        "olive-oil",
+        "tomatoes",
+        "vegetarian"
+      ],
+      "folder": "breakfast-and-light",
+      "created_at": "2016-10-24"
+    },
+    {
+      "title": "Porcini Broth",
+      "content": "NYT Cooking recipe: Porcini Broth",
+      "notes": "Surprised at great flavor to be had from such a simple and short simmer broth!  Very versatile in any recipe calling for mushroom or veggie broth.  Inexpensive too given it takes only 4 grams dry porcini. NOTES:  1) I've subbed a good size leek for the onions & scallion with good outcome.  2) A few whole black peppercorns added in is good too.  3) Partially covering during simmer helps maintain volume but in general plan on 3 'plus' Cups yield.  4) Freezes well.",
+      "tags": [
+        "cheese",
+        "citrus"
+      ],
+      "folder": "mains",
+      "created_at": "2016-11-06"
+    },
+    {
+      "title": "Roasted Butternut Squash And Red Onions",
+      "content": "NYT Cooking recipe: Roasted Butternut Squash And Red Onions",
+      "notes": "5) A few fresh dates chopped and sprinkled on top are also a good finishing add.\n\nSubbed Sugar Pie pumpkin (peeled) for squash and pepitas for pine nuts.  Otherwise per recipe.  Definitely a keeper.  Used this as main dish although it could be a side. NOTES:  1) Tahini sauce is great with this.  Don't leave it out.   2) Same for mint, cilantro, parsley mixed herbs.  3) ) I'd cut salt by half next time.  Salt was over the top for our palates.  4) Pumpkin was done in about 30 min., 35 for onions.  4) Next time I'd reduce heat to 425 degrees.",
+      "tags": [
+        "alliums",
+        "butter",
+        "roasting",
+        "squash",
+        "vegetarian"
+      ],
+      "folder": "mains",
+      "created_at": "2016-11-06"
+    },
+    {
+      "title": "Georgian Cilantro Sauce",
+      "content": "NYT Cooking recipe: Georgian Cilantro Sauce",
+      "notes": "Really delicious, versatile as sauce with roasted veggies or fish, dip with crudite, pasta salad dressing, tossed with rice or potatoes & as crostini spread.  Holds well in fridge.   NOTES:  1) California apricots are best here, not Turkish.  2) 2 cloves garlic is plenty.  3) BIG pinch for cayenne.  4) Olive oil works in place of walnut oil & reduce oil to 4T.  5) Prefer a bit more cilantro & bit less parsley.  6) Tarragon only in place of mixed herbs works & reduce to 3T.",
+      "tags": [
+        "citrus"
+      ],
+      "folder": "mains",
+      "created_at": "2016-11-07"
+    },
+    {
+      "title": "Coconut Pork Stew With Garam Masala",
+      "content": "NYT Cooking recipe: Coconut Pork Stew With Garam Masala",
+      "notes": "Fan of Melissa Clark recipes as I find them to be both foolproof and delicious.  This one was the latter but although I made it per recipe the yellow split peas never did soften up as expected. Even after 3 hrs of cook time - extended it to try to get them tender - & even when reheated on day 2.  Very good reheated.   Equally as good w/out the garlic oil.  Used lots of cilantro as garnish.  So many recipes & so little time not sure it will make it to repeat file.  But glad I tried it.",
+      "tags": [
+        "cheese",
+        "dairy",
+        "indian",
+        "leftovers",
+        "make-ahead",
+        "pork",
+        "southeast-asian",
+        "stew"
+      ],
+      "folder": "soups-and-stews",
+      "created_at": "2016-11-09"
+    },
+    {
+      "title": "Mushroom Soup Gratinee",
+      "content": "NYT Cooking recipe: Mushroom Soup Gratinee",
+      "notes": "Wonderful flavors.  Some prep work but easy execution.  Made per recipe for soup.  Simplified serving.  NOTES;  A.  For SOUP: 1. Started wiw/David Tanis' Porcini Broth 2. Did not remove 1/3 cup mushrooms.  (See service).  3.  Next time will reduce clove and ginger to 1/4 tsp each.  B. For SERVICE: 1.  Didn't broil per recipe.  Instead made simple crostini in oven with thin gruyere melted on.  Floated on soup.  2.  A very little finely chopped parsley on top.  Chives would work too.",
+      "tags": [
+        "french",
+        "mushrooms",
+        "soup",
+        "vegetarian"
+      ],
+      "folder": "soups-and-stews",
+      "created_at": "2016-11-16"
+    },
+    {
+      "title": "Old Fashioned",
+      "content": "NYT Cooking recipe: Old Fashioned",
+      "notes": "I'm a Manhattan kinda girrrr......woman.  Although I've been old enough to imbibe for several decades now, I've just never had an Old Fashioned.  But saw this recipe and had all the ingredients so whipped up a couple for my hubby and me last night.  Delightful.  Easy enough that even a no mixology skills person like me can make them.  I think I'll make us another round tonight.  It was a long election season.  Maybe it will all make more sense if we drink enough of these.",
+      "tags": [],
+      "folder": "mains",
+      "created_at": "2016-11-20"
+    },
+    {
+      "title": "Cranberry Sauce With Chiles",
+      "content": "NYT Cooking recipe: Cranberry Sauce With Chiles",
+      "notes": "In household of cranberry sauce fan(atics) this may be one of all time favs.  Too lazy to grind pequin chiles, I subbed approx. 1/4 tsp cayenne.  Not as complex flavor as pequin or as many Scovilles for heat but a good option.  Also used a big pinch of ground cloves rather than grinding own for that.  We prefer cranberry sauce more tart so skimped just a bit on the sugar.  All perfect for us.  Next time may simmer 2 whole pequins in at cook stage then remove them at cool down.  An easy keeper!",
+      "tags": [],
+      "folder": "mains",
+      "created_at": "2016-11-24"
+    },
+    {
+      "title": "Mashed Potato Casserole",
+      "content": "NYT Cooking recipe: Mashed Potato Casserole",
+      "notes": "NOTES: 1) Made full size, half size & 1/3 of recipe.  Delicious every time.  2) Set aside 1C or more hot potato cooking water b/4 draining.  Add it in at mash step as needed to get to desired consistency.  3) Adjust final salt in dish as needed given cooking water is salted. 4)  1/3 recipe (2# potatoes) feeds 6 as side.  5) If making ahead remove from fridge at least 90 min before baking. then add crumbs.  6) Bake 350 degrees not 400 - for 40 min. to make crumbs golden / no risk of burning.",
+      "tags": [
+        "potatoes",
+        "vegetarian"
+      ],
+      "folder": "mains",
+      "created_at": "2016-11-25"
+    },
+    {
+      "title": "Splayed Turkey With Herbs",
+      "content": "NYT Cooking recipe: Splayed Turkey With Herbs",
+      "notes": "As Dana Carvey's immortal character'\"The Church Lady' might ask \"Well, isn't that special?\"  The turkey outcome using this recipe.  Because while ours wasn't as woeful as Burt Spielman's funny review of his experience (laughing WITH you, Burt, not at you), it was not what we expected.  And here I should ground what will be the start of a two screen review by saying my husband and I are experienced home cooks and fans of Melissa Clark.   Next...\n\nUsed 14# fresh turkey.  Gollowed recipe to a \"T\", using Orange-Bacon-Chile option minus bacon, dry brined 36 hours.  Removed from fridge for 90 min then seared in roaster, placed on lowest oven rack at temp spec'd for 30 min then lowered temp for another 75.  Two reads in each turkey thighs at 165 and breast 160.  Let rest 30 min, went to carve and breast still way pink at bone.  Back in oven to finish breast alone.  Flavors good but skin too pliable and dark meat tough.  Alas.\n\nThree's a charm...definitely the last note.  \"Followed\"  not \"Gollowed\" in should have read my previous tome.  Also to say the pan jus from this was luscious.  Using the Orange-Chilie rub version returns a disquieting orange color to drippings but when strained into a fat separator, the resulting de-fatted jus is a lovely amber color and the orange stuff is tossed.  Really great flavored pan jus for gravy or on its' own or in turkey tossed with noodle leftovers.",
+      "tags": [
+        "citrus",
+        "heat",
+        "leftovers",
+        "turkey"
+      ],
+      "folder": "mains",
+      "created_at": "2016-11-25"
+    },
+    {
+      "title": "Mushroom Spinach Soup With Cinnamon Coriander And Cumin",
+      "content": "NYT Cooking recipe: Mushroom Spinach Soup With Cinnamon Coriander And Cumin",
+      "notes": "A couple of minor changes, otherwise made as written. We really enjoyed this for the earthiness of the mushrooms combined with the Middle Eastern spices.  Getting the mushrooms well browned /caramelized really is a key step in this dish.  Don't rush it.   Leftovers delicious reheated next day.  Changes:  1) Used half butter and have EVOO in browning step.  2) Reduced salt by a lot.  3) Did not use spinach.",
+      "tags": [
+        "dairy",
+        "greens",
+        "mushrooms",
+        "soup",
+        "spices",
+        "vegetarian",
+        "warm-spices"
+      ],
+      "folder": "soups-and-stews",
+      "created_at": "2017-01-15"
+    },
+    {
+      "title": "Tagine Style Lamb Stew",
+      "content": "NYT Cooking recipe: Tagine Style Lamb Stew",
+      "notes": "Fantabulous flavors. So simple to make it works for\"Tuesday dinner\" or to serve guests.  Like many braises we think this is best made a day ahead & reheated.  (Also provides opportunity to remove fat layer.)  Made as written but for these:  1) Olive oil sub for butter.  2) Water sub for chix stock.  3) Reduce water / liquid to 1 C. \"plus\".  4) After bringing to simmer on stovetop, transfer (covered) to 325 degree oven for 30 min then 275 degree for 1 1/2 hr.",
+      "tags": [
+        "lamb",
+        "stew"
+      ],
+      "folder": "soups-and-stews",
+      "created_at": "2017-01-20"
+    },
+    {
+      "title": "Sicilian Style Citrus Salad",
+      "content": "NYT Cooking recipe: Sicilian Style Citrus Salad",
+      "notes": "Be sure to use some of the tender celery leaves from those inside stalks tossed into this salad.  In fact, I think it looks like there are some celery leaves in the photo although not called out specifically in the ingredients list along with the celery.  Some folks made good recommendations to \"soften\" the red onion flavor.  My hubby is Siclian and we actually like it in \"rough\" form here when thinly sliced.  This is a particularly great salad with escarole in the mix.",
+      "tags": [
+        "italian",
+        "salad"
+      ],
+      "folder": "pasta-and-noodles",
+      "created_at": "2017-01-30"
+    },
+    {
+      "title": "Greek Chicken Stew With Cauliflower And Olives",
+      "content": "NYT Cooking recipe: Greek Chicken Stew With Cauliflower And Olives",
+      "notes": "Used chicken legs & made per recipe for ingredients.  Good enough one dish meal to be glad I tried it.  Won't repeat.  Best for those eaters who like subtle flavors.   NOTES: 1) Instead of stove top, I finished in oven like this: at step 4 also added cauliflower & after bringing all to simmer covered & braised in 325 degree oven for 20 min. then lowered to 275 for 1hr.  2) After removing from oven stirred in olives & parsley.  3) Good made day ahead.  Leftovers keep well.",
+      "tags": [
+        "cauliflower",
+        "chicken",
+        "heat",
+        "mediterranean",
+        "stew"
+      ],
+      "folder": "soups-and-stews",
+      "created_at": "2017-01-31"
+    },
+    {
+      "title": "Tortilla Soup With Roasted Cauliflower Rice",
+      "content": "NYT Cooking recipe: Tortilla Soup With Roasted Cauliflower Rice",
+      "notes": "Very tasty. Made per recipe for ingredients.  Only change in technique from as written was to toast tortilla strips in oven.  Really liked the \"riced\"' cauliflower in this.  Will use the technique for other things too.  Chipotle powder in the cauliflower was a great flavor profile add.  But noting we are big fans of spicy food, I'd say for many audiences you may want to cut the chipotle in half, to 1/2 tsp.  Also, plan on this taking more like 2 hrs start to finish, not 1.",
+      "tags": [
+        "beer-cooking",
+        "cauliflower",
+        "heat",
+        "mexican",
+        "roasting",
+        "soup",
+        "vegetarian"
+      ],
+      "folder": "soups-and-stews",
+      "created_at": "2017-01-31"
+    },
+    {
+      "title": "Sweet Potatoes With Yogurt And Cilantro Chile Sauce",
+      "content": "NYT Cooking recipe: Sweet Potatoes With Yogurt And Cilantro Chile Sauce",
+      "notes": "Easy and excellent when made as written.  Used serrano chiles for the green chiles.  If serving it as part of a family style or buffet table service it is as delicious when it starts to cool as it is hot. Don't know that it needs the drizzle of oil in step 4.  Love yogurt with it but if serving lactose intolerant diners it is just as good without yogurt as with.  Made it to our \"keeper\" file.  PS - If you don't have blanched almonds in the house, sliced ones work well too.",
+      "tags": [
+        "dairy",
+        "potatoes",
+        "vegetarian"
+      ],
+      "folder": "mains",
+      "created_at": "2017-02-04"
+    },
+    {
+      "title": "Baked Romanesco Broccoli With Mozzarella And Olives",
+      "content": "NYT Cooking recipe: Baked Romanesco Broccoli With Mozzarella And Olives",
+      "notes": "Made per recipe.  Outcome was delicious.  Agree you COULD make with plain cauliflower but the Romanesco is really THE thing for this.  Next time I'll reduce both cheeses by almost half.  But first time with a recipe I always like to do as written for a true 'test drive'.  If serving anchovy averse diners, I think it would be fine to leave them out since this has so much going on for pungent flavor.  But if so, I'd up the capers...maybe double.  A keeper.",
+      "tags": [
+        "baking",
+        "broccoli",
+        "cheese",
+        "vegetarian",
+        "wine-cooking"
+      ],
+      "folder": "baking-and-desserts",
+      "created_at": "2017-02-08"
+    },
+    {
+      "title": "Braised Lamb With Red Wine And Prunes",
+      "content": "NYT Cooking recipe: Braised Lamb With Red Wine And Prunes",
+      "notes": "Shoulder chops work well in place of lamb shoulder cut up.  Increase from 2 lbs by a bit to allow for weight of bone in chops if using them.  Doubled cinnamon as several suggested.  Otherwise 'as written' for the 1st 'test drive'.  Excellent flavors.  Even better made day ahead.  Leftovers are great.  Next time I'd add a pinch or two of Aleppo or Cayenne pepper.  Otherwise a keeper for sure as written!",
+      "tags": [
+        "braising",
+        "lamb",
+        "spices",
+        "wine-cooking"
+      ],
+      "folder": "mains",
+      "created_at": "2017-02-09"
+    },
+    {
+      "title": "Sweet Potato Soup",
+      "content": "NYT Cooking recipe: Sweet Potato Soup",
+      "notes": "Made this without the cream (add a little more water to make up for volume) and marshmallows.  Also used about half the butter.  Used an immersion blender to puree so texture not as smooth.   Not exactly per original recipe  but it was the inspiration for using all the other ingredients on hand for a easy, nutritious, delicious, \"school night\" meal for four.   Belgian style beer or ale is really good in this given the low bitterness level.   Made it to our \"keeper\" file.",
+      "tags": [
+        "olive-oil",
+        "potatoes",
+        "soup",
+        "vegetarian"
+      ],
+      "folder": "soups-and-stews",
+      "created_at": "2017-02-23"
+    },
+    {
+      "title": "Roasted Cauliflower With Ras El Hanout",
+      "content": "NYT Cooking recipe: Roasted Cauliflower With Ras El Hanout",
+      "notes": "Good outcome for creamy texture of wedges at service. 1) Cauliflower head was small'ish side of medium so used 2 qt saucepan & approx 1 qt milk covered nicely.  But head wanted to float to top so turned it upside down for braising step.   Took 40 min to tender.  3) Given smallish head, used less butter and spice but made per recipe for technique.  4) Let come to room temp before roasting & 35 min was just right time.  5) Leftover milk delicious for cheese sauce next day meal.",
+      "tags": [
+        "cauliflower",
+        "roasting",
+        "vegetarian"
+      ],
+      "folder": "mains",
+      "created_at": "2017-02-26"
+    },
+    {
+      "title": "Mini Almond Cakes With Chocolate Or Cherry",
+      "content": "NYT Cooking recipe: Mini Almond Cakes With Chocolate Or Cherry",
+      "notes": "Delectable flavors & texture.  Keeper!  \n\n1) Made per recipe for cakes but modified to use neither ganache nor cherry jam for center.  Instead used an Amerena cherry. \n\n2) Experience similar to what others shared.  At 10 min bake time too firm to push down gently.  Would reduce this first bake time to 5 min. next time.\n\n3) Divided perfectly between 12 muffin cups - well  buttered first.  Cakes released AOK with a little coaxing when still slightly warm.  \n\n4) Best day 1 but good day 2.\n\nSomeone asked about Kosher confectioner's sugar that does not contain cornstarch in an earlier string so that these might work for Passover.  I made these using Whole Foods 360 brand confectioners sugar & noticed it uses tapioca starch, not cornstarch, for sugar stabilizer.  Cassava, source of tapioca, is a root like potato so should be Passover friendly.  The sugar was marked U on bag so should fit for Passover use.  But note the almond cake recipe also contains cornstarch.",
+      "tags": [
+        "baking",
+        "butter",
+        "dessert"
+      ],
+      "folder": "baking-and-desserts",
+      "created_at": "2017-03-03"
+    },
+    {
+      "title": "Best Black Bean Soup",
+      "content": "NYT Cooking recipe: Best Black Bean Soup",
+      "notes": "Oh me of little faith...soaked the beans the night before.  I buy black beans at my CoOp where they always seem fresh.  I cook them often.  I was not believing they'd cook in an hour or two without pre-soak.  Good thing.  Because they took two hours and \"a bit\" to tender stage for this soup.  Other than pre-soak step, made per recipe.  Good, layered in flavors, just spicy enough.  Start slowly with the salt at end.  1 1/2 tsp was enough for us.",
+      "tags": [
+        "beans",
+        "cheese",
+        "soup"
+      ],
+      "folder": "soups-and-stews",
+      "created_at": "2017-03-04"
+    },
+    {
+      "title": "Manhattan",
+      "content": "NYT Cooking recipe: Manhattan",
+      "notes": "My Brooklyn born and raised husband is a longtime Manhattan cocktail fan.  Sometime during the 2016 Prez primary cycle when Lindsay Graham suggested if one started drinking during happy hour and had enough alcohol that Trump might start to make sense, we decided to put this cocktail recipe in our daily repertoire.  Great with rye (hubby) or bourbon (me).  We use just a tick less vermouth.  And Amerena cherries.  I like mine on rocks.  Great drink.  But did not work for that making sense thing.",
+      "tags": [
+        "butter",
+        "ginger"
+      ],
+      "folder": "mains",
+      "created_at": "2017-03-14"
+    },
+    {
       "title": "Cabbage Potato And Leek Soup",
       "content": "NYT Cooking recipe: Cabbage Potato And Leek Soup",
       "notes": "Easy, delicious, healthy, fast. Made 2X; 1X per recipe & 1X w/slight modifications.  Thanks to person who suggested a parm rind added in for the simmer.  Worked well.  Second pass at this I subbed thin sliced onion (@ 1 med.) for leeks.  Also used 12 oz bottle hard cider (apple) instead of 2C stock & made up additional 4 oz. w/ addt'l. water.  Added cider after cabbage caramelized & let simmer @ 5 min before step 2.  Only took cabbage @ 15 min to caramelize both times.",
@@ -13,85 +823,7 @@
         "vegetarian"
       ],
       "folder": "soups-and-stews",
-      "created_at": "2017-10-01"
-    },
-    {
-      "title": "Creamy Polenta With Parmesan And Sausage",
-      "content": "NYT Cooking recipe: Creamy Polenta With Parmesan And Sausage",
-      "notes": "This is unique for technique.  Bittman starts polenta in a cup of cold water then adds more water as it cooks & stirs little.  Most recipes bring all water to a boil & whisk in polenta & stir often.  This recipe works splendidly!  Took @ 21min for med. grind polenta to be perfect.  (Watch the video)  Can be topped with whatever you like...sausage, saut\u00e9ed mushrooms, roasted veg., ragu...  Leave out parm & sub a bit of ricotta & use with honey or maple syrup for breakfast.",
-      "tags": [
-        "cheese",
-        "citrus",
-        "dairy",
-        "sausage"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-01"
-    },
-    {
-      "title": "Summer Berry Buckle",
-      "content": "NYT Cooking recipe: Summer Berry Buckle",
-      "notes": "I have always been a crisp-kinda-person who didn't get the allure of buckles.  Until I tried this one.  So good.  Maybe it is the higher ratio of fruit in this than most recipes.  Or the combination of lemon zest and nutmeg in the mix. Delicious any time of day.  Serve for breakfast, lunch, tea time, dinner.  Take it to a cookout or picnic or party.  So easy to do.  Made as written it is just right.  PS - if yours sticks, see tips from some posters on how to mitigate that.",
-      "tags": [
-        "pressure-cooking"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-01"
-    },
-    {
-      "title": "Oat And Tahini Cookies",
-      "content": "NYT Cooking recipe: Oat And Tahini Cookies",
-      "notes": "Not usually a fan of oatmeal cookies but any recipe with Chef Ottolenghi's name + tahni & halvah gets my attention.  Good thing because they are splendidly delicious!  Made twice, 1st time per recipe.  Second time subbing thick cut sliced almonds for hazelnuts.  Delicious both ways.  Chopped pistachios would be good too.  Cookies come together easily and just as recipe says they will.  Made 20 both times.  Left off chocolate drizzle 2nd time.  Like flavor best w/out chocolate.  Keeper!",
-      "tags": [
-        "baking",
-        "citrus",
-        "dairy",
-        "middle-eastern"
-      ],
-      "folder": "baking-and-desserts",
-      "created_at": "2017-10-01"
-    },
-    {
-      "title": "Tamarind Spiced Nuts With Mint",
-      "content": "NYT Cooking recipe: Tamarind Spiced Nuts With Mint",
-      "notes": "1) Love tamarind & garam masala; addictively good flavor combo.  2)  BUT way more fat from butter than expected.  Nut mixture laying in little butter puddle as it cooled.  Tricky to serve for guests' greasy fingers.  3) May try again - cutting butter to 3T and so on from there to see how that impacts outcome.   4) Fresh mint chiffonade great accent but makes nuts more difficult to serve / eat.  Try mint drink instead like Julep, Mojito, Israeli Mint Lemonade, Mint iced tea...",
-      "tags": [
-        "wine-cooking"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-01"
-    },
-    {
-      "title": "Manhattan",
-      "content": "NYT Cooking recipe: Manhattan",
-      "notes": "My Brooklyn born and raised husband is a longtime Manhattan cocktail fan.  Sometime during the 2016 Prez primary cycle when Lindsay Graham suggested if one started drinking during happy hour and had enough alcohol that Trump might start to make sense, we decided to put this cocktail recipe in our daily repertoire.  Great with rye (hubby) or bourbon (me).  We use just a tick less vermouth.  And Amerena cherries.  I like mine on rocks.  Great drink.  But did not work for that making sense thing.",
-      "tags": [
-        "butter",
-        "ginger"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-01"
-    },
-    {
-      "title": "Tostadas With Smashed Black Beans Or Vaqueros",
-      "content": "NYT Cooking recipe: Tostadas With Smashed Black Beans Or Vaqueros",
-      "notes": "Crisped the tortillas in oven instead of microwave (see Sara's tip on this thread.)  These were delicious with recipe as written!  And in poster LeslieMac being a person after my own tastebuds and appetite, I also found that one recipe served my husband and me with just a little leftover for a snack.  I'd say stretching this to 4 - 8 servings per recipe works for more restrained appetites, but this was just SO good and healthy too so we didn't feel guilty.",
-      "tags": [
-        "beans",
-        "leftovers"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-01"
-    },
-    {
-      "title": "Glazed Lamb Ribs",
-      "content": "NYT Cooking recipe: Glazed Lamb Ribs",
-      "notes": "Our finished dish looked precisely like recipe photo.  And we made it per recipe.  Luscious lamb ribs.  Great glaze.  Splendid sprinkle.  (DON'T skip it.)  Yummy yogurt.  (Although, next time I'll use 2% yogurt and no cr\u00e8me fraiche.  Pretty rich as written for lamb partner.)  Still the whole lotta work was not quite what we expected for final; the sum was less than the whole of the parts.  Note:  Lamb ribs are messier than pork ribs by far.  Know well your guests when serving! :-)",
-      "tags": [
-        "lamb"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-01"
+      "created_at": "2017-03-19"
     },
     {
       "title": "Ande Ki Kari Eggs In Spicy Tomato Sauce",
@@ -103,7 +835,7 @@
         "tomatoes"
       ],
       "folder": "mains",
-      "created_at": "2017-10-01"
+      "created_at": "2017-03-30"
     },
     {
       "title": "Malted Milk Fudge Ripple Ice Cream",
@@ -114,7 +846,58 @@
         "dessert"
       ],
       "folder": "baking-and-desserts",
-      "created_at": "2017-10-01"
+      "created_at": "2017-04-14"
+    },
+    {
+      "title": "Glazed Lamb Ribs",
+      "content": "NYT Cooking recipe: Glazed Lamb Ribs",
+      "notes": "Our finished dish looked precisely like recipe photo.  And we made it per recipe.  Luscious lamb ribs.  Great glaze.  Splendid sprinkle.  (DON'T skip it.)  Yummy yogurt.  (Although, next time I'll use 2% yogurt and no cr\u00e8me fraiche.  Pretty rich as written for lamb partner.)  Still the whole lotta work was not quite what we expected for final; the sum was less than the whole of the parts.  Note:  Lamb ribs are messier than pork ribs by far.  Know well your guests when serving! :-)",
+      "tags": [
+        "lamb"
+      ],
+      "folder": "mains",
+      "created_at": "2017-04-16"
+    },
+    {
+      "title": "Bucatini Allamatriciana",
+      "content": "NYT Cooking recipe: Bucatini Allamatriciana",
+      "notes": "Very good.  Italian in-laws would agree with author that guanciale is key for authenticity. Also a milder percorino than Romano.  When we lived in NYC and SF areas these were easier to come by.  In the 'wilds' of Boise where we are now...hahahaha.  No.  Not here.  So pancetta & percorino romano it is.  But no garlic.  (FIL allergic so may be why.)  Bucatini  needs to be cooked \"justa\" to stay on the fork.  Too firm & it will slap you with sauce as you try to twirl it.",
+      "tags": [],
+      "folder": "mains",
+      "created_at": "2017-05-02"
+    },
+    {
+      "title": "A Big Pot Of Simmered Pintos",
+      "content": "NYT Cooking recipe: A Big Pot Of Simmered Pintos",
+      "notes": "After soaking the beans overnight I drain them and start with fresh water.  About 10 cups of water seems to be the right ratio for a pound of beans every time.",
+      "tags": [
+        "heat"
+      ],
+      "folder": "mains",
+      "created_at": "2017-05-05"
+    },
+    {
+      "title": "Rhubarb Crisp",
+      "content": "NYT Cooking recipe: Rhubarb Crisp",
+      "notes": "One of the lovely things about Bittman's recipes is they allow the user to make it as written or experiment with their own version and always have a delicious dish because of good foundation.  I made this maybe  half a dozen ways last season and served it at all times of the day (even breakfast). Rhubarb alone as written. Rhubarb with berries.  Apples and berries with no rhubarb.  Pecans.  Walnuts.  Thick sliced almonds.  So good each time.  Less sugar each time seemed best.",
+      "tags": [
+        "cheese",
+        "ginger",
+        "warm-spices"
+      ],
+      "folder": "mains",
+      "created_at": "2017-05-21"
+    },
+    {
+      "title": "Tostadas With Smashed Black Beans Or Vaqueros",
+      "content": "NYT Cooking recipe: Tostadas With Smashed Black Beans Or Vaqueros",
+      "notes": "Crisped the tortillas in oven instead of microwave (see Sara's tip on this thread.)  These were delicious with recipe as written!  And in poster LeslieMac being a person after my own tastebuds and appetite, I also found that one recipe served my husband and me with just a little leftover for a snack.  I'd say stretching this to 4 - 8 servings per recipe works for more restrained appetites, but this was just SO good and healthy too so we didn't feel guilty.",
+      "tags": [
+        "beans",
+        "leftovers"
+      ],
+      "folder": "mains",
+      "created_at": "2017-05-25"
     },
     {
       "title": "Pizza With Caramelized Onions Ricotta And Chard",
@@ -128,29 +911,19 @@
         "vegetarian"
       ],
       "folder": "mains",
-      "created_at": "2017-10-01"
+      "created_at": "2017-06-03"
     },
     {
-      "title": "A Big Pot Of Simmered Pintos",
-      "content": "NYT Cooking recipe: A Big Pot Of Simmered Pintos",
-      "notes": "After soaking the beans overnight I drain them and start with fresh water.  About 10 cups of water seems to be the right ratio for a pound of beans every time.",
+      "title": "Baked Beans With Pomegranate Molasses Walnuts And Chard",
+      "content": "NYT Cooking recipe: Baked Beans With Pomegranate Molasses Walnuts And Chard",
+      "notes": "Extraordinarily delicious made per recipe and what makes this even yummier is that it is so darned easy to do.  Aside from the need to plan ahead by soaking the beans (overnight for me), this goes together in a snap.  There are several white bean varieties and I prefer the tiny ones over the larger ones, so tiny it was in this recipe too.  It may be even better warm than hot, but either way all good! Leftovers, if you have any, are wonderful too.",
       "tags": [
-        "heat"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-01"
-    },
-    {
-      "title": "Best Black Bean Soup",
-      "content": "NYT Cooking recipe: Best Black Bean Soup",
-      "notes": "Oh me of little faith...soaked the beans the night before.  I buy black beans at my CoOp where they always seem fresh.  I cook them often.  I was not believing they'd cook in an hour or two without pre-soak.  Good thing.  Because they took two hours and \"a bit\" to tender stage for this soup.  Other than pre-soak step, made per recipe.  Good, layered in flavors, just spicy enough.  Start slowly with the salt at end.  1 1/2 tsp was enough for us.",
-      "tags": [
+        "baking",
         "beans",
-        "cheese",
-        "soup"
+        "greens"
       ],
-      "folder": "soups-and-stews",
-      "created_at": "2017-10-01"
+      "folder": "baking-and-desserts",
+      "created_at": "2017-06-03"
     },
     {
       "title": "Cumin Lamb Meatballs With Tahini Yogurt Dipping Sauce",
@@ -164,43 +937,30 @@
         "spices"
       ],
       "folder": "mains",
-      "created_at": "2017-10-01"
+      "created_at": "2017-06-11"
     },
     {
-      "title": "Linguine With Crab Meat",
-      "content": "NYT Cooking recipe: Linguine With Crab Meat",
-      "notes": "Minus the mushrooms, nearly doubled the crab, used fresh Dungeness, lemon juice filled in for ponzu...all good!   The little bit of butter at the end really helps accent the crab flavor along with the scatter of tarragon.  Lovely.",
-      "tags": [
-        "crab",
-        "italian",
-        "wine-cooking"
-      ],
-      "folder": "pasta-and-noodles",
-      "created_at": "2017-10-01"
-    },
-    {
-      "title": "Baked Beans With Pomegranate Molasses Walnuts And Chard",
-      "content": "NYT Cooking recipe: Baked Beans With Pomegranate Molasses Walnuts And Chard",
-      "notes": "Extraordinarily delicious made per recipe and what makes this even yummier is that it is so darned easy to do.  Aside from the need to plan ahead by soaking the beans (overnight for me), this goes together in a snap.  There are several white bean varieties and I prefer the tiny ones over the larger ones, so tiny it was in this recipe too.  It may be even better warm than hot, but either way all good! Leftovers, if you have any, are wonderful too.",
+      "title": "Oat And Tahini Cookies",
+      "content": "NYT Cooking recipe: Oat And Tahini Cookies",
+      "notes": "Not usually a fan of oatmeal cookies but any recipe with Chef Ottolenghi's name + tahni & halvah gets my attention.  Good thing because they are splendidly delicious!  Made twice, 1st time per recipe.  Second time subbing thick cut sliced almonds for hazelnuts.  Delicious both ways.  Chopped pistachios would be good too.  Cookies come together easily and just as recipe says they will.  Made 20 both times.  Left off chocolate drizzle 2nd time.  Like flavor best w/out chocolate.  Keeper!",
       "tags": [
         "baking",
-        "beans",
-        "greens"
+        "citrus",
+        "dairy",
+        "middle-eastern"
       ],
       "folder": "baking-and-desserts",
-      "created_at": "2017-10-01"
+      "created_at": "2017-06-12"
     },
     {
-      "title": "Monkfish Roasted With Herbs And Olives",
-      "content": "NYT Cooking recipe: Monkfish Roasted With Herbs And Olives",
-      "notes": "What a great tip to tie the monkfish, as one would a pork tenderloin, to tuck in the short end and help create a more uniform shape for even cooking.  At 15 minutes cook time and after a 5 minute out of oven rest this was perfect for doneness and texture.  Easy to make.  Great flavors.  Handsome to serve.  For folks new to monkfish, the recipe assumes your fishmonger has cleaned it of the membrane surrounding the tail when it is fileted.   If not done, you'll need to do that first.",
+      "title": "Tamarind Spiced Nuts With Mint",
+      "content": "NYT Cooking recipe: Tamarind Spiced Nuts With Mint",
+      "notes": "1) Love tamarind & garam masala; addictively good flavor combo.  2)  BUT way more fat from butter than expected.  Nut mixture laying in little butter puddle as it cooled.  Tricky to serve for guests' greasy fingers.  3) May try again - cutting butter to 3T and so on from there to see how that impacts outcome.   4) Fresh mint chiffonade great accent but makes nuts more difficult to serve / eat.  Try mint drink instead like Julep, Mojito, Israeli Mint Lemonade, Mint iced tea...",
       "tags": [
-        "fish",
-        "leftovers",
-        "roasting"
+        "wine-cooking"
       ],
       "folder": "mains",
-      "created_at": "2017-10-01"
+      "created_at": "2017-06-21"
     },
     {
       "title": "Pork Chops With Tamarind And Ginger",
@@ -212,26 +972,7 @@
         "pork"
       ],
       "folder": "mains",
-      "created_at": "2017-10-01"
-    },
-    {
-      "title": "Roasted Halibut With Lemons Olives And Rosemary",
-      "content": "NYT Cooking recipe: Roasted Halibut With Lemons Olives And Rosemary",
-      "notes": "Made as written but for eliminating rosemary.  Very simple to make and simply delicious to eat.  While you might substitute another chili powder, the fruity, moderate heat of Aleppo really is great here.  Worth the search for it.  We buy ours at an Afghani market but places like Savory Spice Shop and Penzey's sell it too as do several on Amazon.  It's a staple in our kitchen these days.  Took about 20 minutes for the halibut to reach level of doneness we prefer.",
-      "tags": [
-        "citrus",
-        "roasting"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-01"
-    },
-    {
-      "title": "Bucatini Allamatriciana",
-      "content": "NYT Cooking recipe: Bucatini Allamatriciana",
-      "notes": "Very good.  Italian in-laws would agree with author that guanciale is key for authenticity. Also a milder percorino than Romano.  When we lived in NYC and SF areas these were easier to come by.  In the 'wilds' of Boise where we are now...hahahaha.  No.  Not here.  So pancetta & percorino romano it is.  But no garlic.  (FIL allergic so may be why.)  Bucatini  needs to be cooked \"justa\" to stay on the fork.  Too firm & it will slap you with sauce as you try to twirl it.",
-      "tags": [],
-      "folder": "mains",
-      "created_at": "2017-10-01"
+      "created_at": "2017-06-28"
     },
     {
       "title": "Buttermilk Biscuit Shortcakes With Strawberries",
@@ -243,19 +984,123 @@
         "citrus"
       ],
       "folder": "baking-and-desserts",
-      "created_at": "2017-10-01"
+      "created_at": "2017-07-01"
     },
     {
-      "title": "Rhubarb Crisp",
-      "content": "NYT Cooking recipe: Rhubarb Crisp",
-      "notes": "One of the lovely things about Bittman's recipes is they allow the user to make it as written or experiment with their own version and always have a delicious dish because of good foundation.  I made this maybe  half a dozen ways last season and served it at all times of the day (even breakfast). Rhubarb alone as written. Rhubarb with berries.  Apples and berries with no rhubarb.  Pecans.  Walnuts.  Thick sliced almonds.  So good each time.  Less sugar each time seemed best.",
+      "title": "Summer Berry Buckle",
+      "content": "NYT Cooking recipe: Summer Berry Buckle",
+      "notes": "I have always been a crisp-kinda-person who didn't get the allure of buckles.  Until I tried this one.  So good.  Maybe it is the higher ratio of fruit in this than most recipes.  Or the combination of lemon zest and nutmeg in the mix. Delicious any time of day.  Serve for breakfast, lunch, tea time, dinner.  Take it to a cookout or picnic or party.  So easy to do.  Made as written it is just right.  PS - if yours sticks, see tips from some posters on how to mitigate that.",
       "tags": [
-        "cheese",
-        "ginger",
-        "warm-spices"
+        "pressure-cooking"
       ],
       "folder": "mains",
-      "created_at": "2017-10-01"
+      "created_at": "2017-07-06"
+    },
+    {
+      "title": "Roasted Halibut With Lemons Olives And Rosemary",
+      "content": "NYT Cooking recipe: Roasted Halibut With Lemons Olives And Rosemary",
+      "notes": "Made as written but for eliminating rosemary.  Very simple to make and simply delicious to eat.  While you might substitute another chili powder, the fruity, moderate heat of Aleppo really is great here.  Worth the search for it.  We buy ours at an Afghani market but places like Savory Spice Shop and Penzey's sell it too as do several on Amazon.  It's a staple in our kitchen these days.  Took about 20 minutes for the halibut to reach level of doneness we prefer.",
+      "tags": [
+        "citrus",
+        "roasting"
+      ],
+      "folder": "mains",
+      "created_at": "2017-07-08"
+    },
+    {
+      "title": "Creamy Polenta With Parmesan And Sausage",
+      "content": "NYT Cooking recipe: Creamy Polenta With Parmesan And Sausage",
+      "notes": "This is unique for technique.  Bittman starts polenta in a cup of cold water then adds more water as it cooks & stirs little.  Most recipes bring all water to a boil & whisk in polenta & stir often.  This recipe works splendidly!  Took @ 21min for med. grind polenta to be perfect.  (Watch the video)  Can be topped with whatever you like...sausage, saut\u00e9ed mushrooms, roasted veg., ragu...  Leave out parm & sub a bit of ricotta & use with honey or maple syrup for breakfast.",
+      "tags": [
+        "cheese",
+        "citrus",
+        "dairy",
+        "sausage"
+      ],
+      "folder": "mains",
+      "created_at": "2017-07-12"
+    },
+    {
+      "title": "Monkfish Roasted With Herbs And Olives",
+      "content": "NYT Cooking recipe: Monkfish Roasted With Herbs And Olives",
+      "notes": "What a great tip to tie the monkfish, as one would a pork tenderloin, to tuck in the short end and help create a more uniform shape for even cooking.  At 15 minutes cook time and after a 5 minute out of oven rest this was perfect for doneness and texture.  Easy to make.  Great flavors.  Handsome to serve.  For folks new to monkfish, the recipe assumes your fishmonger has cleaned it of the membrane surrounding the tail when it is fileted.   If not done, you'll need to do that first.",
+      "tags": [
+        "fish",
+        "leftovers",
+        "roasting"
+      ],
+      "folder": "mains",
+      "created_at": "2017-08-02"
+    },
+    {
+      "title": "Linguine With Crab Meat",
+      "content": "NYT Cooking recipe: Linguine With Crab Meat",
+      "notes": "Minus the mushrooms, nearly doubled the crab, used fresh Dungeness, lemon juice filled in for ponzu...all good!   The little bit of butter at the end really helps accent the crab flavor along with the scatter of tarragon.  Lovely.",
+      "tags": [
+        "crab",
+        "italian",
+        "wine-cooking"
+      ],
+      "folder": "pasta-and-noodles",
+      "created_at": "2017-08-05"
+    },
+    {
+      "title": "Zahavs Hummus Tehina",
+      "content": "NYT Cooking recipe: Zahavs Hummus Tehina",
+      "notes": "Chris Kimball's new magazine Milk Street did feature on Israeli Hummus two  issues ago,  The recipe here is still my 'go to' (with tahini redux to 2/3 C) BUT Milk Street cook method for garbanzos is great to use with this.  1.  1C beans soaked in 8C water + 2 TBSP salt not baking soda.   2.  Drain & cook in 10C water + 1/2 tsp soda.  Beans get to overcooked stage needed in about 40 minutes.  3.  Drain to use in this recipe.  Tried 3 times & creamy, smooth outcome in this.\n\nMy 'go to'. Made at least 8 times now and also tried original Zav recipe (from the restaurant) twice.  I prefer the tahini amount of the original (that is 2/3 C tahini to 1 C here) but often use more than 1/3 C lemon juice.  I prefer this recipe for microplane  grating in garlic cloves (I use 2) as opposed to original recipe of whirling the unpeeled garlic & lemon juice together then straining juice.  I sometimes add Aleppo pepper in mixture & always sumac (not paprika) on top.\n\nMade as written.  Outcome was luscious.  Next time I'll make a couple of adjustments to find the 'just right' for us for amount of tahini and salt for our tastebuds.  Maybe 25% less of both of those.  Added extra lemon, as the recipe suggests.  As close as I've come to making at home the fantastic hummus of take out Lebanese food place. The Lebanon raised owner told me the secret was using baking soda in soak and cook stages for the beans.  Just as this recipe does.",
+      "tags": [
+        "citrus",
+        "dairy",
+        "middle-eastern",
+        "spices"
+      ],
+      "folder": "mains",
+      "created_at": "2017-08-21"
+    },
+    {
+      "title": "Muhammara Red Pepper And Walnut Spread",
+      "content": "NYT Cooking recipe: Muhammara Red Pepper And Walnut Spread",
+      "notes": "Muhammara is a favorite dish in our home.  We've tried lots of versions.  This recipe is our favorite.  First time we've added scallions. Excellent marriage of flavors.  Some reviewers say they used jarred peppers or honey or red wine vinegar in place of ingredients specified in recipe and were happy with the results.  Maybe so.  But those ingredients do not make this recipe.   For what it's worth, we made this as written, the ingredients are staples for us, and it is delectable.",
+      "tags": [],
+      "folder": "mains",
+      "created_at": "2017-09-02"
+    },
+    {
+      "title": "Lasagna With Tomato Sauce And Roasted Eggplant",
+      "content": "NYT Cooking recipe: Lasagna With Tomato Sauce And Roasted Eggplant",
+      "notes": "Made as written with one exception.  Didn't use no boil pasta but parboiled (for 4 min) De Cecco #1 lasagna noodles, then proceeded per recipe using them.  Due to parboiled noodles, didn't need to cover when baking.  But all ingredients and all proportions per recipe otherwise.  Simply excellent for outcome.  Easy too since I did the eggplant and marinara (made my own) one day and assembled and baked the next.  Rectangular pan 11.5 x 7.5.  Don't omit the tiny cinnamon pinch!",
+      "tags": [
+        "eggplant",
+        "eggs",
+        "italian",
+        "roasting",
+        "tomatoes"
+      ],
+      "folder": "pasta-and-noodles",
+      "created_at": "2017-09-04"
+    },
+    {
+      "title": "French Lentils With Chard",
+      "content": "NYT Cooking recipe: French Lentils With Chard",
+      "notes": "Seeing the numbers of folks who tried this and found it tasteless, I'll weigh in with the opposite.  Made this per recipe the first time per recipe.  Then per recipe minus chard the second just because I didn't have any in the kitchen so made it as a lentil \"stoup\"..  We found it quite flavor filled both times from the bouquet garni, veg and the cheese the recipe calls for to finish it.  One doesn't need to have tastebuds whalloped for things to be tasty.",
+      "tags": [
+        "french",
+        "greens",
+        "lentils"
+      ],
+      "folder": "mains",
+      "created_at": "2017-09-12"
+    },
+    {
+      "title": "Sausage With Peppers And Onions",
+      "content": "NYT Cooking recipe: Sausage With Peppers And Onions",
+      "notes": "Made as written, minus the optional eggs, this is terrific for a simple meal.  My Italian heritage husband grew up in a Brooklyn household with his  Italian speaking grandmother in charge of the kitchen and for the hundreds of times, it seems at least, that we've made sausage and peppers in his family's tradition, we never thought to try red wine vinegar for finishing the peppers.  That tasty touch coupled with the technique for cooking the sausages makes this a \"keeper\"!",
+      "tags": [
+        "alliums",
+        "sausage"
+      ],
+      "folder": "mains",
+      "created_at": "2017-09-24"
     },
     {
       "title": "Butter Steamed Broccoli With Peppery Bread Crumbs",
@@ -282,836 +1127,12 @@
       "created_at": "2017-10-10"
     },
     {
-      "title": "French Lentils With Chard",
-      "content": "NYT Cooking recipe: French Lentils With Chard",
-      "notes": "Seeing the numbers of folks who tried this and found it tasteless, I'll weigh in with the opposite.  Made this per recipe the first time per recipe.  Then per recipe minus chard the second just because I didn't have any in the kitchen so made it as a lentil \"stoup\"..  We found it quite flavor filled both times from the bouquet garni, veg and the cheese the recipe calls for to finish it.  One doesn't need to have tastebuds whalloped for things to be tasty.",
-      "tags": [
-        "french",
-        "greens",
-        "lentils"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-23"
-    },
-    {
-      "title": "Sausage With Peppers And Onions",
-      "content": "NYT Cooking recipe: Sausage With Peppers And Onions",
-      "notes": "Made as written, minus the optional eggs, this is terrific for a simple meal.  My Italian heritage husband grew up in a Brooklyn household with his  Italian speaking grandmother in charge of the kitchen and for the hundreds of times, it seems at least, that we've made sausage and peppers in his family's tradition, we never thought to try red wine vinegar for finishing the peppers.  That tasty touch coupled with the technique for cooking the sausages makes this a \"keeper\"!",
-      "tags": [
-        "alliums",
-        "sausage"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-23"
-    },
-    {
       "title": "Il Sorpasso",
       "content": "NYT Cooking recipe: Il Sorpasso",
       "notes": "At our house we love bourbon.  And Aperol.  And now this drink with the recipe just as written.  Yum.  We wouldn't change a thing.",
       "tags": [],
       "folder": "mains",
       "created_at": "2017-10-23"
-    },
-    {
-      "title": "Muhammara Red Pepper And Walnut Spread",
-      "content": "NYT Cooking recipe: Muhammara Red Pepper And Walnut Spread",
-      "notes": "Muhammara is a favorite dish in our home.  We've tried lots of versions.  This recipe is our favorite.  First time we've added scallions. Excellent marriage of flavors.  Some reviewers say they used jarred peppers or honey or red wine vinegar in place of ingredients specified in recipe and were happy with the results.  Maybe so.  But those ingredients do not make this recipe.   For what it's worth, we made this as written, the ingredients are staples for us, and it is delectable.",
-      "tags": [],
-      "folder": "mains",
-      "created_at": "2017-10-23"
-    },
-    {
-      "title": "Lasagna With Tomato Sauce And Roasted Eggplant",
-      "content": "NYT Cooking recipe: Lasagna With Tomato Sauce And Roasted Eggplant",
-      "notes": "Made as written with one exception.  Didn't use no boil pasta but parboiled (for 4 min) De Cecco #1 lasagna noodles, then proceeded per recipe using them.  Due to parboiled noodles, didn't need to cover when baking.  But all ingredients and all proportions per recipe otherwise.  Simply excellent for outcome.  Easy too since I did the eggplant and marinara (made my own) one day and assembled and baked the next.  Rectangular pan 11.5 x 7.5.  Don't omit the tiny cinnamon pinch!",
-      "tags": [
-        "eggplant",
-        "eggs",
-        "italian",
-        "roasting",
-        "tomatoes"
-      ],
-      "folder": "pasta-and-noodles",
-      "created_at": "2017-10-23"
-    },
-    {
-      "title": "Baked Cheesy Pasta With Wild Mushrooms",
-      "content": "NYT Cooking recipe: Baked Cheesy Pasta With Wild Mushrooms",
-      "notes": "Per recipe but for 10 oz pasta instead of 8, couple extra ounces of mushrooms and subbing fresh thyme for rosemary.  Watch video for the amount of time mushrooms should roast; that is key for texture.  This is so rich with the cheeses and cream, I think it would be AOK to use only creminis next time and save the spendy wild mushrooms for something where their flavors are more naked.  Needed @1/4C of pasta water to get to right consistency before baking.  Served 5 as main course.  Keeper!",
-      "tags": [
-        "baking",
-        "cheese",
-        "italian",
-        "mushrooms",
-        "pasta",
-        "vegetarian"
-      ],
-      "folder": "baking-and-desserts",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Porcini Broth",
-      "content": "NYT Cooking recipe: Porcini Broth",
-      "notes": "Surprised at great flavor to be had from such a simple and short simmer broth!  Very versatile in any recipe calling for mushroom or veggie broth.  Inexpensive too given it takes only 4 grams dry porcini. NOTES:  1) I've subbed a good size leek for the onions & scallion with good outcome.  2) A few whole black peppercorns added in is good too.  3) Partially covering during simmer helps maintain volume but in general plan on 3 'plus' Cups yield.  4) Freezes well.",
-      "tags": [
-        "cheese",
-        "citrus"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Hot Honey Shrimp",
-      "content": "NYT Cooking recipe: Hot Honey Shrimp",
-      "notes": "Delicious as written.  I decided to play with it too.  Honey mixture makes splendid glaze for oven roasted salmon filet and then finished with the lime juice and sprinkled with jalapenos and scallions.  Ditto with cubed and baked sweet potatoes. (Seeing purists in the mix for whether 'cleaned' shrimp means deveined, peel the sweet potatoes first.) Toss with honey  mixture at last 5 or 10 minutes of baking to avoid honey burn then finish per recipe by tossing with the rest.",
-      "tags": [
-        "shrimp"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Mini Almond Cakes With Chocolate Or Cherry",
-      "content": "NYT Cooking recipe: Mini Almond Cakes With Chocolate Or Cherry",
-      "notes": "Delectable flavors & texture.  Keeper!  \n\n1) Made per recipe for cakes but modified to use neither ganache nor cherry jam for center.  Instead used an Amerena cherry. \n\n2) Experience similar to what others shared.  At 10 min bake time too firm to push down gently.  Would reduce this first bake time to 5 min. next time.\n\n3) Divided perfectly between 12 muffin cups - well  buttered first.  Cakes released AOK with a little coaxing when still slightly warm.  \n\n4) Best day 1 but good day 2.\n\nSomeone asked about Kosher confectioner's sugar that does not contain cornstarch in an earlier string so that these might work for Passover.  I made these using Whole Foods 360 brand confectioners sugar & noticed it uses tapioca starch, not cornstarch, for sugar stabilizer.  Cassava, source of tapioca, is a root like potato so should be Passover friendly.  The sugar was marked U on bag so should fit for Passover use.  But note the almond cake recipe also contains cornstarch.",
-      "tags": [
-        "baking",
-        "butter",
-        "dessert"
-      ],
-      "folder": "baking-and-desserts",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Colorful Chicory Salad With Anchovy Dressing",
-      "content": "NYT Cooking recipe: Colorful Chicory Salad With Anchovy Dressing",
-      "notes": "If you can find salt packed anchovies, all the better!  (They'll need to be soak, rinsed and drained first.) A simple and simply splendid salad.  I cut back on the anchovies by half, personal preference since I prefer the little guys to offer a soft kiss and not a big smooch in dressings.  I imagine you could eliminate them all together and this would still be great.  Maybe sub oil cured black olives finely chopped in their place.  Hmm...I might try round two with that edit tomorrow.",
-      "tags": [
-        "salad",
-        "umami"
-      ],
-      "folder": "salads",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Avocado Tacos",
-      "content": "NYT Cooking recipe: Avocado Tacos",
-      "notes": "Made per recipe except I toasted pasillas in dry skillet over medium flame rather than charring them using tongs over open flame.  Simple reason is I'm a klutz with the tong technique.  Starting with pan toasted instead of flame charred chiles, remainder per recipe.  Fantabulous flavor in chili salsa with the avocado tacos.  I can think of all kinds of things to use with remaining salsa.  Note:  Tomatillos only took 7 min to cook, not 15 of recipe, for me.",
-      "tags": [
-        "mexican"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Greek Chicken Stew With Cauliflower And Olives",
-      "content": "NYT Cooking recipe: Greek Chicken Stew With Cauliflower And Olives",
-      "notes": "Used chicken legs & made per recipe for ingredients.  Good enough one dish meal to be glad I tried it.  Won't repeat.  Best for those eaters who like subtle flavors.   NOTES: 1) Instead of stove top, I finished in oven like this: at step 4 also added cauliflower & after bringing all to simmer covered & braised in 325 degree oven for 20 min. then lowered to 275 for 1hr.  2) After removing from oven stirred in olives & parsley.  3) Good made day ahead.  Leftovers keep well.",
-      "tags": [
-        "cauliflower",
-        "chicken",
-        "heat",
-        "mediterranean",
-        "stew"
-      ],
-      "folder": "soups-and-stews",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Roasted Sweet Potatoes With Yogurt And Sesame Seeds",
-      "content": "NYT Cooking recipe: Roasted Sweet Potatoes With Yogurt And Sesame Seeds",
-      "notes": "I like fish sauce in many things but for my household's taste buds this recipe was better leaving that out and subbing salt instead.  Otherwise as written.  Used the pickled chiles option and not dried flakes.  Would not use sesame seeds next time.  Would increase 'salsa' next time. Japanese sweet potatoes do make a difference if you can find them.  We're fans of sweet potatoes and yams of all kinds so this recipe is added to the keeper file.",
-      "tags": [
-        "dairy",
-        "potatoes",
-        "roasting",
-        "vegetarian"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Braised Lamb With Red Wine And Prunes",
-      "content": "NYT Cooking recipe: Braised Lamb With Red Wine And Prunes",
-      "notes": "Shoulder chops work well in place of lamb shoulder cut up.  Increase from 2 lbs by a bit to allow for weight of bone in chops if using them.  Doubled cinnamon as several suggested.  Otherwise 'as written' for the 1st 'test drive'.  Excellent flavors.  Even better made day ahead.  Leftovers are great.  Next time I'd add a pinch or two of Aleppo or Cayenne pepper.  Otherwise a keeper for sure as written!",
-      "tags": [
-        "braising",
-        "lamb",
-        "spices",
-        "wine-cooking"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Tagine Style Lamb Stew",
-      "content": "NYT Cooking recipe: Tagine Style Lamb Stew",
-      "notes": "Fantabulous flavors. So simple to make it works for\"Tuesday dinner\" or to serve guests.  Like many braises we think this is best made a day ahead & reheated.  (Also provides opportunity to remove fat layer.)  Made as written but for these:  1) Olive oil sub for butter.  2) Water sub for chix stock.  3) Reduce water / liquid to 1 C. \"plus\".  4) After bringing to simmer on stovetop, transfer (covered) to 325 degree oven for 30 min then 275 degree for 1 1/2 hr.",
-      "tags": [
-        "lamb",
-        "stew"
-      ],
-      "folder": "soups-and-stews",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Gjelinas Roasted Yams",
-      "content": "NYT Cooking recipe: Gjelinas Roasted Yams",
-      "notes": "Fast food at it's finest!  So quick and easy to prepare.  Delicious to eat.  Even better that the ingredients are good for you.  First pass at the recipe made it as written and used crushed red pepper flakes.  In our household this was a main dish and enjoyed by all.  Next time we'll play with another crushed pepper, like Aleppo which is staple for us.  Not sure I'd add the olive oil to the yogurt next time.",
-      "tags": [
-        "roasting"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Pickleback Slaw",
-      "content": "NYT Cooking recipe: Pickleback Slaw",
-      "notes": "My household loves slaw of all kinds and in general prefer all salads lightly dressed.  Yet for this slaw we found ourselves wanting to increase the dressing by roughly half.  Also for balance of ingredients we wanted to reduce cabbage by about half.  In the \"what kind of pickle juice\" debate, we split the difference and used an artisan bread and butter pickle juice.  We liked the apples included here.  Good enough to have made once.  Not so good as to be a keeper for us.",
-      "tags": [
-        "dairy",
-        "olive-oil",
-        "pickling"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Coconut Pork Stew With Garam Masala",
-      "content": "NYT Cooking recipe: Coconut Pork Stew With Garam Masala",
-      "notes": "Fan of Melissa Clark recipes as I find them to be both foolproof and delicious.  This one was the latter but although I made it per recipe the yellow split peas never did soften up as expected. Even after 3 hrs of cook time - extended it to try to get them tender - & even when reheated on day 2.  Very good reheated.   Equally as good w/out the garlic oil.  Used lots of cilantro as garnish.  So many recipes & so little time not sure it will make it to repeat file.  But glad I tried it.",
-      "tags": [
-        "cheese",
-        "dairy",
-        "indian",
-        "leftovers",
-        "make-ahead",
-        "pork",
-        "southeast-asian",
-        "stew"
-      ],
-      "folder": "soups-and-stews",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Cacio E Pepe",
-      "content": "NYT Cooking recipe: Cacio E Pepe",
-      "notes": "I'm a fan of Bittman.  I love Cacio de Pepe.  How could I lose?  Big time as it turns out had I followed his recipe for this dish.  See Peter and Michael's notes from two months ago.  Then follow their suggestions.  It will be a good outcome.  Following this recipe will not get to the dish you the silky dish want to eat.  Or look for the Bon Appetit / Epicurious published version from 2011.",
-      "tags": [
-        "cheese"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Cardamom Scented Oatmeal Pancakes With Apricots And Almonds",
-      "content": "NYT Cooking recipe: Cardamom Scented Oatmeal Pancakes With Apricots And Almonds",
-      "notes": "My husband has made these several times since first seeing the recipe in 2011 and each time delicious.  California apricots are best here, not Turkish.  Hubby has even frozen leftovers then popped in toaster to reheat.",
-      "tags": [
-        "baking",
-        "breakfast"
-      ],
-      "folder": "baking-and-desserts",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Mashed Potato Casserole",
-      "content": "NYT Cooking recipe: Mashed Potato Casserole",
-      "notes": "NOTES: 1) Made full size, half size & 1/3 of recipe.  Delicious every time.  2) Set aside 1C or more hot potato cooking water b/4 draining.  Add it in at mash step as needed to get to desired consistency.  3) Adjust final salt in dish as needed given cooking water is salted. 4)  1/3 recipe (2# potatoes) feeds 6 as side.  5) If making ahead remove from fridge at least 90 min before baking. then add crumbs.  6) Bake 350 degrees not 400 - for 40 min. to make crumbs golden / no risk of burning.",
-      "tags": [
-        "potatoes",
-        "vegetarian"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Pizza With Sweet And Hot Peppers",
-      "content": "NYT Cooking recipe: Pizza With Sweet And Hot Peppers",
-      "notes": "Used fresh pizza dough from local CoOp - Whole Foods or Pizzeria would have it too - to save time.  Tossed / stretched to fit jelly roll pan.  Cut the topping recipe in half (although I used the whole jalapeno anyway and it was just right heat level).  It was a perfect fit of topping to crust.  Serves four that way.  Recommend mixing fresh marjoram in with the onion mixture if you're using it so that fresh herb doesn't burn.",
-      "tags": [
-        "pizza"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Hummus From Jerusalem",
-      "content": "NYT Cooking recipe: Hummus From Jerusalem",
-      "notes": "Once read comments by Chef Ottolenghi that went like this:  hummus could be the glue that holds the Middle East together.  Clever given there are so many variations to enjoy across countries and faiths.  A Jordanian acquaintance taught me using baking soda, lots of tahini and lemon juice are secrets to great hummus.  But this recipe was not my fav.  Too much tahini and not enough lemon.  Much prefer the Zahav\u2019s Hummus \u2018Tehina\u2019 published by Melissa Clark.  It remains my 'go to'.",
-      "tags": [
-        "heat",
-        "middle-eastern"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Charlie Birds Farro Salad",
-      "content": "NYT Cooking recipe: Charlie Birds Farro Salad",
-      "notes": "...agree with others who recommend cutting back salt in the apple cider / water cooking stock.  I used the full amount the first time.  I thought it was better using half the salt the second time.  I also used extra lemon.  And cut the amount of dressing back by almost half.  A good dish.\n\nIf using pearled farro you can cook as per this recipe.  But in my experience it still takes 45 min, not 30, to tender stage.   If using non pearled farro, you'll need to soak overnight and then it will still take 45 min.  They cook differently and have a slightly different texture.  The outcome of the dish will be slightly different with each one.  (See Francine's earlier comment.)  Also...",
-      "tags": [
-        "citrus",
-        "salad"
-      ],
-      "folder": "salads",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Pasta With Roast Chicken Currants And Pine Nuts",
-      "content": "NYT Cooking recipe: Pasta With Roast Chicken Currants And Pine Nuts",
-      "notes": "Technique is easy and the outcome was delicious.  Currants are great texture and flavor point.  As much as I try to make 'per recipe' the first time through, I changed this to sub toasted chopped walnuts for pine nuts (guest preference) and I did not use the chicken skin.  \"It's not you it's me\"; not a skin fan unless crispy.   Glad we tried it and provides ideas for using leftover roast chicken and other herbs in similar dish keeping nuts and currants.",
-      "tags": [
-        "chicken",
-        "italian",
-        "pasta",
-        "roasting"
-      ],
-      "folder": "pasta-and-noodles",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Berry Clafoutis",
-      "content": "NYT Cooking recipe: Berry Clafoutis",
-      "notes": "Simple to make & simply delicious; reliable every time recipe delivers  dish as welcome at breakfast or teatime or dessert after dinner.  We enjoy the texture of the almond plus wheat flours used together. Neither too custardy nor cakey.  And just sweet enough but not too much.  Also tried with today with frozen boysenberries.  Didn't thaw berries first, reduced cook temp to 350 degrees and upped cook time to 60 min. \"ish\" for just right brown top & firm middle.",
-      "tags": [
-        "french"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Splayed Turkey With Herbs",
-      "content": "NYT Cooking recipe: Splayed Turkey With Herbs",
-      "notes": "As Dana Carvey's immortal character'\"The Church Lady' might ask \"Well, isn't that special?\"  The turkey outcome using this recipe.  Because while ours wasn't as woeful as Burt Spielman's funny review of his experience (laughing WITH you, Burt, not at you), it was not what we expected.  And here I should ground what will be the start of a two screen review by saying my husband and I are experienced home cooks and fans of Melissa Clark.   Next...\n\nUsed 14# fresh turkey.  Gollowed recipe to a \"T\", using Orange-Bacon-Chile option minus bacon, dry brined 36 hours.  Removed from fridge for 90 min then seared in roaster, placed on lowest oven rack at temp spec'd for 30 min then lowered temp for another 75.  Two reads in each turkey thighs at 165 and breast 160.  Let rest 30 min, went to carve and breast still way pink at bone.  Back in oven to finish breast alone.  Flavors good but skin too pliable and dark meat tough.  Alas.\n\nThree's a charm...definitely the last note.  \"Followed\"  not \"Gollowed\" in should have read my previous tome.  Also to say the pan jus from this was luscious.  Using the Orange-Chilie rub version returns a disquieting orange color to drippings but when strained into a fat separator, the resulting de-fatted jus is a lovely amber color and the orange stuff is tossed.  Really great flavored pan jus for gravy or on its' own or in turkey tossed with noodle leftovers.",
-      "tags": [
-        "citrus",
-        "heat",
-        "leftovers",
-        "turkey"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Farro And Bean Soup",
-      "content": "NYT Cooking recipe: Farro And Bean Soup",
-      "notes": "Easy to make, flavor rich, nutritious and makes the house smell wonderful while it simmers.  A keeper!  Made the vegetarian version, no pancetta but with parmesan rind.  Didn't have farro in the pantry and too lazy to run to the CoOp to fetch some, I used 1/2 cup fregola instead and added that in for the last 20 minutes or so of cooking time.  Splendid outcome.  But next time with farro!  PS - Even better the second day.",
-      "tags": [
-        "beans",
-        "soup"
-      ],
-      "folder": "soups-and-stews",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Tortilla Soup With Roasted Cauliflower Rice",
-      "content": "NYT Cooking recipe: Tortilla Soup With Roasted Cauliflower Rice",
-      "notes": "Very tasty. Made per recipe for ingredients.  Only change in technique from as written was to toast tortilla strips in oven.  Really liked the \"riced\"' cauliflower in this.  Will use the technique for other things too.  Chipotle powder in the cauliflower was a great flavor profile add.  But noting we are big fans of spicy food, I'd say for many audiences you may want to cut the chipotle in half, to 1/2 tsp.  Also, plan on this taking more like 2 hrs start to finish, not 1.",
-      "tags": [
-        "beer-cooking",
-        "cauliflower",
-        "heat",
-        "mexican",
-        "roasting",
-        "soup",
-        "vegetarian"
-      ],
-      "folder": "soups-and-stews",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Harira Soup",
-      "content": "NYT Cooking recipe: Harira Soup",
-      "notes": "Fantastic flavors.  Easy.  Made twice.  Per recipe & w/ \u2018quick cook\u2019 changes.  1) This is hot with specified cayenne.  Reduce by half if \u2018heat sensitive\u2019.  2) Sub parsley for those who don\u2019t like cilantro flavor.  We added 50% more cilantro.  3) Quick cook; sub good diced canned tomatoes for fresh & use can (15 oz) of drained & rinsed garbanzos for dried and soaked.  Starting w/ dry is better but if you forget to soak the beans, I did 2nd time, this works.",
-      "tags": [
-        "heat",
-        "soup"
-      ],
-      "folder": "soups-and-stews",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Pasta With Fried Lemons And Chile Flakes",
-      "content": "NYT Cooking recipe: Pasta With Fried Lemons And Chile Flakes",
-      "notes": "Winter citrus season is THE time to make this dish!  We've made it three times, last season and this one included, using thin skinned Meyer lemons and each time.  Splendid outcomes.  Be sure to watch the video for how to prep the lemons before caramelizing them.  Also while the recipe lists says he celery leaves and parsley are optional, they really do make a difference in the eye appeal and flavor of the dish.",
-      "tags": [
-        "butter",
-        "citrus",
-        "italian",
-        "olive-oil",
-        "pasta"
-      ],
-      "folder": "pasta-and-noodles",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Basic Tahini Sauce",
-      "content": "NYT Cooking recipe: Basic Tahini Sauce",
-      "notes": "Using a Microplane to grate garlic into a tahini sauce as this recipe calls for makes all the difference to soften the edges of raw garlic flavor.  No need to do anything more complicated in steps than just grate.   Fan of  proportion of lemon juice to tahini here.  Have also omitted cumin at times and used ground Aleppo instead.  We use this sauce in so many ways.  Try it drizzled over oven roasted cauliflower \"steaks\" then sprinkle with sumac, sliced scallions and cilantro.",
-      "tags": [
-        "butter",
-        "middle-eastern"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Cinnamon Sugar Almonds",
-      "content": "NYT Cooking recipe: Cinnamon Sugar Almonds",
-      "notes": "Thnx to others' notes, made couple of changes.  Result just right dry sweet - salty - spicy treats.  1) Toasted raw nuts a little in saucepan first. 2) Removed pan from flame b/4 adding water, sugar etc to avoid splatter.  3) @1 tsp kosher salt cinnamon + @ 1/8 tsp New Mexico chili powder added to cinnmon.  4) Silicon spatula to stir gets sugar out pan edges so no burn.  5) @12 min for nice dry coating.  6) Lower flame as nuts cook to dry without burning sugar. 8) Sprinkle w/ Maldon salt.",
-      "tags": [
-        "butter",
-        "warm-spices"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Tahini Ranch Dressing",
-      "content": "NYT Cooking recipe: Tahini Ranch Dressing",
-      "notes": "For people posting who are put off by the garlic powder, you might try grating a small garlic clove with a Microplane instead.  Thanks to a Melissa Clark recipe some time back, I learned this tip and it seems to make all the difference when using raw garlic to soften it.  It works 'magic' in a way pressing or mincing doesn't.   But the point of this particular recipe is to mimic Ranch'ish style so garlic powder would fit in with that.",
-      "tags": [
-        "beer-cooking",
-        "butter",
-        "middle-eastern",
-        "olive-oil"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Crispy Lamb With Cumin Scallions And Red Chiles",
-      "content": "NYT Cooking recipe: Crispy Lamb With Cumin Scallions And Red Chiles",
-      "notes": "Made this per recipe.  Weighing in on the cumin debate as part of this thread, thought the amount of cumin called for was just right for the dish.  I'd use half the amount of salt called for in the lamb marinade if making again.",
-      "tags": [
-        "cheese",
-        "lamb",
-        "spices",
-        "warm-spices"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Baked Romanesco Broccoli With Mozzarella And Olives",
-      "content": "NYT Cooking recipe: Baked Romanesco Broccoli With Mozzarella And Olives",
-      "notes": "Made per recipe.  Outcome was delicious.  Agree you COULD make with plain cauliflower but the Romanesco is really THE thing for this.  Next time I'll reduce both cheeses by almost half.  But first time with a recipe I always like to do as written for a true 'test drive'.  If serving anchovy averse diners, I think it would be fine to leave them out since this has so much going on for pungent flavor.  But if so, I'd up the capers...maybe double.  A keeper.",
-      "tags": [
-        "baking",
-        "broccoli",
-        "cheese",
-        "vegetarian",
-        "wine-cooking"
-      ],
-      "folder": "baking-and-desserts",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Sweet Potatoes With Yogurt And Cilantro Chile Sauce",
-      "content": "NYT Cooking recipe: Sweet Potatoes With Yogurt And Cilantro Chile Sauce",
-      "notes": "Easy and excellent when made as written.  Used serrano chiles for the green chiles.  If serving it as part of a family style or buffet table service it is as delicious when it starts to cool as it is hot. Don't know that it needs the drizzle of oil in step 4.  Love yogurt with it but if serving lactose intolerant diners it is just as good without yogurt as with.  Made it to our \"keeper\" file.  PS - If you don't have blanched almonds in the house, sliced ones work well too.",
-      "tags": [
-        "dairy",
-        "potatoes",
-        "vegetarian"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Tricolor Salad Alla Splendido",
-      "content": "NYT Cooking recipe: Tricolor Salad Alla Splendido",
-      "notes": "Absent the tuna, I made the frisee /radicchio salad portion as a starter course for a seared scallop main dish.  Delicious and good enough to be a 'keeper' in the salad file.  Didn't have limes so used fresh Meyer lemon juice instead.  Cooled the dressing before tossing with the greens.  The Italian parsley in local organic market was so good, fresh and tender that I plucked the leaves and tossed them in whole with the greens.  Salad plates were practically licked clean. :-)",
-      "tags": [
-        "salad"
-      ],
-      "folder": "salads",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Cuban Black Beans",
-      "content": "NYT Cooking recipe: Cuban Black Beans",
-      "notes": "More Latin inspired than pure Cuban w/ jalapeno and pork included?  Great sofrito absent bacon. Outcome very good flavors.  Beware salt lick if you follow recipe!   Soaked beans (always do) and they still took 1:45 to cook.  Skeptical beans  can cook in 1 hr per recipe when not soaked. Prep notes: 1) soaked beans overnight, 2) salted beans after cooking, 3) reduced salt by 2/3 overall, 4) no bacon.   Next time: I'll quarter green bell used in simmering stage so I can remove it - gets mushy.",
-      "tags": [
-        "beans",
-        "citrus",
-        "dutch-oven"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Zahavs Hummus Tehina",
-      "content": "NYT Cooking recipe: Zahavs Hummus Tehina",
-      "notes": "Chris Kimball's new magazine Milk Street did feature on Israeli Hummus two  issues ago,  The recipe here is still my 'go to' (with tahini redux to 2/3 C) BUT Milk Street cook method for garbanzos is great to use with this.  1.  1C beans soaked in 8C water + 2 TBSP salt not baking soda.   2.  Drain & cook in 10C water + 1/2 tsp soda.  Beans get to overcooked stage needed in about 40 minutes.  3.  Drain to use in this recipe.  Tried 3 times & creamy, smooth outcome in this.\n\nMy 'go to'. Made at least 8 times now and also tried original Zav recipe (from the restaurant) twice.  I prefer the tahini amount of the original (that is 2/3 C tahini to 1 C here) but often use more than 1/3 C lemon juice.  I prefer this recipe for microplane  grating in garlic cloves (I use 2) as opposed to original recipe of whirling the unpeeled garlic & lemon juice together then straining juice.  I sometimes add Aleppo pepper in mixture & always sumac (not paprika) on top.\n\nMade as written.  Outcome was luscious.  Next time I'll make a couple of adjustments to find the 'just right' for us for amount of tahini and salt for our tastebuds.  Maybe 25% less of both of those.  Added extra lemon, as the recipe suggests.  As close as I've come to making at home the fantastic hummus of take out Lebanese food place. The Lebanon raised owner told me the secret was using baking soda in soak and cook stages for the beans.  Just as this recipe does.",
-      "tags": [
-        "citrus",
-        "dairy",
-        "middle-eastern",
-        "spices"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Slow Braised Lamb Shanks",
-      "content": "NYT Cooking recipe: Slow Braised Lamb Shanks",
-      "notes": "Brilliantly simple way to achieve outcome of tender lamb to reuse in other braises (like Bittman's Chinese flavored lamb dish) and ragus.  Don't try to short cut / skimp on the browning step.  Makes all the difference.  I used about half water and verjus for the braise liquid and braise time of 2 hours.  Worked swell.",
-      "tags": [
-        "braising",
-        "lamb"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Roasted Cauliflower With Ras El Hanout",
-      "content": "NYT Cooking recipe: Roasted Cauliflower With Ras El Hanout",
-      "notes": "Good outcome for creamy texture of wedges at service. 1) Cauliflower head was small'ish side of medium so used 2 qt saucepan & approx 1 qt milk covered nicely.  But head wanted to float to top so turned it upside down for braising step.   Took 40 min to tender.  3) Given smallish head, used less butter and spice but made per recipe for technique.  4) Let come to room temp before roasting & 35 min was just right time.  5) Leftover milk delicious for cheese sauce next day meal.",
-      "tags": [
-        "cauliflower",
-        "roasting",
-        "vegetarian"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Sour Cherry Old Fashioned",
-      "content": "NYT Cooking recipe: Sour Cherry Old Fashioned",
-      "notes": "Who knew?  Two of my favorits, sour cherries and bourbon, are tasty partners in this easy cocktail.  Canned or frozen (and thawed) sour cherries (available in groceries here on the west coast) work as well as fresh ones.  I find a teaspoon (or so) of simple syrup works better than trying to dissolve sugar.  If you go that route, try superfine sugar to dissolve easier than regular sugar.  A little squeeze of fresh juice from the orange from which the peel came is a nice add too sometimes.",
-      "tags": [
-        "cheese"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Cabbage And Potato Gratin",
-      "content": "NYT Cooking recipe: Cabbage And Potato Gratin",
-      "notes": "Made per recipe.  Easy. Delicious outcome.  Instructions don't specify how thick to slice potatoes.  Chose 1/4\" \"ish\" and seemed right based on result.  All liquid was absorbed nicely as the dish cooked. 1 hr + 15 minutes was perfect baking time.  Good news if serving as part of 'buffet table' meal - it is as good barely warm as hot. Next time thought:  I'll reduce gentle boil time from 5 to 4 min.",
-      "tags": [
-        "cabbage",
-        "citrus",
-        "french",
-        "potatoes",
-        "vegetarian"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Sicilian Style Citrus Salad",
-      "content": "NYT Cooking recipe: Sicilian Style Citrus Salad",
-      "notes": "Be sure to use some of the tender celery leaves from those inside stalks tossed into this salad.  In fact, I think it looks like there are some celery leaves in the photo although not called out specifically in the ingredients list along with the celery.  Some folks made good recommendations to \"soften\" the red onion flavor.  My hubby is Siclian and we actually like it in \"rough\" form here when thinly sliced.  This is a particularly great salad with escarole in the mix.",
-      "tags": [
-        "italian",
-        "salad"
-      ],
-      "folder": "pasta-and-noodles",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Ale Cheddar And Cauliflower Soup",
-      "content": "NYT Cooking recipe: Ale Cheddar And Cauliflower Soup",
-      "notes": "Very good, easy.  NOTES:  1) Some say too bitter.  Can mitigate in two ways.  a) choose lower IBU (International Bitterness Unit) beer.  Belgian style dark abbey as called for is pretty low; maybe 25 IBU.  Get above 40 IBU & bitterness will come out.  b) Use 1 bottle  +  8 oz water instead of 2 bottles.   Worked for me.  2) Remember cheddar will add lots of salt at end.  3) Cornstarch does NOT make this gummy.  It helps cheese melt evenly & creates smooth mouth feel.\n\n4) Omitted optional bacon.  5) Used stone ground brown mustard.",
-      "tags": [
-        "beer-cooking",
-        "cauliflower",
-        "cheese",
-        "soup",
-        "vegetarian"
-      ],
-      "folder": "soups-and-stews",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Pasta Salad With Roasted Eggplant Chile And Mint",
-      "content": "NYT Cooking recipe: Pasta Salad With Roasted Eggplant Chile And Mint",
-      "notes": "1) Watch video...helpful to see cook color for eggplant...took mine 40 min to get there not 25.  2) Says serves 2, I think 3 as main, even 4 as side.  3) Made twice; first per recipe, second minus anchovies given one guest can't eat them.  Add a little more salt to compensate.  Delicious both ways. 4)  Prefer to chiffonade rather than tear herbs.  5) If skin on eggplant is a bit tough out of oven, no worries; softens to 'just right' when tossed in tomatoes. 6) Great room temp.",
-      "tags": [
-        "citrus",
-        "eggplant",
-        "eggs",
-        "italian",
-        "pasta",
-        "roasting",
-        "salad"
-      ],
-      "folder": "pasta-and-noodles",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Eleven Madison Park Granola",
-      "content": "NYT Cooking recipe: Eleven Madison Park Granola",
-      "notes": "Having made 3 times now, I'd offer 2 tips in addition to my first to reduce the salt to 2 tsp (or maybe  1 1/2).  Those tips are: 1) Watch the time closely and pay attention to color and aroma as this cooks.  In one pass at this, using someone else's kitchen, 25 minutes was plenty of time to get this done.  2) Stir in the coconut chips after the first 10 or 25 minutes of baking time.  They will brown up faster than the other ingredients.\n\nDelectable.  I prefer salt reduced to 2 teaspoons.  Otherwise as written.",
-      "tags": [],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Slow Roasted Cherry Tomatoes With Basil Oil",
-      "content": "NYT Cooking recipe: Slow Roasted Cherry Tomatoes With Basil Oil",
-      "notes": "Made per recipe but without the addition of the basil oil because I was using this as a side for Melissa Clark's Baked Cheesy Wild Mushroom Casserole.  Easy technique and good outcome even if you don't want the basil oil included.  I think the little bit of sugar with the salt in this recipe intensifies tomato flavor.  Drizzled the juices from roasted tomatoes over them after arranging them on serving platter. Made these a couple of hours ahead and they were delicious room temperature.",
-      "tags": [
-        "butter",
-        "citrus",
-        "roasting",
-        "tomatoes",
-        "vegetarian"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Baingan Bharta",
-      "content": "NYT Cooking recipe: Baingan Bharta",
-      "notes": "Made per recipe.  Started with two eggplant, 1# each.  Using option to roast in oven at hottest possible heat, I chose 500 degrees.  Took just 25 min \"minus\" for it to be done.  Liked the flavors and pungency very much.  Added just a little more lime juice. Looked just like photo at outcome.  I'm a big fan of eggplant but not sure I liked the texture of the mashed (with fork) eggplant here.  No fault of the recipe.  Just different strokes for different palates.",
-      "tags": [
-        "heat"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Cranberry Sauce With Chiles",
-      "content": "NYT Cooking recipe: Cranberry Sauce With Chiles",
-      "notes": "In household of cranberry sauce fan(atics) this may be one of all time favs.  Too lazy to grind pequin chiles, I subbed approx. 1/4 tsp cayenne.  Not as complex flavor as pequin or as many Scovilles for heat but a good option.  Also used a big pinch of ground cloves rather than grinding own for that.  We prefer cranberry sauce more tart so skimped just a bit on the sugar.  All perfect for us.  Next time may simmer 2 whole pequins in at cook stage then remove them at cool down.  An easy keeper!",
-      "tags": [],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "North African Meatballs",
-      "content": "NYT Cooking recipe: North African Meatballs",
-      "notes": "Lyric of the Billy Joel classic comes to mind.  \"I love you just the way you are...\"  Well.  Almost.  I did bake the meatballs rather than fry them and sized them to get 28 total not 36.  Otherwise made per recipe, used ground lamb for protein, with result of splendidly seasoned, tender meatballs.  The sauce is brothy and perfect here.  Made the couscous but used fregola.  Golden raisins great counterpoint to spices in meat and broth.  Excellent day 2 too.  A Keeper!",
-      "tags": [
-        "meatballs"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Cant Miss Rice",
-      "content": "NYT Cooking recipe: Cant Miss Rice",
-      "notes": "An experienced cook but the world's worst cooker of rice, I managed have even this brilliantly fool proof recipe be not quite right. To it I say, \"It's not you.  It's me.\"  Used white long grain basmati and followed recipe.  Even good advice of some to use foil between the pot and lid for tight fit before putting in oven.  At 17 min baking /10 min rest it was perfectly fluffy but over cooked by just an eensie.  Next time,  I'll do 15 min in oven.",
-      "tags": [],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Mushroom Spinach Soup With Cinnamon Coriander And Cumin",
-      "content": "NYT Cooking recipe: Mushroom Spinach Soup With Cinnamon Coriander And Cumin",
-      "notes": "A couple of minor changes, otherwise made as written. We really enjoyed this for the earthiness of the mushrooms combined with the Middle Eastern spices.  Getting the mushrooms well browned /caramelized really is a key step in this dish.  Don't rush it.   Leftovers delicious reheated next day.  Changes:  1) Used half butter and have EVOO in browning step.  2) Reduced salt by a lot.  3) Did not use spinach.",
-      "tags": [
-        "dairy",
-        "greens",
-        "mushrooms",
-        "soup",
-        "spices",
-        "vegetarian",
-        "warm-spices"
-      ],
-      "folder": "soups-and-stews",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Old Fashioned",
-      "content": "NYT Cooking recipe: Old Fashioned",
-      "notes": "I'm a Manhattan kinda girrrr......woman.  Although I've been old enough to imbibe for several decades now, I've just never had an Old Fashioned.  But saw this recipe and had all the ingredients so whipped up a couple for my hubby and me last night.  Delightful.  Easy enough that even a no mixology skills person like me can make them.  I think I'll make us another round tonight.  It was a long election season.  Maybe it will all make more sense if we drink enough of these.",
-      "tags": [],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Roasted Butternut Squash And Red Onions",
-      "content": "NYT Cooking recipe: Roasted Butternut Squash And Red Onions",
-      "notes": "5) A few fresh dates chopped and sprinkled on top are also a good finishing add.\n\nSubbed Sugar Pie pumpkin (peeled) for squash and pepitas for pine nuts.  Otherwise per recipe.  Definitely a keeper.  Used this as main dish although it could be a side. NOTES:  1) Tahini sauce is great with this.  Don't leave it out.   2) Same for mint, cilantro, parsley mixed herbs.  3) ) I'd cut salt by half next time.  Salt was over the top for our palates.  4) Pumpkin was done in about 30 min., 35 for onions.  4) Next time I'd reduce heat to 425 degrees.",
-      "tags": [
-        "alliums",
-        "butter",
-        "roasting",
-        "squash",
-        "vegetarian"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Canlis Salad",
-      "content": "NYT Cooking recipe: Canlis Salad",
-      "notes": "Been making Canlis Salad from original recipe from WAY back in late 70's.  This is a little different and a lot better!  Omitting bacon still makes a great salad - use some olive oil to toast crutons. Noting some don't want to use coddled egg yolk (but it is safe to do), try Lidia Bastianich's trick of using a hard boiled yolk in blender with other dressing ingredients.  You can get by with @ 1.5 tsp dry oregano instead of fresh; whisk into dressing.  Fresh mint is essential.",
-      "tags": [
-        "salad"
-      ],
-      "folder": "salads",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Sweet Potato Soup",
-      "content": "NYT Cooking recipe: Sweet Potato Soup",
-      "notes": "Made this without the cream (add a little more water to make up for volume) and marshmallows.  Also used about half the butter.  Used an immersion blender to puree so texture not as smooth.   Not exactly per original recipe  but it was the inspiration for using all the other ingredients on hand for a easy, nutritious, delicious, \"school night\" meal for four.   Belgian style beer or ale is really good in this given the low bitterness level.   Made it to our \"keeper\" file.",
-      "tags": [
-        "olive-oil",
-        "potatoes",
-        "soup",
-        "vegetarian"
-      ],
-      "folder": "soups-and-stews",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Curried Waldorf Salad",
-      "content": "NYT Cooking recipe: Curried Waldorf Salad",
-      "notes": "My fav of all curried Waldorfs I've made; it is cumin that makes this especially delicious.  Notes:\n*For any Waldorf I like to mix all BUT nuts and parsley together to \"get to know each other\" as they chill in fridge a bit.  Did that here too.  It also helps hydrate raisins.\n*Adding nuts / parsley just before serving keeps both fresh\n*For dressing base used 2T mayo + 1/4 C yogurt + enough buttermilk (maybe 3T) to thin as desired\n*Broke up walnut halves after toasting",
-      "tags": [
-        "citrus",
-        "salad"
-      ],
-      "folder": "salads",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Sauteed Brussels Sprouts And Apple With Prosciutto",
-      "content": "NYT Cooking recipe: Sauteed Brussels Sprouts And Apple With Prosciutto",
-      "notes": "As with all Melissa Clark recipes I've tried, this is reliable and flexible for the cook.  Used the Pecorino instead of the prosciutto for the vegetarian version only because I had the former in house and not the latter.  Subbed local orchard Honeycrisps that were gifts from friends for the specified Golden Delicious.  Outcome was delightful.  Although added less salt than recipe suggested as I knew cheese would add a fair amount at end.  A keeper.",
-      "tags": [
-        "brussels-sprouts",
-        "sauteing",
-        "vegetarian"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Baked Potatoes",
-      "content": "NYT Cooking recipe: Baked Potatoes",
-      "notes": "Can't think of anything simpler for a week day meal than the perfectly baked potatoes this recipe delivers.  Love the warm oven on a cool evening and the aroma of the potatoes baking.  The time they take is just enough time to change clothes and sip a glass of wine while chopping or prepping whatever it is you'll use for topping.  Only change for me from recipe is I make a little \"X\" in middle then push from both ends to open it up for maximum fluffy goodness.",
-      "tags": [
-        "baking",
-        "citrus",
-        "potatoes",
-        "vegetarian"
-      ],
-      "folder": "baking-and-desserts",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Rice Pilaf With Pistachios And Almonds",
-      "content": "NYT Cooking recipe: Rice Pilaf With Pistachios And Almonds",
-      "notes": "Having tried rosewater in several other dishes to learn it isn't a flavor my household enjoys, I omitted it here.   With that exception, made per recipe using dried apricots.  Used California apricots, which seem a little more difficult to find these days, and not Turkish ones as we like the more tart flavor provided by the California variety.  The aroma from the spices blooming in the ghee is luscious.    So is the flavor of this as side dish.  Great paired with lamb.",
-      "tags": [
-        "citrus"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Roasted Salmon Glazed With Brown Sugar And Mustard",
-      "content": "NYT Cooking recipe: Roasted Salmon Glazed With Brown Sugar And Mustard",
-      "notes": "Brilliantly simple and simply delicious.  Foolproof.  I tried this with Dijon and mustard per recipe the first time.  Then a second time used whole grain mustard spread over salmon and then used a Microplane grater to grate over some hard as a rock brown sugar that I was going to toss out.  That worked very well...in fact I may prefer that adaptation.  So an idea for the brown sugar you think is too hard to use.",
-      "tags": [
-        "citrus",
-        "dairy",
-        "heat",
-        "roasting",
-        "salmon"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "White Peaches Pistachios Honey And Ricotta",
-      "content": "NYT Cooking recipe: White Peaches Pistachios Honey And Ricotta",
-      "notes": "Simply delicious.  The kind of ricotta used will make a big difference here.  If you can find Bel Gioioso's Ricotta Con Latte it is a delectable option in this recipe.  I prefer yellow stone fruits over white ones so used yellow nectarines.   Omitted the olive oil and it was still a winner.  Although I'm considering trying this with sectioned (supremed) blood oranges come citrus season and I may add the olive oil then.",
-      "tags": [
-        "cheese",
-        "wine-cooking"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Cold Sesame Noodles With Sweet Peppers",
-      "content": "NYT Cooking recipe: Cold Sesame Noodles With Sweet Peppers",
-      "notes": "Made per recipe.  So many recipes so little time; likely not a repeat.  \"It's not you, it's me.\"  My palate wanted something more in dressing.  Maybe a clove of garlic Microplane grated into it.  Maybe a little honey.  Maybe lime juice instead of rice wine vinegar.  Different things please different palates.  Notes:  1) Microplane the ginger for similar intensity as juice w/ less work. 2) Brewed black tea can be subbed for broth / water. 3) Don't skip black sesame seeds!",
-      "tags": [
-        "cheese",
-        "noodles"
-      ],
-      "folder": "pasta-and-noodles",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Persian Tamarind Fish",
-      "content": "NYT Cooking recipe: Persian Tamarind Fish",
-      "notes": "Fantastic flavors and very easy to do.  The tamarind mixture elevates even lowly inexpensive rockfish, which I used, to be special.  Made per recipe.  Notes:  1) If using dried cranberries, find good ones, not 'craisin' quality, and coarse chop them...barberries are smaller.  2) Grating the garlic is best.  2) Used cilantro, chives, parsley and mint together. Great combo with the tamarind.  3) The squeeze of fresh lime and additional minced herbs as garnish are just right.",
-      "tags": [
-        "fish"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Georgian Cilantro Sauce",
-      "content": "NYT Cooking recipe: Georgian Cilantro Sauce",
-      "notes": "Really delicious, versatile as sauce with roasted veggies or fish, dip with crudite, pasta salad dressing, tossed with rice or potatoes & as crostini spread.  Holds well in fridge.   NOTES:  1) California apricots are best here, not Turkish.  2) 2 cloves garlic is plenty.  3) BIG pinch for cayenne.  4) Olive oil works in place of walnut oil & reduce oil to 4T.  5) Prefer a bit more cilantro & bit less parsley.  6) Tarragon only in place of mixed herbs works & reduce to 3T.",
-      "tags": [
-        "citrus"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Cauliflower And Tomato Frittata With Feta",
-      "content": "NYT Cooking recipe: Cauliflower And Tomato Frittata With Feta",
-      "notes": "Made per recipe for ingredients & with 10\" skillet.  A splendid blend of flavors.  Great texture & color too.  Used thyme option to start then parsley & mint as fresh herb combo.  Take time needed to get tomato sauce to thick pasty texture.  Makes all the difference in outcome.  After step 5 I finished this in oven & not under broiler.  Approx 35 min or so at 325 degrees worked in my oven for being done all the way through and puffy.  Definitely a keeper!",
-      "tags": [
-        "breakfast",
-        "cauliflower",
-        "cheese",
-        "heat",
-        "olive-oil",
-        "tomatoes",
-        "vegetarian"
-      ],
-      "folder": "breakfast-and-light",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Crunchy Berry Almond Crumble",
-      "content": "NYT Cooking recipe: Crunchy Berry Almond Crumble",
-      "notes": "Keeper.  Made per recipe.  Weighed all ingredients where gram weights indicated.   10\" cake pan perfect size.  Topping not as expected for texture but very good.  Re filling: Blue, black and raspberries combo/ used 3 TBSP sugar from 2-4 range and @ 3/4 TBSP tapioca.  Seemed just right.  Re topping: Took @65 min in my oven to get crispness / color(vs recipe 55 min.). Texture was coarse-sandy not clumps as expected per recipe notes.  Crispy & stayed crisp but in fine not coarse crumb.",
-      "tags": [],
-      "folder": "mains",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Mushroom Soup Gratinee",
-      "content": "NYT Cooking recipe: Mushroom Soup Gratinee",
-      "notes": "Wonderful flavors.  Some prep work but easy execution.  Made per recipe for soup.  Simplified serving.  NOTES;  A.  For SOUP: 1. Started wiw/David Tanis' Porcini Broth 2. Did not remove 1/3 cup mushrooms.  (See service).  3.  Next time will reduce clove and ginger to 1/4 tsp each.  B. For SERVICE: 1.  Didn't broil per recipe.  Instead made simple crostini in oven with thin gruyere melted on.  Floated on soup.  2.  A very little finely chopped parsley on top.  Chives would work too.",
-      "tags": [
-        "french",
-        "mushrooms",
-        "soup",
-        "vegetarian"
-      ],
-      "folder": "soups-and-stews",
-      "created_at": "2017-10-24"
-    },
-    {
-      "title": "Savory Clafoutis With Corn And Swiss Chard",
-      "content": "NYT Cooking recipe: Savory Clafoutis With Corn And Swiss Chard",
-      "notes": "With nod to Fall equinox, I small diced Sugar Pie pumpkin and hot oven roasted the tiny cubes to be tender to sub for corn kernels (2C).  Omitted dill.  Otherwise, made per recipe.  In 10\u201d straight sided skillet.  Husband\u2019s review as he ate; \u201cThis is EXCELLENT.\u201d   Pretty too.  As usual for Melissa Clark recipes, reliable and versatile for home cooks.  A keeper I\u2019ll have fun \"playing with\" every season.  Next time may sub sour cream or full fat Greek Yogurt for cr\u00e8me fraiche.",
-      "tags": [
-        "corn",
-        "french",
-        "greens",
-        "vegetarian"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-24"
     },
     {
       "title": "Roasted Peppers With Lemon Ricotta",
@@ -1131,27 +1152,6 @@
       "notes": "Made as written using optional pomegranate molasses (one of my fav ingredients) & cooking dried chickpeas rather than using canned. Good enough to be glad we tried it.  But with so many recipes & so little time, this didn't make 'keeper' file.  Don't skip the mint & pomegranate seeds at end.  They add that \"little something\" to finish.  Was less sold on the butter toasted walnuts. Really good on their own but seemed to get lost in this.",
       "tags": [
         "lamb"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-30"
-    },
-    {
-      "title": "Rigatoni And Cauliflower Al Forno",
-      "content": "NYT Cooking recipe: Rigatoni And Cauliflower Al Forno",
-      "notes": "\"Here's the recipe.\"  That was my response to my husband's  question, \"What would you like me to make for dinner on your birthday, Sweetie.\"   Pretty foolproof to make.  Pretty fantabulous flavors to eat.  We didn't find it dry as others suggest but my Italian hubby is Italian and it is the mode NOT to heavily sauce pastas in his heritage.  Paired with a nice glass of Arneis, I was a happy woman...in spite of having another year on my age.",
-      "tags": [
-        "cauliflower",
-        "vegetarian"
-      ],
-      "folder": "mains",
-      "created_at": "2017-10-30"
-    },
-    {
-      "title": "Scallops With Pomegranate Syrup And Foriana Sauce",
-      "content": "NYT Cooking recipe: Scallops With Pomegranate Syrup And Foriana Sauce",
-      "notes": "Unusual combination of ingredients beckoned.  Made per recipe with exception of substituting pistachios for pine nuts (allergy for latter).  Outcome was delicious.  Note ingredients list does not name pomegranate seeds are garnish although photo shows them on dish.  So seeded a fresh pomegranate and used them per photo.  A very nice addition for eye appeal, tartness and texture.  This made it to our \"keeper\" file.",
-      "tags": [
-        "scallops"
       ],
       "folder": "mains",
       "created_at": "2017-10-30"
@@ -1191,6 +1191,14 @@
       "created_at": "2017-11-26"
     },
     {
+      "title": "Pear Cranberry Galette",
+      "content": "NYT Cooking recipe: Pear Cranberry Galette",
+      "notes": "As much as I cringe to see comments were the recipe was not followed, here goes my own in that vein.  I used this filling recipe but subbed dried cherries for the dried cranberries.  Luscious filling flavors.  Loved the combination of tastes.  But I was intimated by the instructions on the crust.  So used a standard galette / crostada crust recipe.  (You could use one from Melissa Clark's galettes.)  For baking, started 375 for 30 minutes, then lowered to 350 for 30 more.  Perfect.",
+      "tags": [],
+      "folder": "mains",
+      "created_at": "2017-12-04"
+    },
+    {
       "title": "Baked Rigatoni With Tomatoes Olives And Pepper",
       "content": "NYT Cooking recipe: Baked Rigatoni With Tomatoes Olives And Pepper",
       "notes": "Made per recipe with one exception: started with can of crushed Italian tomatoes.   Then as written from top to bottom of ingredients list and steps.  Really good served hot as recommended but also darned delicious at room temp or even out of fridge for breakfast the next morning...assuming you have any leftover. My husband is Italian and we prefer our pastas lightly sauced, as this  is.  If you prefer the more Americanized standard of more sauce, you'll need to add to this.",
@@ -1200,15 +1208,7 @@
         "vegetarian"
       ],
       "folder": "baking-and-desserts",
-      "created_at": "2017-12-04"
-    },
-    {
-      "title": "Pear Cranberry Galette",
-      "content": "NYT Cooking recipe: Pear Cranberry Galette",
-      "notes": "As much as I cringe to see comments were the recipe was not followed, here goes my own in that vein.  I used this filling recipe but subbed dried cherries for the dried cranberries.  Luscious filling flavors.  Loved the combination of tastes.  But I was intimated by the instructions on the crust.  So used a standard galette / crostada crust recipe.  (You could use one from Melissa Clark's galettes.)  For baking, started 375 for 30 minutes, then lowered to 350 for 30 more.  Perfect.",
-      "tags": [],
-      "folder": "mains",
-      "created_at": "2017-12-04"
+      "created_at": "2017-12-05"
     },
     {
       "title": "Shaddocks Fizz",
@@ -1228,7 +1228,7 @@
         "italian"
       ],
       "folder": "pasta-and-noodles",
-      "created_at": "2017-12-08"
+      "created_at": "2017-12-07"
     },
     {
       "title": "Timpano Alla Big Night",
@@ -1323,7 +1323,7 @@
         "tomatoes"
       ],
       "folder": "mains",
-      "created_at": "2017-12-31"
+      "created_at": "2018-01-02"
     },
     {
       "title": "Braised Country Style Pork Ribs With Chipotle",
@@ -1350,7 +1350,7 @@
         "vegetarian"
       ],
       "folder": "mains",
-      "created_at": "2018-01-11"
+      "created_at": "2018-01-10"
     },
     {
       "title": "Winter Citrus And Red Chicories Salad",
@@ -1381,7 +1381,7 @@
         "leftovers"
       ],
       "folder": "mains",
-      "created_at": "2018-01-26"
+      "created_at": "2018-01-25"
     },
     {
       "title": "Crunchy Roasted Zaatar Chickpeas",
@@ -1449,7 +1449,7 @@
         "korean"
       ],
       "folder": "mains",
-      "created_at": "2018-02-20"
+      "created_at": "2018-02-19"
     },
     {
       "title": "Cardamom Walnut Crescents",
@@ -1519,7 +1519,7 @@
         "stew"
       ],
       "folder": "soups-and-stews",
-      "created_at": "2018-04-13"
+      "created_at": "2018-04-14"
     },
     {
       "title": "Lime Sugar Dipping Salt",
@@ -1751,7 +1751,7 @@
         "thai"
       ],
       "folder": "mains",
-      "created_at": "2018-08-05"
+      "created_at": "2018-08-06"
     },
     {
       "title": "Basic Pesto Sauce",
@@ -1794,7 +1794,7 @@
         "vegetarian"
       ],
       "folder": "mains",
-      "created_at": "2018-08-14"
+      "created_at": "2018-08-15"
     },
     {
       "title": "Beans And Garlic Toast In Broth",
@@ -1831,7 +1831,7 @@
         "vegetarian"
       ],
       "folder": "mains",
-      "created_at": "2018-08-31"
+      "created_at": "2018-09-01"
     },
     {
       "title": "Panzanella With Mozzarella And Herbs",
@@ -2038,7 +2038,7 @@
         "stew"
       ],
       "folder": "soups-and-stews",
-      "created_at": "2018-11-07"
+      "created_at": "2018-11-08"
     },
     {
       "title": "Roasted Sweet Potatoes With Hot Honey Browned Butter",
@@ -2219,7 +2219,7 @@
       "notes": "First, the olive oil measure in this recipe should be 1/3 C.  Looks like a typo in ingredients as published here.  I have been making my own crouton for 30 years, but it didn't occur to me to tear the bread until seeing Samin's recipe.  Genius.  I've made these in both standard and \"classic\" - see Tip at bottom of recipe - and they're  great to use in salad, with soup, to dip in hummus or other spreads or on their own with a libation.  Airtight container and they've held well for a week for us.",
       "tags": [],
       "folder": "mains",
-      "created_at": "2019-01-07"
+      "created_at": "2019-01-08"
     },
     {
       "title": "Orecchiette With Nduja Shrimp And Tomatoes",
@@ -2234,23 +2234,23 @@
       "created_at": "2019-01-15"
     },
     {
-      "title": "Lamb Tagine",
-      "content": "NYT Cooking recipe: Lamb Tagine",
-      "notes": "1. Made per recipe with following exceptions.  Delicious and just as expected for tagine for form and sauce.  Keeper.\n\n2. Exceptions to as written recipe:  a) Used water instead of stock.  b) Used Emile Henry Dutch Oven which has 'dimpled' lid so didn't need foil and oven at 300 degrees (not 325) for perfectly tender in 2'ish hours.\n\n3. Toasted almonds and other garnish 'make it' for final presentation.\n\n4. Used Calif. not Turkish apricots.  CA cots a bit more tart so didn't need lemon at end.",
-      "tags": [
-        "citrus",
-        "lamb"
-      ],
-      "folder": "mains",
-      "created_at": "2019-01-19"
-    },
-    {
       "title": "Han Oak Galbijjim",
       "content": "NYT Cooking recipe: Han Oak Galbijjim",
       "notes": "For the multiple folks who are objecting to the use of Coca Cola in this dish, I'm wondering if that could be much concern about nothing.  First, it is but 2 oz cola per serving.  Also, you aren't eating this three meals x seven a week.  It is one dish for one meal in what I assume wouldn't be more on rotation than weekly.  If that.  Not to mention there is cane sugar sweetened Coke on the market these days.   A couple of oz of cola consumed is not fatal.  IMHO",
       "tags": [
         "citrus",
         "warm-spices"
+      ],
+      "folder": "mains",
+      "created_at": "2019-01-20"
+    },
+    {
+      "title": "Lamb Tagine",
+      "content": "NYT Cooking recipe: Lamb Tagine",
+      "notes": "1. Made per recipe with following exceptions.  Delicious and just as expected for tagine for form and sauce.  Keeper.\n\n2. Exceptions to as written recipe:  a) Used water instead of stock.  b) Used Emile Henry Dutch Oven which has 'dimpled' lid so didn't need foil and oven at 300 degrees (not 325) for perfectly tender in 2'ish hours.\n\n3. Toasted almonds and other garnish 'make it' for final presentation.\n\n4. Used Calif. not Turkish apricots.  CA cots a bit more tart so didn't need lemon at end.",
+      "tags": [
+        "citrus",
+        "lamb"
       ],
       "folder": "mains",
       "created_at": "2019-01-20"
@@ -2403,7 +2403,7 @@
       "notes": "Addictively delicious.  Notes based on making twice:\n1) Used gram weights for all where it was noted.\n2) Second time reduced honey & brown sugar to 100g each - prefer that.\n3) Mixed spices in with sesame seeds before mixing into nuts & kamut - worked well to distribute spices throughout.\n4) Bake time seems best at 7 min for 1st bake & 5 min for 2nd.\n5) We make for snacking not as breakfast cereal so we sprinkle a little flake salt over when trays come out of oven\n\nFor those looking for mahaleb, there really is no substitute for this, and if your local Middle Eastern market is out of it (as mine), thought it might be useful to know this is sometimes spelled mahleb if you're doing a web search.  World Spice is out of stock.  Savory Spice no longer sells it.  But SNUK has some available.  Buy the smallest amount you can.  A little goes a long way and too much can sometimes add bitterness.\n\nFor those asking about puffed grains availability and about puffed grains to sub for wheat to make gluten free dish, thought this might be helpful.  You can find puffed wheat pretty readily all grocery stores that have a natural foods section.  Arrowood is one brand broadly distributed and makes puffed grains sold in bags.  Wheat.  Brown Rice (GF).  Kamut (ancient wheat derivative and not GF.)  Also it changes the texture a bit but puffed Millet - grass not grain so GF might be worth a try.",
       "tags": [],
       "folder": "mains",
-      "created_at": "2019-04-03"
+      "created_at": "2019-04-04"
     },
     {
       "title": "Red Bean Stew",
@@ -2439,17 +2439,6 @@
       "created_at": "2019-05-04"
     },
     {
-      "title": "Lemony Whipped Feta With Charred Scallions",
-      "content": "NYT Cooking recipe: Lemony Whipped Feta With Charred Scallions",
-      "notes": "1.  Keeper. Made as written in morning of event day & refrigerated until @ 1 hr  B4 service.  Texture just right.\n\n2. I sliced  lemons very thin for 2 benefits.  a) They'll char at same time as scallions. b) Tucked in  across the spread they are easy to spoon out with the spread & delicious to eat.\n\n3. Labneh, Fromage Blanc or Greek Yogurt can sub for cream cheese - will be more 'tang' & lighter texture if so.\n\n4.  See NYT Cooking demo video here.  https://www.youtube.com/watch?v=galpmZHzwIs",
-      "tags": [
-        "cheese",
-        "citrus"
-      ],
-      "folder": "mains",
-      "created_at": "2019-05-05"
-    },
-    {
       "title": "Red Curry Mussels And Roasted Sweet Potatoes",
       "content": "NYT Cooking recipe: Red Curry Mussels And Roasted Sweet Potatoes",
       "notes": "Makrut lime leaves are also called kaffir lime leaves and looking for them labeled as the latter may make it easier to find them.  Even in some mainstream grocers - typically in the fresh herb produce section.  Easier to buy if you have a SE Asian or Indian market nearby.  Kaffir lime leaves add a distinct quality to a dish and I use a number of recipes that call for them.  The good news is if you do find them, they freeze well to use as you need them.",
@@ -2463,6 +2452,17 @@
       "created_at": "2019-05-06"
     },
     {
+      "title": "Lemony Whipped Feta With Charred Scallions",
+      "content": "NYT Cooking recipe: Lemony Whipped Feta With Charred Scallions",
+      "notes": "1.  Keeper. Made as written in morning of event day & refrigerated until @ 1 hr  B4 service.  Texture just right.\n\n2. I sliced  lemons very thin for 2 benefits.  a) They'll char at same time as scallions. b) Tucked in  across the spread they are easy to spoon out with the spread & delicious to eat.\n\n3. Labneh, Fromage Blanc or Greek Yogurt can sub for cream cheese - will be more 'tang' & lighter texture if so.\n\n4.  See NYT Cooking demo video here.  https://www.youtube.com/watch?v=galpmZHzwIs",
+      "tags": [
+        "cheese",
+        "citrus"
+      ],
+      "folder": "mains",
+      "created_at": "2019-05-07"
+    },
+    {
       "title": "Chopped Salad With Apples Walnuts And Bitter Lettuces",
       "content": "NYT Cooking recipe: Chopped Salad With Apples Walnuts And Bitter Lettuces",
       "notes": "Delicious keeper we made multiple times in Fall and Winter when heirloom apples were plentiful. Notes:\n\n1) Some pears work here too but the outcome isn't as tart as choosing the right apples.\n\n2) Just for personal preference for the amount of acid we prefer in salad dressings, we cut back on the oil a bit to increase the acids to fats balance.\n\n3) We prefer to grate the garlic with a microplane or mash it up on the cutting board with a little salt to make it into a paste before adding",
@@ -2471,7 +2471,7 @@
         "salad"
       ],
       "folder": "salads",
-      "created_at": "2019-05-25"
+      "created_at": "2019-05-26"
     },
     {
       "title": "Barbecue Country Style Pork Ribs",
@@ -2545,7 +2545,7 @@
         "olive-oil"
       ],
       "folder": "mains",
-      "created_at": "2019-06-15"
+      "created_at": "2019-06-16"
     },
     {
       "title": "Pork And Ricotta Meatballs",
@@ -2580,7 +2580,7 @@
         "fish"
       ],
       "folder": "mains",
-      "created_at": "2019-06-28"
+      "created_at": "2019-06-29"
     },
     {
       "title": "Coconut Rice With Peas",
@@ -2605,7 +2605,7 @@
         "salad"
       ],
       "folder": "salads",
-      "created_at": "2019-07-11"
+      "created_at": "2019-07-12"
     },
     {
       "title": "Sous Vide Rib Steaks With Spicy Salsa Verde",
@@ -2638,7 +2638,7 @@
       "notes": "Made per recipe using @ 1/4C EVOO & 1/3C \"plus\" parmesan.  Made all in food processor.  Great flavor used as spread on ciabbata sandwiches, tossed in pasta w/ fresh tomatoes  & swirled in ricotta as dip for veggies & torn croutons (Samin's).  Arugula is peppery brassicale (like mustard) containing glucosinolate that some people's taste buds process as more bitter.  Noting some say this recipe is bitter, if you find arugula to be so this likely isn\u2019t the pesto for you.",
       "tags": [],
       "folder": "mains",
-      "created_at": "2019-07-16"
+      "created_at": "2019-07-17"
     },
     {
       "title": "Summer Corn Soup",
@@ -2676,7 +2676,7 @@
         "tomatoes"
       ],
       "folder": "mains",
-      "created_at": "2019-08-09"
+      "created_at": "2019-08-10"
     },
     {
       "title": "Tomato Risotto",
@@ -2764,7 +2764,7 @@
         "chicken"
       ],
       "folder": "mains",
-      "created_at": "2019-10-25"
+      "created_at": "2019-10-26"
     },
     {
       "title": "Spicy Caramelized Squash With Lemon And Hazelnuts",
@@ -2886,7 +2886,7 @@
         "vegetarian"
       ],
       "folder": "mains",
-      "created_at": "2020-02-04"
+      "created_at": "2020-02-05"
     },
     {
       "title": "Passover Inspired Braised Lamb With Dried Fruit",
@@ -2899,7 +2899,7 @@
         "leftovers"
       ],
       "folder": "mains",
-      "created_at": "2020-04-01"
+      "created_at": "2020-04-02"
     },
     {
       "title": "Cheesy Cauliflower Toasts",
@@ -2912,7 +2912,7 @@
         "wine-cooking"
       ],
       "folder": "breakfast-and-light",
-      "created_at": "2020-04-30"
+      "created_at": "2020-05-01"
     },
     {
       "title": "Green Garlic Toast",
@@ -3013,7 +3013,7 @@
         "eggs"
       ],
       "folder": "mains",
-      "created_at": "2020-06-02"
+      "created_at": "2020-06-03"
     },
     {
       "title": "Sour Cream And Fruit Scones",
@@ -3107,7 +3107,7 @@
         "vegetarian"
       ],
       "folder": "salads",
-      "created_at": "2020-08-07"
+      "created_at": "2020-08-08"
     },
     {
       "title": "Crostini Alla Norma",
@@ -3335,7 +3335,7 @@
         "make-ahead"
       ],
       "folder": "baking-and-desserts",
-      "created_at": "2020-11-26"
+      "created_at": "2020-11-27"
     },
     {
       "title": "Pumpkin Soup With Ancho And Apple",
@@ -3522,6 +3522,17 @@
       "created_at": "2021-02-02"
     },
     {
+      "title": "Olive Oil Refried Beans",
+      "content": "NYT Cooking recipe: Olive Oil Refried Beans",
+      "notes": "Samin leads in the article, in which this recipe is discussed, by saying it is her last column for the magazine.  I will miss reading her columns as I hear her voice as I read.  She has taught me much and I am an old...umm...well seasoned...passionate home cook.  I also do not 'get' Instant Pots.  Thanks for making me not the only person to not use one.  And her technique here for refried beans leads to luscious outcome.  I eat beans like this for breakfast at times.  Truth.",
+      "tags": [
+        "beans",
+        "olive-oil"
+      ],
+      "folder": "mains",
+      "created_at": "2021-02-03"
+    },
+    {
       "title": "Hot Italian Sausage And Broccoli Rabe Frittata",
       "content": "NYT Cooking recipe: Hot Italian Sausage And Broccoli Rabe Frittata",
       "notes": "In previous 'high five' note for this remarkable dish I said it was my \"take to a desert island\" recipe.  That was in 'before days' and now it has been 'pandemic days favorite' too.  We haven't been out to eat since 3/16/20 and it is 2/02/21 as I post this and our cooking at home audience is now 2 people.  Made this many times in easy to scale down to half size - so 4 portions means 2 night's dinners for 2 - by using 8\" sq baking dish to assemble ingredients.\n\nAdding to my earlier comments, this is now my \"take to a desert island\" recipe.  Made more than half a dozen times, each time with excellent outcome.  (I do cook the rapini to start in step 1 per Viola Buitoni's technique: http://zesterdaily.com/cooking/dont-bitter-just-cook-rapini-better ) Great for B L or D served hot, warm or even room temp.  Travels well. Reheats well.  Can be 1 dish meal.  Plays well w/ sparkling wine which I'll take to that desert island too.  Perfect.\n\nA new \"go to\" for one of my fav veg, rapini (broccoli rabe) to introduce others to it.  Made 3 times, 2 per recipe and 1 w/out mozzarella.  Prefer w/out.   Also recommend Viola Buitoni's method of cooking the rapini.  Perfect outcome every time to balance natural bitterness of the veg.  Cook rapini like this then proceed with the recipe.  Delicious.  http://zesterdaily.com/cooking/dont-bitter-just-cook-rapini-better/  Also found leftovers for this frittata travel and reheat well.",
@@ -3535,17 +3546,6 @@
         "wine-cooking"
       ],
       "folder": "pasta-and-noodles",
-      "created_at": "2021-02-02"
-    },
-    {
-      "title": "Olive Oil Refried Beans",
-      "content": "NYT Cooking recipe: Olive Oil Refried Beans",
-      "notes": "Samin leads in the article, in which this recipe is discussed, by saying it is her last column for the magazine.  I will miss reading her columns as I hear her voice as I read.  She has taught me much and I am an old...umm...well seasoned...passionate home cook.  I also do not 'get' Instant Pots.  Thanks for making me not the only person to not use one.  And her technique here for refried beans leads to luscious outcome.  I eat beans like this for breakfast at times.  Truth.",
-      "tags": [
-        "beans",
-        "olive-oil"
-      ],
-      "folder": "mains",
       "created_at": "2021-02-03"
     },
     {
@@ -3684,19 +3684,6 @@
       "created_at": "2021-04-10"
     },
     {
-      "title": "Roasted Sausages With Grapes And Onions",
-      "content": "NYT Cooking recipe: Roasted Sausages With Grapes And Onions",
-      "notes": "This is great as written using Italian pork sausages and really good using merguez, a spicy lamb sausage.  We like fennel seed when using pork sausages and cumin and/or coriander as the crushed spice options when using merguez.  We have used red grapes and black ones.  Always a good sherry vinegar to finish.",
-      "tags": [
-        "alliums",
-        "citrus",
-        "roasting",
-        "sausage"
-      ],
-      "folder": "mains",
-      "created_at": "2021-05-01"
-    },
-    {
       "title": "Sausage Egg And Kale Casserole",
       "content": "NYT Cooking recipe: Sausage Egg And Kale Casserole",
       "notes": "We enjoy making this with merguez (spicy lamb sausage) and given the seasonings in merguez (more North African flavor profile) we find fontina not quite the right option for the meltable cheese here using merguez...although it is a great option with Italian sausage in this.  For the meltable nature and similar texture consider mozzarella.  Also a good feta crumbled over can replace the grated parmesan when using merguez.",
@@ -3720,6 +3707,19 @@
         "vegetarian"
       ],
       "folder": "pasta-and-noodles",
+      "created_at": "2021-05-02"
+    },
+    {
+      "title": "Roasted Sausages With Grapes And Onions",
+      "content": "NYT Cooking recipe: Roasted Sausages With Grapes And Onions",
+      "notes": "This is great as written using Italian pork sausages and really good using merguez, a spicy lamb sausage.  We like fennel seed when using pork sausages and cumin and/or coriander as the crushed spice options when using merguez.  We have used red grapes and black ones.  Always a good sherry vinegar to finish.",
+      "tags": [
+        "alliums",
+        "citrus",
+        "roasting",
+        "sausage"
+      ],
+      "folder": "mains",
       "created_at": "2021-05-02"
     },
     {

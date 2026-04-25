@@ -213,7 +213,7 @@ def main():
                     entry["tags"] = derive_tags(recipe, entry["notes"])
                     entry["folder"] = derive_folder(entry["tags"], recipe)
                     # Use the latest date
-                    ts = float(row["createDate"])
+                    ts = float(row["approveDate"])
                     entry_ts = entry.get("_ts", 0)
                     if ts > entry_ts:
                         entry["_ts"] = ts
@@ -226,7 +226,7 @@ def main():
         seen_recipes.add(recipe)
         tags = derive_tags(recipe, body)
         folder = derive_folder(tags, recipe)
-        ts = float(row["createDate"])
+        ts = float(row["approveDate"])
         body = clean_comment(row["commentBody"])
 
         # Title is the recipe name, title-cased
