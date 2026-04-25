@@ -2,104 +2,130 @@
 
 Python client for [Enzyme](https://enzyme.garden) — a compile step for knowledge bases that gives agents structural understanding of accumulated content.
 
-## Quickstart
+## Two ingestion paths
 
-```bash
-pip install enzyme-sdk
-```
+### 1. DB ingest (recommended for product integrations)
+
+Pipe structured data directly into the enzyme DB. No markdown files on disk.
 
 ```python
-from enzyme_sdk import EnzymeClient, Collection
+from enzyme_sdk import EnzymeClient
 
-# Downloads the binary + embedding model if not already installed.
 client = EnzymeClient.ensure_installed()
 
-# Point at a folder of markdown files.
+# Batch import at signup — user's existing saved recipes
+client.ingest(collection="user-123", entries=[
+    {
+        "title": "Miso Glazed Salmon",
+        "content": "Pan-seared salmon with white miso glaze",
+        "notes": "Subbed white miso for butter. Way better.",
+        "tags": ["seafood", "japanese", "miso"],
+        "folder": "saves",
+        "created_at": "2025-06-15",
+    },
+    # ... more entries
+])
+
+# Build the index (embeddings + catalysts)
+client.init(collection="user-123")
+
+# Search by concept
+results = client.catalyze("umami substitutions for dairy", collection="user-123")
+print(results.render_to_prompt())
+```
+
+Each entry has: `title` (required), `content`, `notes`, `tags`, `links`, `folder`, `created_at`, `metadata`. The SDK handles chunking, hashing, and entity extraction.
+
+`--collection` resolves to `~/.enzyme-sdk/collections/<id>/.enzyme/enzyme.db` — no vault directory needed.
+
+### 2. Filesystem (markdown vaults)
+
+Point at a folder of markdown files. Same as before.
+
+```python
+from enzyme_sdk import Collection
+
 coll = Collection.open("~/my-notes", client=client, auto_init=True)
-
-# Search by concept — not keyword.
 results = coll.search("how they think about creative constraints")
-for r in results.results:
-    print(f"[{r.similarity:.3f}] {r.file_path}")
 ```
 
-That's it. `ensure_installed()` handles the binary. `auto_init=True` runs the indexing pipeline on first use. After that, searches are local and fast.
+## Agent integration
 
-## What happens under the hood
-
-1. **Install** — downloads a platform binary (~11MB) and an embedding model (~52MB) to `~/.local/bin/`. No external services needed for search.
-2. **Init** — reads the markdown files, extracts entities (tags, links, folders), and generates thematic questions that characterize what each entity's documents are about. This is the compile step.
-3. **Search** — your query matches against the precomputed questions, which route to the right documents. A broad query works because the questions already encode the specific patterns in the content.
-4. **Refresh** — after adding new content, call `coll.refresh()` to update the index. Only re-processes changed files.
-
-## Adding content
+The SDK provides `render_to_prompt()` on response objects and `tool_description()` for harness registration.
 
 ```python
-from enzyme_sdk import Document
+from agents import Agent, function_tool
+from enzyme_sdk import EnzymeClient
 
-coll.add(Document.from_text(
-    "Session — typography review",
-    "Sarah advanced the serif option for headings. 'The serif carries "
-    "intention. The sans carries information.' Rejected monospace.",
-    tags=["typography", "design-session"],
-    links=["Sarah", "Meridian"],
-), folder="Sessions")
+enzyme = EnzymeClient()
 
-coll.refresh()
+@function_tool(description_override=EnzymeClient.tool_description("catalyze"))
+def explore(query: str) -> str:
+    return enzyme.catalyze(query, collection="user-123").render_to_prompt()
+
+agent = Agent(
+    name="Cooking assistant",
+    tools=[explore],
+    instructions=enzyme.petri(collection="user-123").render_to_prompt(),
+)
 ```
 
-The SDK writes markdown with tags and wikilinks. Enzyme indexes it. You don't manage the format.
+See `examples/agent_test.py` for a full end-to-end example using OpenAI Agent SDK + OpenRouter.
 
-## Using search results in an agent
+## Data shape: what makes good enzyme input
 
-```python
-# Agent needs preference context before generating design concepts.
-results = coll.search("Sarah typography preferences for functional layouts")
+Enzyme works best when users accumulate choices over time. The data needs two things:
 
-# Each result is a full document — not a fragment.
-top = results.results[0]
-print(top.content)  # Full session prose: decisions, quotes, rationale.
+**1. Tags that cluster behavior.** Tags should represent patterns that recur across entries — ingredient preferences, technique habits, cuisine affinities. They become the entities that catalysts are generated for. A tag like "miso" that appears across salmon, banana bread, and eggplant creates a cluster where enzyme can notice the user's fermented-for-dairy substitution pattern.
 
-# Contributing catalysts explain *why* this was retrieved:
-for c in results.top_contributing_catalysts:
-    print(f"[{c.entity}] {c.text}")
-    # e.g. "How does Sarah's serif/sans split adapt across editorial
-    #        vs. functional contexts?"
+- Derive tags from both structured metadata (recipe categories, ingredient lists) AND the user's own text (comment mentions of techniques, ingredients, tools)
+- Aim for 2-3 tags per entry average, 15+ tags with 10+ entries each
+- Tags with <3 entries won't generate meaningful catalysts
+- Avoid catch-all tags that apply to everything — they dilute the signal
 
-# Inject results + catalyst signals into the generation prompt.
-# The catalyst tells the agent what pattern to focus on.
-```
+**2. User voice in the content.** The `notes` field (or inline annotations in `content`) should contain what the user actually thinks — substitutions they made, what worked, what they'd change, their verdicts. Generic descriptions produce generic catalysts. User opinions produce catalysts that encode taste.
 
-## See what the index understands
+### What doesn't matter as much
 
-```python
-overview = coll.overview(top=5)
-for entity in overview.entities:
-    print(f"{entity.name} ({entity.entity_type})")
-    for q in entity.catalysts:
-        print(f"  ? {q['text']}")
-```
+- **Perfect tag taxonomy.** Derived tags from keyword matching work fine. Enzyme's catalyst generation finds the cross-cutting patterns that individual tags miss.
+- **Huge volume.** 150-300 entries with good tag coverage produce 50-60 catalysts across 15-20 entities — enough for useful search. More entries sharpen the catalysts but the marginal return diminishes.
+- **Recent data.** Historical data works. Dates flow through for temporal metadata (recency scores, activity trends) but catalysts form from content patterns, not timestamps.
 
-This shows the conceptual structure Enzyme built — the entities it tracks and the questions it generated for each. These questions are the retrieval paths. They evolve as content accumulates.
+### Entity structure
 
-## API Server
+Enzyme selects ~20 top entities (by frequency × recency) and generates catalysts for each. Entities are:
 
-For multi-tenant use:
+- **Tags** — ingredient, cuisine, technique clusters (e.g., "miso", "italian", "braising")
+- **Folders** — behavioral/category clusters (e.g., "saves", "soups-and-stews", "baking-and-desserts")
+- **Links** — wikilink references (e.g., people, sources)
 
-```bash
-export ENZYME_SDK_API_KEY="your-key"
-python -m enzyme_sdk  # starts on port 8420
-```
+Each entity gets 3+ catalysts — AI-generated questions that probe what's latent in that cluster. The catalysts are the retrieval paths: queries match against them, not against document text directly.
 
-Endpoints: create/delete collections, ingest documents, search, refresh.
+Tested with 318 NYT Cooking recipe comments from one prolific commenter, with tags derived from recipe names + comment text. See `examples/prepare_nyt_data.py` for the full preprocessing pipeline.
+
+## System prompt guidance for agents
+
+When an agent uses enzyme tools, it receives JSON output. The system prompt should explain:
+
+1. **petri output** returns entities with their catalysts, frequency, and activity trends. Use it once at session start to understand the user's landscape.
+2. **catalyze output** returns matched documents (with the user's notes) and the catalysts that routed the match. The catalysts explain *why* content surfaced.
+3. **Call tools sparingly** — one overview + one search is usually enough. The agent should synthesize, not enumerate.
+4. **Lead with the user's words** — quote from their notes/comments, don't paraphrase generically.
+
+See the `SYSTEM_PROMPT` in `examples/agent_test.py` for a working example.
 
 ## Files
 
 ```
 enzyme_sdk/
-  client.py        — EnzymeClient (binary wrapper + auto-install)
-  collection.py    — Collection (add, search, overview, refresh)
-  document.py      — Document (content → markdown)
+  client.py        — EnzymeClient (binary wrapper, ingest, render_to_prompt)
+  collection.py    — Collection (add, ingest, search, overview)
+  document.py      — Document (content → markdown for filesystem path)
   store.py         — VaultStore (per-collection directories)
   server.py        — FastAPI multi-tenant API
+
+examples/
+  agent_test.py       — End-to-end: ingest → init → agent conversation
+  prepare_nyt_data.py — Preprocessing pipeline for NYT Cooking comments
+  nyt_user_data.json  — 318 entries from one NYT commenter (dimmerswitch)
 ```
