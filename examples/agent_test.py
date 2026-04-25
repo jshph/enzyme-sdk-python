@@ -21,6 +21,9 @@ from datetime import datetime, timezone
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
+from dotenv import load_dotenv
+load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
+
 from agents import Agent, Runner, function_tool, ModelSettings
 from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
 from openai import AsyncOpenAI
@@ -37,10 +40,7 @@ ENZYME_BIN = os.environ.get(
 )
 USER = os.environ.get("ENZYME_TEST_USER", "es")
 COLLECTION_ID = f"nyt-{USER}"
-OPENROUTER_KEY = os.environ.get(
-    "OPENROUTER_API_KEY",
-    "",
-)
+OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 MODEL = "google/gemini-3-flash-preview"
 
 # Pre-generated data (from prepare_nyt_data.py <user>)
