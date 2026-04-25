@@ -6,7 +6,20 @@ import json
 import re
 import subprocess
 from dataclasses import dataclass
+from datetime import date, datetime, timezone
 from pathlib import Path
+from typing import Any
+
+
+def _json_default(value: Any) -> Any:
+    """Serialize SDK-native values into the JSON shape expected by the CLI."""
+    if isinstance(value, datetime):
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=timezone.utc)
+        return value.isoformat()
+    if isinstance(value, date):
+        return value.isoformat()
+    raise TypeError(f"Object of type {type(value).__name__} is not JSON serializable")
 
 
 @dataclass
@@ -553,7 +566,7 @@ class EnzymeClient:
         if not vault and not collection:
             raise ValueError("Must provide either 'vault' or 'collection'")
 
-        payload_json = json.dumps(payload)
+        payload_json = json.dumps(payload, default=_json_default)
 
         cmd = [self.enzyme_bin]
         if collection:
