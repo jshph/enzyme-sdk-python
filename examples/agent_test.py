@@ -35,15 +35,16 @@ ENZYME_BIN = os.environ.get(
         "../../enzyme-rust/.claude/worktrees/sdk-db-ingest/target/debug/enzyme",
     ),
 )
-COLLECTION_ID = "nyt-dimmerswitch"
+USER = os.environ.get("ENZYME_TEST_USER", "es")
+COLLECTION_ID = f"nyt-{USER}"
 OPENROUTER_KEY = os.environ.get(
     "OPENROUTER_API_KEY",
     "",
 )
 MODEL = "google/gemini-3-flash-preview"
 
-# Pre-generated data (from prepare_nyt_data.py) or load from CSV directly
-DATA_PATH = os.path.join(os.path.dirname(__file__), "nyt_user_data.json")
+# Pre-generated data (from prepare_nyt_data.py <user>)
+DATA_PATH = os.path.join(os.path.dirname(__file__), f"nyt_{USER}_data.json")
 
 
 # ── Loading data ─────────────────────────────────────────────────────────────

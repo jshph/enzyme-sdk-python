@@ -13,8 +13,18 @@ from collections import defaultdict
 from datetime import datetime, timezone
 
 ZIP_PATH = "/Users/joshuapham/Downloads/nyt_recipe_comments_Jun25.csv.zip"
-TARGET_UID = "38686708.0"  # dimmerswitch — 352 comments, 318 recipes
-OUTPUT_PATH = "examples/nyt_user_data.json"
+
+USERS = {
+    "dimmerswitch": "38686708.0",  # 352 comments, 318 recipes
+    "es": "1942514.0",            # 411 comments, 407 recipes
+    "christa": "1570140.0",       # 431 comments, 325 recipes
+    "luther": "66479981.0",       # 253 comments, 244 recipes
+}
+
+import sys
+user_key = sys.argv[1] if len(sys.argv) > 1 else "es"
+TARGET_UID = USERS.get(user_key, user_key)  # accept name or raw UID
+OUTPUT_PATH = f"examples/nyt_{user_key}_data.json"
 
 # ── Tag derivation from recipe names ─────────────────────────────────────────
 # Since the dataset has no tags, we derive them from recipe name keywords.
