@@ -16,7 +16,7 @@ This isn't template filling. The agent found these recipes because enzyme's inde
 
 ## How it works
 
-Enzyme generates **catalysts** — thematic questions — from each tag cluster in the user's data. When the agent queries, it matches against those questions, not document text.
+Enzyme groups your data into clusters and generates **catalysts** — thematic questions — for each cluster. When the agent queries, it matches against those questions, not document text.
 
 ```
 Agent query:     "vegetarian dinner ideas"
@@ -26,6 +26,14 @@ Catalyst match:  "What does the commitment to vegetarianism cost when
 ```
 
 The agent's query is generic. The catalyst is specific to this user — someone who saves sausage dishes despite cooking vegetarian most of the time. The personalization happened at index time.
+
+### How clusters form
+
+Enzyme clusters content using labels you attach to entries. In the cooking example, entries get labels like `miso`, `italian`, `braising` — derived from recipe categories and the user's own comment text. Miso salmon, miso banana bread, and miso eggplant land in the same cluster. Enzyme sees the user keeps substituting miso for dairy fats and generates a question about that pattern.
+
+The labels don't need to be perfect or hand-curated. Derive them from whatever you have: product categories, ingredient lists, keywords in user text. In our test, scanning comments for "cast iron" and "leftover" caught patterns that recipe metadata alone missed. See `examples/prepare_nyt_data.py` for a working derivation pipeline.
+
+Without any labels, enzyme still clusters by folder and content similarity — but labeling lets you tell it which groupings matter for your domain.
 
 ## Get started
 
@@ -39,14 +47,14 @@ client.ingest(collection="user-123", entries=[
     {
         "title": "Miso Glazed Salmon",
         "notes": "Subbed white miso for butter. Way better.",
-        "tags": ["seafood", "japanese", "miso"],
+        "tags": ["seafood", "japanese", "miso"],  # labels — how enzyme clusters
         "folder": "saves",
         "created_at": "2025-06-15",
     },
     # ...
 ])
 
-# Build index — generates embeddings (local, no API) + catalysts (needs LLM API key).
+# Build index — embeddings run locally, catalysts need an LLM API key.
 # ~6s for 318 entries. Set OPENAI_API_KEY or configure via ~/.enzyme/config.toml.
 client.init(collection="user-123")
 
@@ -55,17 +63,7 @@ results = client.catalyze("comfort food", collection="user-123")
 print(results.render_to_prompt())  # formatted text an LLM can use directly
 ```
 
-Each collection is a per-user index at `~/.enzyme-sdk/collections/<id>/`. Ingest is additive — call it on each new user action, then `init` or `refresh` to rebuild catalysts.
-
-## The one design decision: tags
-
-Tags become the entities that catalysts are generated for. They're the retrieval paths.
-
-A tag like `miso` that appears on salmon, banana bread, and eggplant creates a cluster. Enzyme sees the user keeps substituting miso for dairy fats and generates a catalyst about that pattern. Without the tag, those three recipes are unrelated documents.
-
-Derive tags from whatever you have — recipe categories, ingredient lists, user text. In our test, scanning the user's comments for words like "cast iron" and "leftover" caught patterns that metadata alone missed.
-
-Aim for 2-3 tags per entry and 15+ tags with 10+ entries each. Below that, catalysts don't have enough cross-entry patterns to work with.
+Each collection is a per-user index at `~/.enzyme-sdk/collections/<id>/`. Ingest is additive — call it on each new user action, then `init` or `refresh` to rebuild.
 
 ## Agent integration
 
@@ -85,7 +83,7 @@ def get_overview() -> str:
     return enzyme.petri(collection=user_id).render_to_prompt()
 ```
 
-The system prompt needs to tell the agent: (1) call tools at most twice, (2) catalysts explain *why* results surfaced — use them, (3) quote the user's own words from the results. Without the tool-call cap, agents make 5-7 redundant calls. See `examples/agent_test.py` for the full system prompt.
+The system prompt needs three things: (1) cap tool calls to two — without this, agents make 5-7 redundant calls, (2) explain that catalysts tell the agent *why* results surfaced, (3) tell it to quote the user's own words from results. See `examples/agent_test.py` for the full working prompt.
 
 ## Example
 
@@ -95,4 +93,4 @@ python examples/prepare_nyt_data.py   # prepare 318 entries from NYT Cooking dat
 python examples/agent_test.py         # run agent via OpenRouter (Gemini 3 Flash)
 ```
 
-The example ingests one prolific NYT Cooking commenter's history (318 recipes, 2017-2021), builds an index (60 catalysts across 20 entities in ~6s), and runs an agent conversation that produces the dinner party response shown above.
+Ingests one prolific NYT Cooking commenter's history (318 recipes, 2017-2021), builds an index (60 catalysts in ~6s), and runs the agent conversation that produces the dinner party response above.
