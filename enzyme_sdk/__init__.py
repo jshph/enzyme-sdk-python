@@ -1,5 +1,18 @@
 """Enzyme SDK — give agents structural understanding of accumulated content."""
 
+from enzyme_sdk.body_clusters import (
+    BodyCluster,
+    BodyClusterResult,
+    ClusterRepresentative,
+    EntryCluster,
+    EntryClusterAssignment,
+    EntryClusterAssignmentResult,
+    EntryClusterIndex,
+    EntryClusterSingleAssignmentResult,
+    build_entry_cluster_index,
+    cluster_body_entries,
+    cluster_entries,
+)
 from enzyme_sdk.client import (
     CatalyzeResponse,
     CatalyzeResult,
@@ -19,6 +32,17 @@ __all__ = [
     "CatalyzeResponse",
     "CatalyzeResult",
     "ContributingCatalyst",
+    "ClusterRepresentative",
+    "EntryCluster",
+    "EntryClusterAssignment",
+    "EntryClusterAssignmentResult",
+    "EntryClusterIndex",
+    "EntryClusterSingleAssignmentResult",
+    "build_entry_cluster_index",
+    "cluster_entries",
+    "BodyCluster",
+    "BodyClusterResult",
+    "cluster_body_entries",
     "PetriEntity",
     "PetriResponse",
     "VaultStatus",

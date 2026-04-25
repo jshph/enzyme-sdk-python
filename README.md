@@ -29,9 +29,9 @@ The agent's query is generic. The catalyst is specific to *this* user — someon
 
 ### How clusters form
 
-Enzyme clusters content using labels you attach to entries. In the cooking example, entries get labels like `miso`, `italian`, `braising` — derived from recipe categories and the user's own comment text. Miso salmon, miso banana bread, and miso eggplant land in the same cluster. Enzyme sees the user keeps substituting miso for dairy fats and generates a question about that pattern.
+Enzyme can create automatic clusters from entry bodies before ingest. These become readable automatic tags like `auto-cluster-black-rice`. Catalysts are generated from the user's own entries in each cluster; the tag keywords are only a weak display hint.
 
-The labels don't need to be perfect or hand-curated. Derive them from whatever you have: product categories, ingredient lists, keywords in user text. Without any labels, enzyme still clusters by folder and content similarity — but labeling tells it which groupings matter for your domain.
+You can still attach your own labels when you have strong domain structure. For uncurated data, build automatic clusters first and ingest the enriched entries.
 
 ## Get started
 
@@ -39,40 +39,62 @@ Here's the full integration we tested — loading 407 recipe comments from a CSV
 
 ### 1. Load and ingest
 
-Your data comes from a database or CSV. Write an adapter function that maps each row to an enzyme entry:
+Your data comes from a database or CSV:
 
 ```python
+import csv
 from enzyme_sdk import EnzymeClient
 
 client = EnzymeClient.ensure_installed()  # ~11MB binary + ~52MB embedding model
 
-# The adapter — maps your row to an enzyme entry.
-# This is the part you change for your dataset.
-LABEL_KEYWORDS = {
-    "chicken": "chicken", "salmon": "salmon", "pasta": "italian",
-    "miso": "japanese", "roast": "roasting", "stew": "stew",
-    "parmesan": "cheese", "lemon": "citrus", "chili": "heat",
-    "cast iron": "cast-iron", "leftover": "leftovers",
-    # ... scan recipe name + comment text for domain-relevant keywords
-}
-
-def row_to_entry(row):
-    text = (row["recipe_name"] + " " + row["comment"]).lower()
-    labels = sorted({tag for kw, tag in LABEL_KEYWORDS.items() if kw in text})
-    return {
-        "title": row["recipe_name"].replace("-", " ").title(),
-        "notes": row["comment"],       # the user's voice — this is the signal
-        "tags": labels,                 # how enzyme clusters
-        "folder": "saves",
-        "created_at": row["date"],      # ISO date or epoch ms
-    }
-
-# Batch load from your data source
-import csv
 with open("comments.csv") as f:
-    entries = [row_to_entry(row) for row in csv.DictReader(f)]
+    all_recipes = list(csv.DictReader(f))
 
-client.ingest(collection="user-123", entries=entries)
+def recipe_text(recipe):
+    return f"{recipe['recipe_name']}\n\n{recipe['comment']}"
+
+# Build reusable automatic labels across all users.
+cluster_index = client.build_entry_cluster_index(
+    all_recipes,
+    text=recipe_text,
+    # granularity="fine",  # broader coverage for sparse corpora
+)
+
+# Ingest one user's entries. Catalysts are generated from this user's corpus.
+user_recipes = [
+    recipe for recipe in all_recipes
+    if recipe["user_id"] == "user-123"
+]
+assigned = cluster_index.assign(
+    user_recipes,
+    text=recipe_text,
+    target_field="auto_tags",
+)
+
+client.ingest(
+    collection="user-123",
+    entries=[
+        {
+            "title": recipe["recipe_name"].replace("-", " ").title(),
+            "notes": recipe["comment"],
+            "tags": recipe.get("auto_tags", []),
+            # "tags": recipe["source_tags"],  # use source tags without auto clustering
+            # "tags": recipe.get("source_tags", []) + recipe.get("auto_tags", []),
+            "created_at": recipe["date"],
+        }
+        for recipe in assigned.entries
+    ],
+)
+```
+
+Single-user app:
+
+```python
+assigned = client.cluster_entries(
+    user_recipes,
+    text=recipe_text,
+    target_field="auto_tags",
+)
 ```
 
 ### 2. Build the index
@@ -126,12 +148,15 @@ The system prompt matters. Without the tool-call cap, agents make 5-7 redundant 
 ## Running the full example
 
 ```bash
-pip install -e ".[dev]" openai-agents
-python examples/prepare_nyt_data.py es    # extracts 407 entries from NYT dataset
-python examples/agent_test.py             # runs agent (set OPENROUTER_API_KEY in .env)
+pip install -e ".[dev,cluster]" openai-agents
+python examples/prepare_nyt_data.py es    # writes nyt_es_data.json to the system temp dir
+python examples/agent_test.py             # set OPENROUTER_API_KEY in .env
 ```
 
-`prepare_nyt_data.py` shows the full label derivation pipeline — scanning recipe names AND comment text for ingredients, cuisines, techniques, and cooking behaviors. `agent_test.py` is the complete working integration.
+`examples/nyt_sample_comments.json` includes all comments for three sample users.
+`prepare_nyt_data.py` prepares all three users for cluster labels plus one user
+for ingest. `agent_test.py` builds automatic cluster tags from all three users
+and ingests only the selected user's entries.
 
 Try a different user to see how the same prompt produces completely different output:
 

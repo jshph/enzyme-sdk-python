@@ -334,6 +334,62 @@ class EnzymeClient:
         except json.JSONDecodeError as e:
             raise EnzymeError(f"Failed to parse enzyme output: {e}\nOutput: {stdout[:500]}")
 
+    def embed_entries(
+        self,
+        entries: list[dict] | None = None,
+        *,
+        entry: dict | None = None,
+    ) -> dict:
+        """Embed structured entries without requiring a vault or collection."""
+        if (entries is None) == (entry is None):
+            raise ValueError("Must provide exactly one of 'entries' or 'entry'")
+
+        payload = {"entries": entries} if entries is not None else {"entry": entry}
+        cmd = [self.enzyme_bin, "embed-entries"]
+
+        try:
+            result = subprocess.run(
+                cmd,
+                input=json.dumps(payload),
+                capture_output=True,
+                text=True,
+                timeout=self.timeout,
+            )
+        except FileNotFoundError:
+            raise EnzymeError(
+                f"Enzyme binary not found at '{self.enzyme_bin}'. "
+                "Install via: brew install jshph/enzyme/enzyme-cli"
+            )
+        except subprocess.TimeoutExpired:
+            raise EnzymeError(f"Enzyme command timed out after {self.timeout}s: {' '.join(cmd)}")
+
+        if result.returncode != 0:
+            raise EnzymeError(f"Embed entries failed (exit {result.returncode}): {result.stderr.strip()}")
+
+        stdout = result.stdout.strip()
+        if not stdout:
+            return {}
+        try:
+            return json.loads(stdout)
+        except json.JSONDecodeError as e:
+            raise EnzymeError(f"Failed to parse enzyme output: {e}\nOutput: {stdout[:500]}")
+
+    def build_entry_cluster_index(self, entries: list[dict | str], **kwargs):
+        """Build a reusable automatic entry-cluster index."""
+        from enzyme_sdk.body_clusters import build_entry_cluster_index
+
+        return build_entry_cluster_index(entries, client=self, **kwargs)
+
+    def cluster_entries(self, entries: list[dict | str], **kwargs):
+        """Cluster entries and append flat readable auto-cluster tags."""
+        target_field = kwargs.pop("target_field", "tags")
+        index = self.build_entry_cluster_index(entries, **kwargs)
+        return index.assign(
+            entries,
+            text=kwargs.get("text"),
+            target_field=target_field,
+        )
+
     def catalyze(
         self,
         query: str,
