@@ -150,13 +150,16 @@ The system prompt matters. Without the tool-call cap, agents make 5-7 redundant 
 ```bash
 pip install -e ".[dev,cluster]" openai-agents
 python examples/prepare_nyt_data.py es    # writes nyt_es_data.json to the system temp dir
-python examples/agent_test.py             # set OPENROUTER_API_KEY in .env
+python examples/agent_test.py             # set OPENAI_API_KEY in .env
 ```
 
 `examples/nyt_sample_comments.json` includes all comments for three sample users.
 `prepare_nyt_data.py` prepares all three users for cluster labels plus one user
 for ingest. `agent_test.py` builds automatic cluster tags from all three users
 and ingests only the selected user's entries.
+
+Use `OPENAI_MODEL` to change models. Set `OPENAI_BASE_URL` for a compatible
+provider.
 
 Try a different user to see how the same prompt produces completely different output:
 

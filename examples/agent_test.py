@@ -30,8 +30,9 @@ from enzyme_sdk import EnzymeClient
 
 ENZYME_BIN = os.environ.get("ENZYME_BIN", "enzyme")
 USER = os.environ.get("ENZYME_TEST_USER", "es")
-OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY", "")
-MODEL = os.environ.get("ENZYME_TEST_MODEL", "google/gemini-3-flash-preview")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+OPENAI_BASE_URL = os.environ.get("OPENAI_BASE_URL")
+MODEL = os.environ.get("OPENAI_MODEL", "gpt-4.1-mini")
 DATA_PATH = Path(
     os.environ.get(
         "ENZYME_NYT_DATA",
@@ -86,13 +87,13 @@ def make_tools(vault: Path):
 
 
 def make_agent(vault: Path) -> Agent:
-    openrouter_client = AsyncOpenAI(
-        base_url="https://openrouter.ai/api/v1",
-        api_key=OPENROUTER_KEY,
-    )
+    client_kwargs = {"api_key": OPENAI_API_KEY}
+    if OPENAI_BASE_URL:
+        client_kwargs["base_url"] = OPENAI_BASE_URL
+    openai_client = AsyncOpenAI(**client_kwargs)
     model = OpenAIChatCompletionsModel(
         model=MODEL,
-        openai_client=openrouter_client,
+        openai_client=openai_client,
     )
     return Agent(
         name="Cooking assistant",
