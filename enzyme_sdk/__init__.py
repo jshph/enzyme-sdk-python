@@ -13,6 +13,12 @@ from enzyme_sdk.body_clusters import (
     cluster_body_entries,
     cluster_entries,
 )
+from enzyme_sdk.hosted import (
+    HostedCatalyzeResult,
+    HostedEnzymeClient,
+    HostedPetriEntity,
+    HostedVaultStatus,
+)
 from enzyme_sdk.client import (
     CatalyzeResponse,
     CatalyzeResult,
@@ -27,6 +33,10 @@ from enzyme_sdk.document import Document
 
 __all__ = [
     "EnzymeClient",
+    "HostedEnzymeClient",
+    "HostedCatalyzeResult",
+    "HostedPetriEntity",
+    "HostedVaultStatus",
     "Collection",
     "Document",
     "CatalyzeResponse",
