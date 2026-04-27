@@ -1,0 +1,789 @@
+"""Decorator-based hosted integration for Enzyme.
+
+Decorate your existing save/fetch functions. Enzyme turns them into a Claude
+connector — with user isolation and catalyst-based personalization.
+No data moves until the user opts in.
+
+Quick start::
+
+    export ENZYME_API_KEY=enz_...   # from enzyme.garden/settings
+
+    from enzyme_sdk import EnzymeHosted, enzyme
+
+    client = EnzymeHosted(display_name="DishGen")
+
+    @enzyme.hydrate(client, entity="recipe")
+    def get_recipes(user_id: str) -> list[dict]:
+        return db.get_recipes(owner=user_id)
+
+    @enzyme.on_save(client, entity="recipe",
+        title="title", content="instructions", tags="tags")
+    def create_recipe(user_id, data):
+        return db.insert(data)          # return value unchanged
+
+    client.connect_user("user-42")      # triggers hydrate + index
+    client.search("user-42", "comfort food")
+"""
+
+from __future__ import annotations
+
+import functools
+import json
+import logging
+import os
+import shutil
+import string
+from collections import Counter
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Callable
+
+log = logging.getLogger("enzyme.hosted")
+
+# ---------------------------------------------------------------------------
+# Lightweight keyword search (fallback when enzyme binary is unavailable)
+# ---------------------------------------------------------------------------
+
+_PUNCT_TABLE = str.maketrans("", "", string.punctuation)
+
+
+def _tokenize(text: str) -> list[str]:
+    return text.lower().replace("-", " ").translate(_PUNCT_TABLE).split()
+
+
+def _score_entry(query_tokens: list[str], entry: dict[str, Any]) -> float:
+    if not query_tokens:
+        return 0.0
+    query_set = set(query_tokens)
+    score = 0.0
+    for field_name, weight in [("title", 3.0), ("tags", 2.0), ("content", 1.0)]:
+        val = entry.get(field_name, "")
+        if isinstance(val, list):
+            val = " ".join(val)
+        tokens = _tokenize(val)
+        if tokens:
+            hits = sum(1 for t in tokens if t in query_set)
+            score += weight * hits / len(tokens)
+    return score
+
+
+def _search_entries(
+    entries: list[dict[str, Any]], query: str, limit: int = 10,
+) -> list[dict[str, Any]]:
+    query_tokens = _tokenize(query)
+    scored = [(s, i, e) for i, e in enumerate(entries) if (s := _score_entry(query_tokens, e)) > 0]
+    scored.sort(key=lambda t: (-t[0], t[1]))
+    mx = scored[0][0] if scored else 1.0
+    return [
+        {"title": e.get("title", ""), "content": e.get("content", ""),
+         "tags": e.get("tags", []), "_score": round(s / mx, 4)}
+        for s, _, e in scored[:limit]
+    ]
+
+
+def _build_overview(entries: list[dict[str, Any]], top: int = 10) -> dict[str, Any]:
+    tags: Counter[str] = Counter()
+    etypes: Counter[str] = Counter()
+    for e in entries:
+        for t in e.get("tags", []):
+            tags[t] += 1
+        etypes[e.get("entity", "unknown")] += 1
+    return {
+        "entry_count": len(entries),
+        "top_tags": [{"tag": t, "count": c} for t, c in tags.most_common(top)],
+        "entity_types": dict(etypes),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Field extraction helpers for @enzyme.on_save
+# ---------------------------------------------------------------------------
+
+def _extract_enzyme_entry(
+    result: Any,
+    field_map: dict[str, str | Callable],
+) -> dict[str, Any]:
+    """Pull enzyme fields from an arbitrary return value using a field map.
+
+    Each key in *field_map* is a target enzyme field (title, content, tags …).
+    Each value is either:
+      - a string  → used as dict key / attribute name on *result*
+      - a callable → called with *result*, must return the value
+    """
+    entry: dict[str, Any] = {}
+    for enzyme_field, accessor in field_map.items():
+        if callable(accessor):
+            entry[enzyme_field] = accessor(result)
+        elif isinstance(result, dict):
+            entry[enzyme_field] = result.get(accessor, "" if enzyme_field != "tags" else [])
+        else:
+            entry[enzyme_field] = getattr(result, accessor, "" if enzyme_field != "tags" else [])
+    return entry
+
+
+# ---------------------------------------------------------------------------
+# EntityConfig
+# ---------------------------------------------------------------------------
+
+@dataclass
+class EntityConfig:
+    name: str
+    plural: str = ""
+
+    def __post_init__(self):
+        if not self.plural:
+            if self.name.endswith("s"):
+                self.plural = self.name + "es"
+            elif self.name.endswith("y"):
+                self.plural = self.name[:-1] + "ies"
+            else:
+                self.plural = self.name + "s"
+
+
+# ---------------------------------------------------------------------------
+# DevSession
+# ---------------------------------------------------------------------------
+
+class DevSession:
+    """Returned by ``EnzymeHosted.dev()`` — explore inline data with no setup."""
+
+    def __init__(self, entity: str, entries: list[dict[str, Any]]) -> None:
+        self.entity = entity
+        self._entries = [dict(e, entity=entity) for e in entries]
+
+    def search(self, query: str, limit: int = 10) -> list[dict[str, Any]]:
+        return _search_entries(self._entries, query, limit)
+
+    def overview(self) -> dict[str, Any]:
+        return _build_overview(self._entries)
+
+    def status(self) -> dict[str, Any]:
+        return {"entity": self.entity, "entry_count": len(self._entries), "mode": "dev"}
+
+    def __repr__(self) -> str:
+        return f"<DevSession entity={self.entity!r} entries={len(self._entries)}>"
+
+
+# ---------------------------------------------------------------------------
+# EnzymeHosted
+# ---------------------------------------------------------------------------
+
+class EnzymeHosted:
+    """Connect your app to Enzyme Hosted.
+
+    Get your API key:
+        1. enzyme.garden/login  (GitHub or Google)
+        2. enzyme.garden/settings → Create API key
+        3. ``export ENZYME_API_KEY=enz_...`` or pass ``api_key=`` directly
+    """
+
+    def __init__(
+        self,
+        api_key: str | None = None,
+        display_name: str = "",
+        description: str = "",
+        logo_url: str = "",
+        system_prompt: str = "",
+    ) -> None:
+        self.api_key = api_key or os.environ.get("ENZYME_API_KEY", "")
+        self.display_name = display_name
+        self.description = description
+        self.logo_url = logo_url
+        self.system_prompt = system_prompt
+
+        # Registry
+        self._entities: dict[str, EntityConfig] = {}
+        self._save_fns: dict[str, Callable] = {}
+        self._hydrate_fns: dict[str, Callable] = {}
+        self._field_maps: dict[str, dict[str, str | Callable]] = {}
+
+        # Per-user state
+        self._connected_users: set[str] = set()
+        self._user_stores: dict[str, list[dict[str, Any]]] = {}
+
+        # Enzyme pipeline (lazy init)
+        self._enzyme_client: Any = None
+        self._store: Any = None
+        self._collections_base: Path | None = None
+
+    # -- enzyme pipeline (lazy) --------------------------------------------
+
+    def _get_enzyme_client(self):
+        if self._enzyme_client is None:
+            from enzyme_sdk.client import EnzymeClient
+            self._enzyme_client = EnzymeClient()
+        return self._enzyme_client
+
+    def _get_store(self):
+        if self._store is None:
+            from enzyme_sdk.store import VaultStore
+            self._store = VaultStore()
+            self._collections_base = Path(self._store.base_path)
+        return self._store
+
+    def _use_pipeline(self) -> bool:
+        """True if the enzyme binary is available for full catalyze/petri."""
+        return shutil.which("enzyme") is not None or Path.home().joinpath(".local/bin/enzyme").exists()
+
+    # -- registration (called by decorators) --------------------------------
+
+    def _register_save(self, entity: str, fn: Callable, field_map: dict[str, str | Callable]) -> None:
+        self._ensure_entity(entity)
+        self._save_fns[entity] = fn
+        self._field_maps[entity] = field_map
+
+    def _register_hydrate(self, entity: str, fn: Callable) -> None:
+        self._ensure_entity(entity)
+        self._hydrate_fns[entity] = fn
+
+    def _ensure_entity(self, entity: str) -> None:
+        if entity not in self._entities:
+            self._entities[entity] = EntityConfig(name=entity)
+
+    # -- ingest -------------------------------------------------------------
+
+    def _queue_ingest(self, user_id: str, entity: str, entry: dict[str, Any]) -> None:
+        if user_id not in self._connected_users:
+            return
+        enriched = dict(entry, entity=entity)
+        self._user_stores.setdefault(user_id, []).append(enriched)
+
+        # Also ingest into the real enzyme pipeline if available
+        if self._use_pipeline() and self._collections_base:
+            try:
+                collection_id = self._user_collection_id(user_id)
+                store = self._get_store()
+                if store.vault_exists(collection_id):
+                    vault_path = str(store.vault_path(collection_id))
+                    self._get_enzyme_client().ingest(vault=vault_path, entry=entry)
+            except Exception as exc:
+                log.debug("incremental ingest failed: %s", exc)
+
+    # -- user lifecycle -----------------------------------------------------
+
+    def _user_collection_id(self, user_id: str) -> str:
+        slug = self.display_name.lower().replace(" ", "-") or "enzyme"
+        return f"{slug}--{user_id}"
+
+    def connect_user(self, user_id: str) -> dict[str, Any]:
+        """Connect a user — calls ``@hydrate`` functions and indexes their data.
+
+        In production this is triggered by OAuth. In dev/test, call directly.
+        Re-connecting replaces the user's data with a fresh fetch.
+
+        Returns a status dict with entry count and whether the full pipeline ran.
+        """
+        self._connected_users.add(user_id)
+        store: list[dict[str, Any]] = []
+        self._user_stores[user_id] = store
+
+        for entity, hydrate_fn in self._hydrate_fns.items():
+            entries = hydrate_fn(user_id)
+            if entries:
+                for entry in entries:
+                    store.append(dict(entry, entity=entity))
+
+        # Run full enzyme pipeline if binary is available
+        pipeline_ran = False
+        if self._use_pipeline() and store:
+            log.info("indexing %s (%d entries)…", user_id, len(store))
+            try:
+                pipeline_ran = self._run_pipeline(user_id, store)
+                log.info("indexed %s ✓", user_id)
+            except Exception as exc:
+                log.warning("enzyme pipeline failed for %s, using keyword fallback: %s", user_id, exc)
+
+        return {
+            "user_id": user_id,
+            "entries": len(store),
+            "pipeline": "enzyme" if pipeline_ran else "keyword",
+        }
+
+    def _run_pipeline(self, user_id: str, entries: list[dict[str, Any]]) -> bool:
+        """Run enzyme ingest → init for a user. Returns True on success."""
+        ec = self._get_enzyme_client()
+        store = self._get_store()
+        collection_id = self._user_collection_id(user_id)
+
+        # Create vault directory if needed
+        if not store.vault_exists(collection_id):
+            store.create_vault(collection_id)
+
+        vault_path = str(store.vault_path(collection_id))
+
+        # Ingest all entries
+        clean_entries = [
+            {k: v for k, v in e.items() if k != "entity"} for e in entries
+        ]
+        ec.ingest(vault=vault_path, entries=clean_entries)
+
+        # Run full indexing pipeline (embed → cluster → catalyze)
+        ec.init(vault=vault_path, quiet=True)
+        return True
+
+    def disconnect_user(self, user_id: str) -> None:
+        self._connected_users.discard(user_id)
+
+    def is_connected(self, user_id: str) -> bool:
+        return user_id in self._connected_users
+
+    @property
+    def connected_users(self) -> set[str]:
+        return set(self._connected_users)
+
+    # -- query --------------------------------------------------------------
+
+    def search(self, user_id: str, query: str, limit: int = 10) -> Any:
+        """Search a user's indexed data.
+
+        Uses the full enzyme catalyze pipeline if available, otherwise falls
+        back to keyword search.
+        """
+        if not self.is_connected(user_id):
+            raise RuntimeError(f"User {user_id!r} is not connected. Call connect_user() first.")
+
+        # Try the real enzyme pipeline first
+        if self._use_pipeline():
+            try:
+                ec = self._get_enzyme_client()
+                collection_id = self._user_collection_id(user_id)
+                store = self._get_store()
+                if store.vault_exists(collection_id):
+                    vault_path = str(store.vault_path(collection_id))
+                    result = ec.catalyze(query, vault=vault_path, limit=limit)
+                    if result.results:
+                        return result
+            except Exception as exc:
+                log.debug("catalyze failed, falling back to keyword search: %s", exc)
+
+        entries = self._user_stores.get(user_id, [])
+        return _search_entries(entries, query, limit)
+
+    def overview(self, user_id: str, top: int = 10) -> Any:
+        """Get the structural overview of a user's data.
+
+        Uses petri (entity explorer) if the enzyme pipeline is available.
+        """
+        if not self.is_connected(user_id):
+            raise RuntimeError(f"User {user_id!r} is not connected. Call connect_user() first.")
+
+        if self._use_pipeline():
+            try:
+                ec = self._get_enzyme_client()
+                collection_id = self._user_collection_id(user_id)
+                store = self._get_store()
+                if store.vault_exists(collection_id):
+                    vault_path = str(store.vault_path(collection_id))
+                    result = ec.petri(vault=vault_path, top=top)
+                    if result.entities:
+                        return result
+            except Exception as exc:
+                log.debug("petri failed, falling back to overview: %s", exc)
+
+        entries = self._user_stores.get(user_id, [])
+        return _build_overview(entries, top)
+
+    # -- dev mode -----------------------------------------------------------
+
+    def dev(self, entity: str, entries: list[dict[str, Any]]) -> DevSession:
+        return DevSession(entity, entries)
+
+    # -- MCP server ---------------------------------------------------------
+
+    def _tool_descriptions(self) -> dict[str, str]:
+        """Build rich tool descriptions customized to this app."""
+        app = self.display_name or "the app"
+        base_search = (
+            f"Search the user's {app} data by concept. The query doesn't need to "
+            "match document text — Enzyme routes it through precomputed thematic "
+            "questions that characterize patterns in the user's choices. Use this when "
+            "the user's question could benefit from their personal history, preferences, "
+            "or past decisions. Returns matched documents and the thematic signals that "
+            "drove the retrieval."
+        )
+        base_overview = (
+            f"Get a structural overview of the user's {app} data — which topics are "
+            "active, what thematic questions characterize each area, and how interests "
+            "have shifted recently. Use this at the start of a conversation to understand "
+            "the user's landscape before making recommendations."
+        )
+
+        descs: dict[str, str] = {}
+        for entity, cfg in self._entities.items():
+            descs[f"search_{cfg.plural}"] = base_search.replace("data", cfg.plural)
+            descs[f"get_{entity}_profile"] = base_overview.replace("data", f"{cfg.plural} collection")
+        return descs
+
+    def as_mcp_app(self, *, whitelist: list[str] | None = None) -> Any:
+        """Return a FastAPI app serving JSON-RPC 2.0 MCP tool calls.
+
+        Args:
+            whitelist: If set, only these user IDs can be queried (dev mode).
+        """
+        from fastapi import FastAPI, Request
+        from fastapi.responses import JSONResponse
+
+        allowed = set(whitelist) if whitelist else None
+        descs = self._tool_descriptions()
+
+        mcp = FastAPI(
+            title=self.display_name or "Enzyme MCP",
+            description=self.description,
+            version="0.1.0",
+        )
+
+        def _build_tools() -> list[dict[str, Any]]:
+            tools: list[dict[str, Any]] = []
+            for entity, cfg in self._entities.items():
+                tools.append({
+                    "name": f"search_{cfg.plural}",
+                    "description": descs.get(f"search_{cfg.plural}", ""),
+                    "inputSchema": {
+                        "type": "object",
+                        "properties": {
+                            "query": {"type": "string", "description": "What you're looking for, in natural language. Broad queries work well."},
+                            "limit": {"type": "integer", "description": "Max results (1-20).", "default": 10},
+                        },
+                        "required": ["query"],
+                    },
+                })
+                tools.append({
+                    "name": f"get_{entity}_profile",
+                    "description": descs.get(f"get_{entity}_profile", ""),
+                    "inputSchema": {
+                        "type": "object",
+                        "properties": {
+                            "top": {"type": "integer", "description": "Number of top entities.", "default": 10},
+                        },
+                    },
+                })
+            return tools
+
+        def _resolve_user(request) -> str | None:
+            """In dev mode, user_id comes from the token or a header."""
+            # Dev: X-Enzyme-User header or first whitelisted user
+            user = request.headers.get("X-Enzyme-User")
+            if user:
+                return user
+            if allowed:
+                return next(iter(allowed))
+            # In prod, this would come from the OAuth token
+            return None
+
+        def _dispatch(name: str, args: dict[str, Any], user_id: str) -> Any:
+            for entity, cfg in self._entities.items():
+                if name == f"search_{cfg.plural}":
+                    result = self.search(user_id, args["query"], args.get("limit", 10))
+                    if hasattr(result, "render_to_prompt"):
+                        return result.render_to_prompt()
+                    return result
+                if name == f"get_{entity}_profile":
+                    result = self.overview(user_id, args.get("top", 10))
+                    if hasattr(result, "render_to_prompt"):
+                        return result.render_to_prompt()
+                    return result
+            raise ValueError(f"Unknown tool: {name!r}")
+
+        @mcp.get("/health")
+        async def health():
+            return {
+                "status": "ok",
+                "app": self.display_name,
+                "entities": list(self._entities.keys()),
+                "connected_users": len(self._connected_users),
+                "pipeline": "enzyme" if self._use_pipeline() else "keyword",
+            }
+
+        async def _handler(request) -> JSONResponse:
+            import time as _time
+
+            auth = request.headers.get("Authorization")
+            if not auth:
+                return JSONResponse(
+                    status_code=401,
+                    content={"error": "Missing Authorization header"},
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+
+            user_id = _resolve_user(request)
+            if allowed and user_id not in allowed:
+                return JSONResponse(
+                    status_code=403,
+                    content={"error": f"User {user_id!r} not in whitelist"},
+                )
+
+            body = await request.json()
+            rpc_id = body.get("id")
+            method = body.get("method", "")
+            params = body.get("params", {})
+
+            log.info("← %s", method)
+
+            if method == "initialize":
+                result: dict[str, Any] = {
+                    "protocolVersion": "2025-03-26",
+                    "capabilities": {"tools": {}},
+                    "serverInfo": {
+                        "name": self.display_name or "Enzyme",
+                        "version": "0.1.0",
+                    },
+                }
+                if self.system_prompt:
+                    result["instructions"] = self.system_prompt
+                return JSONResponse({"jsonrpc": "2.0", "id": rpc_id, "result": result})
+
+            if method == "tools/list":
+                tools = _build_tools()
+                log.info("→ tools/list: %s", [t["name"] for t in tools])
+                return JSONResponse({
+                    "jsonrpc": "2.0", "id": rpc_id,
+                    "result": {"tools": tools},
+                })
+
+            if method == "tools/call":
+                tool_name = params.get("name", "")
+                arguments = params.get("arguments", {})
+                if not user_id:
+                    return JSONResponse({
+                        "jsonrpc": "2.0", "id": rpc_id,
+                        "error": {"code": -32000, "message": "Cannot resolve user. Set X-Enzyme-User header."},
+                    })
+                log.info("→ %s(%s) user=%s", tool_name, arguments, user_id)
+                t0 = _time.perf_counter()
+                try:
+                    result = _dispatch(tool_name, arguments, user_id)
+                    elapsed = _time.perf_counter() - t0
+                    text = result if isinstance(result, str) else json.dumps(result, default=str, ensure_ascii=False)
+                    preview = text[:120] + "…" if len(text) > 120 else text
+                    log.info("✓ %s → %d chars in %.2fs: %s", tool_name, len(text), elapsed, preview)
+                    return JSONResponse({
+                        "jsonrpc": "2.0", "id": rpc_id,
+                        "result": {"content": [{"type": "text", "text": text}]},
+                    })
+                except (RuntimeError, ValueError) as exc:
+                    elapsed = _time.perf_counter() - t0
+                    log.warning("✗ %s failed in %.2fs: %s", tool_name, elapsed, exc)
+                    code = -32000 if isinstance(exc, RuntimeError) else -32601
+                    return JSONResponse({
+                        "jsonrpc": "2.0", "id": rpc_id,
+                        "error": {"code": code, "message": str(exc)},
+                    })
+
+            return JSONResponse({
+                "jsonrpc": "2.0", "id": rpc_id,
+                "error": {"code": -32601, "message": f"Unknown method: {method!r}"},
+            })
+
+        # PEP 563 workaround: patch annotation so FastAPI sees the real Request class
+        from fastapi import Request as _Req
+        _handler.__annotations__["request"] = _Req
+        mcp.post("/mcp")(_handler)
+
+        return mcp
+
+    # -- serve (dev mode with optional ngrok) -------------------------------
+
+    def serve(
+        self,
+        port: int = 9460,
+        *,
+        users: list[str] | None = None,
+        ngrok: bool = False,
+        ngrok_domain: str | None = None,
+    ) -> None:
+        """Start the MCP server for development / testing.
+
+        Args:
+            port: Local port.
+            users: Whitelist of user IDs. If set, connects them automatically.
+            ngrok: If True, expose via ngrok tunnel for testing with Claude.
+            ngrok_domain: Custom ngrok domain (requires paid plan).
+        """
+        # Configure logging so tool call logs are visible
+        logging.basicConfig(
+            level=logging.INFO,
+            format="  %(name)s  %(message)s",
+        )
+        log.setLevel(logging.INFO)
+
+        if users:
+            for uid in users:
+                self.connect_user(uid)
+
+        mcp_app = self.as_mcp_app(whitelist=users)
+        url = f"http://localhost:{port}"
+
+        print()
+        print("=" * 64)
+        print(f"  {self.display_name or 'Enzyme'} MCP Server")
+        print("=" * 64)
+        print(f"  Local:    {url}")
+
+        tunnel_url = None
+        if ngrok:
+            tunnel_url = self._start_ngrok(port, ngrok_domain)
+            if tunnel_url:
+                print(f"  Public:   {tunnel_url}")
+                print()
+                print("  Add to Claude → Settings → Connectors:")
+                print(f"    URL: {tunnel_url}/mcp")
+
+        print()
+        if users:
+            for uid in users:
+                count = len(self._user_stores.get(uid, []))
+                print(f"  {uid}: {count} entries")
+        print()
+
+        pipeline = "enzyme catalyze" if self._use_pipeline() else "keyword (install enzyme for full pipeline)"
+        print(f"  Search:   {pipeline}")
+        print(f"  Entities: {list(self._entities.keys())}")
+
+        if self.system_prompt:
+            print(f"  Prompt:   {self.system_prompt[:60]}...")
+        print()
+        print("-" * 64)
+        print("  curl examples")
+        print("-" * 64)
+        print()
+
+        base = tunnel_url or url
+        user_header = ""
+        if users:
+            user_header = f'\n    -H "X-Enzyme-User: {users[0]}" \\'
+
+        print(f"  # Health")
+        print(f"  curl {base}/health")
+        print()
+        print(f"  # List tools")
+        print(f"""  curl -X POST {base}/mcp \\
+    -H "Authorization: Bearer dev-token" \\{user_header}
+    -H "Content-Type: application/json" \\
+    -d '{{"jsonrpc":"2.0","id":1,"method":"tools/list"}}'""")
+        print()
+
+        for entity, cfg in self._entities.items():
+            print(f"  # Search {cfg.plural}")
+            print(f"""  curl -X POST {base}/mcp \\
+    -H "Authorization: Bearer dev-token" \\{user_header}
+    -H "Content-Type: application/json" \\
+    -d '{{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{{"name":"search_{cfg.plural}","arguments":{{"query":"your query here"}}}}}}'""")
+            print()
+
+        print("=" * 64)
+        print()
+
+        import uvicorn
+        uvicorn.run(mcp_app, host="0.0.0.0", port=port)
+
+    @staticmethod
+    def _start_ngrok(port: int, domain: str | None = None) -> str | None:
+        """Start an ngrok tunnel. Returns the public URL or None."""
+        try:
+            from pyngrok import ngrok as _ngrok
+            kwargs: dict[str, Any] = {"addr": str(port), "proto": "http"}
+            if domain:
+                kwargs["hostname"] = domain
+            tunnel = _ngrok.connect(**kwargs)
+            return str(tunnel.public_url)
+        except ImportError:
+            print("  (ngrok requested but pyngrok not installed: pip install pyngrok)")
+            return None
+        except Exception as exc:
+            print(f"  (ngrok failed: {exc})")
+            return None
+
+    def __repr__(self) -> str:
+        return (
+            f"<EnzymeHosted {self.display_name!r} "
+            f"entities={list(self._entities.keys())} connected={len(self._connected_users)}>"
+        )
+
+
+# ---------------------------------------------------------------------------
+# Decorator namespace
+# ---------------------------------------------------------------------------
+
+class _Enzyme:
+    """Decorator namespace — ``enzyme.hydrate`` and ``enzyme.on_save``."""
+
+    def hydrate(self, client: EnzymeHosted, entity: str) -> Callable:
+        """Register a function that loads a user's data for indexing.
+
+        Called when a user connects. Must accept ``user_id`` as first arg
+        and return a list of dicts, each with at least ``title`` and
+        ``content`` keys. Tags are optional but improve search.
+
+        Example::
+
+            @enzyme.hydrate(client, entity="recipe")
+            def get_recipes(user_id: str) -> list[dict]:
+                return [{"title": r.name, "content": r.body, "tags": r.tags}
+                        for r in db.query(user_id)]
+        """
+        def decorator(fn: Callable) -> Callable:
+            client._register_hydrate(entity, fn)
+            return fn
+        return decorator
+
+    def on_save(
+        self,
+        client: EnzymeHosted,
+        entity: str,
+        *,
+        title: str | Callable = "title",
+        content: str | Callable = "content",
+        tags: str | Callable | None = "tags",
+        metadata: str | Callable | None = None,
+        map: Callable | None = None,
+    ) -> Callable:
+        """Decorate an existing save function — Enzyme indexes the return value.
+
+        The decorated function's signature and return value are **unchanged**.
+        The decorator extracts enzyme fields from the return value using either
+        the field-name shortcuts or a custom ``map`` callable.
+
+        Field shortcuts (default):
+            ``title="title"`` means ``entry["title"]`` on the return dict.
+            Pass a callable for complex extraction: ``title=lambda r: r.name``.
+
+        Custom map (overrides field shortcuts):
+            ``map=lambda r: {"title": r.name, "content": r.body, "tags": r.tags}``
+
+        Example::
+
+            @enzyme.on_save(client, entity="recipe",
+                title="title", content="instructions", tags="tags")
+            def create_recipe(user_id, data):
+                recipe = db.insert(data)
+                return recipe   # unchanged — enzyme extracts what it needs
+        """
+        if map is not None:
+            field_map: dict[str, str | Callable] = {"_map": map}
+        else:
+            field_map = {"title": title, "content": content}
+            if tags is not None:
+                field_map["tags"] = tags
+            if metadata is not None:
+                field_map["metadata"] = metadata
+
+        def decorator(fn: Callable) -> Callable:
+            @functools.wraps(fn)
+            def wrapper(user_id: str, *args: Any, **kwargs: Any) -> Any:
+                result = fn(user_id, *args, **kwargs)
+                if client.is_connected(user_id) and result is not None:
+                    if "_map" in field_map:
+                        entry = field_map["_map"](result)
+                    else:
+                        entry = _extract_enzyme_entry(result, field_map)
+                    client._queue_ingest(user_id, entity, entry)
+                return result
+            client._register_save(entity, wrapper, field_map)
+            return wrapper
+        return decorator
+
+    # Keep backwards compat alias
+    fetch = hydrate
+
+
+enzyme = _Enzyme()

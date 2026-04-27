@@ -19,6 +19,7 @@ from enzyme_sdk.hosted import (
     HostedPetriEntity,
     HostedVaultStatus,
 )
+from enzyme_sdk.enzyme import DevSession, EnzymeHosted, enzyme
 from enzyme_sdk.client import (
     CatalyzeResponse,
     CatalyzeResult,
@@ -33,6 +34,9 @@ from enzyme_sdk.document import Document
 
 __all__ = [
     "EnzymeClient",
+    "EnzymeHosted",
+    "DevSession",
+    "enzyme",
     "HostedEnzymeClient",
     "HostedCatalyzeResult",
     "HostedPetriEntity",
