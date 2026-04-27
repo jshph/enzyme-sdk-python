@@ -31,68 +31,14 @@ import functools
 import json
 import logging
 import os
-import shutil
-import string
-from collections import Counter
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
 log = logging.getLogger("enzyme.hosted")
 
-# ---------------------------------------------------------------------------
-# Lightweight keyword search (fallback when enzyme binary is unavailable)
-# ---------------------------------------------------------------------------
-
-_PUNCT_TABLE = str.maketrans("", "", string.punctuation)
 
 
-def _tokenize(text: str) -> list[str]:
-    return text.lower().replace("-", " ").translate(_PUNCT_TABLE).split()
-
-
-def _score_entry(query_tokens: list[str], entry: dict[str, Any]) -> float:
-    if not query_tokens:
-        return 0.0
-    query_set = set(query_tokens)
-    score = 0.0
-    for field_name, weight in [("title", 3.0), ("tags", 2.0), ("content", 1.0)]:
-        val = entry.get(field_name, "")
-        if isinstance(val, list):
-            val = " ".join(val)
-        tokens = _tokenize(val)
-        if tokens:
-            hits = sum(1 for t in tokens if t in query_set)
-            score += weight * hits / len(tokens)
-    return score
-
-
-def _search_entries(
-    entries: list[dict[str, Any]], query: str, limit: int = 10,
-) -> list[dict[str, Any]]:
-    query_tokens = _tokenize(query)
-    scored = [(s, i, e) for i, e in enumerate(entries) if (s := _score_entry(query_tokens, e)) > 0]
-    scored.sort(key=lambda t: (-t[0], t[1]))
-    mx = scored[0][0] if scored else 1.0
-    return [
-        {"title": e.get("title", ""), "content": e.get("content", ""),
-         "tags": e.get("tags", []), "_score": round(s / mx, 4)}
-        for s, _, e in scored[:limit]
-    ]
-
-
-def _build_overview(entries: list[dict[str, Any]], top: int = 10) -> dict[str, Any]:
-    tags: Counter[str] = Counter()
-    etypes: Counter[str] = Counter()
-    for e in entries:
-        for t in e.get("tags", []):
-            tags[t] += 1
-        etypes[e.get("entity", "unknown")] += 1
-    return {
-        "entry_count": len(entries),
-        "top_tags": [{"tag": t, "count": c} for t, c in tags.most_common(top)],
-        "entity_types": dict(etypes),
-    }
 
 
 # ---------------------------------------------------------------------------
@@ -145,20 +91,56 @@ class EntityConfig:
 # ---------------------------------------------------------------------------
 
 class DevSession:
-    """Returned by ``EnzymeHosted.dev()`` — explore inline data with no setup."""
+    """Returned by ``EnzymeHosted.dev()`` — explore inline data with no setup.
+
+    Creates a temporary enzyme vault, ingests the entries, and runs the full
+    pipeline so search and overview work immediately.
+    """
 
     def __init__(self, entity: str, entries: list[dict[str, Any]]) -> None:
+        import hashlib
+        from enzyme_sdk.client import EnzymeClient
+        from enzyme_sdk.store import VaultStore
+
         self.entity = entity
-        self._entries = [dict(e, entity=entity) for e in entries]
+        self._entries = entries
+        self._ec = EnzymeClient()
+        self._store = VaultStore()
 
-    def search(self, query: str, limit: int = 10) -> list[dict[str, Any]]:
-        return _search_entries(self._entries, query, limit)
+        # Deterministic collection ID so repeated calls reuse the vault
+        content_hash = hashlib.md5(str(entries).encode()).hexdigest()[:8]
+        self._collection_id = f"_dev-{entity}-{content_hash}"
+        vault_path = self._store.vault_path(self._collection_id)
 
-    def overview(self) -> dict[str, Any]:
-        return _build_overview(self._entries)
+        # Build vault if needed
+        try:
+            st = self._ec.status(vault=str(vault_path))
+            if st.catalysts > 0 and st.documents == len(entries):
+                self._vault = str(vault_path)
+                return
+        except Exception:
+            pass
+
+        self._store.create_vault(self._collection_id)
+        self._vault = str(vault_path)
+        self._ec.ingest(vault=self._vault, entries=entries)
+        self._ec.init(vault=self._vault, quiet=True)
+
+    def search(self, query: str, limit: int = 10) -> Any:
+        return self._ec.catalyze(query, vault=self._vault, limit=limit)
+
+    def overview(self, top: int = 10) -> Any:
+        return self._ec.petri(vault=self._vault, top=top)
 
     def status(self) -> dict[str, Any]:
-        return {"entity": self.entity, "entry_count": len(self._entries), "mode": "dev"}
+        st = self._ec.status(vault=self._vault)
+        return {
+            "entity": self.entity,
+            "documents": st.documents,
+            "catalysts": st.catalysts,
+            "entities": st.entities,
+            "mode": "dev",
+        }
 
     def __repr__(self) -> str:
         return f"<DevSession entity={self.entity!r} entries={len(self._entries)}>"
@@ -206,7 +188,18 @@ class EnzymeHosted:
         self._store: Any = None
         self._collections_base: Path | None = None
 
+        # Isolate SDK dev environment from user's ~/.enzyme
+        self._ensure_enzyme_home()
+
     # -- enzyme pipeline (lazy) --------------------------------------------
+
+    @staticmethod
+    def _ensure_enzyme_home():
+        """Set ENZYME_HOME so SDK dev vaults don't pollute ~/.enzyme/config.toml."""
+        if "ENZYME_HOME" not in os.environ:
+            sdk_home = Path.home() / ".enzyme-sdk" / ".enzyme"
+            sdk_home.mkdir(parents=True, exist_ok=True)
+            os.environ["ENZYME_HOME"] = str(sdk_home)
 
     def _get_enzyme_client(self):
         if self._enzyme_client is None:
@@ -220,10 +213,6 @@ class EnzymeHosted:
             self._store = VaultStore()
             self._collections_base = Path(self._store.base_path)
         return self._store
-
-    def _use_pipeline(self) -> bool:
-        """True if the enzyme binary is available for full catalyze/petri."""
-        return shutil.which("enzyme") is not None or Path.home().joinpath(".local/bin/enzyme").exists()
 
     # -- registration (called by decorators) --------------------------------
 
@@ -248,16 +237,15 @@ class EnzymeHosted:
         enriched = dict(entry, entity=entity)
         self._user_stores.setdefault(user_id, []).append(enriched)
 
-        # Also ingest into the real enzyme pipeline if available
-        if self._use_pipeline() and self._collections_base:
-            try:
-                collection_id = self._user_collection_id(user_id)
-                store = self._get_store()
-                if store.vault_exists(collection_id):
-                    vault_path = str(store.vault_path(collection_id))
-                    self._get_enzyme_client().ingest(vault=vault_path, entry=entry)
-            except Exception as exc:
-                log.debug("incremental ingest failed: %s", exc)
+        # Ingest into the enzyme DB (fast, no embedding yet — refresh debounces)
+        try:
+            collection_id = self._user_collection_id(user_id)
+            store = self._get_store()
+            if store.vault_exists(collection_id):
+                vault_path = str(store.vault_path(collection_id))
+                self._get_enzyme_client().ingest(vault=vault_path, entry=entry)
+        except Exception as exc:
+            log.debug("incremental ingest failed: %s", exc)
 
     # -- user lifecycle -----------------------------------------------------
 
@@ -283,24 +271,16 @@ class EnzymeHosted:
                 for entry in entries:
                     store.append(dict(entry, entity=entity))
 
-        # Run full enzyme pipeline if binary is available
-        pipeline_ran = False
-        if self._use_pipeline() and store:
+        # Run enzyme pipeline: ingest → init/refresh
+        if store:
             log.info("indexing %s (%d entries)…", user_id, len(store))
-            try:
-                pipeline_ran = self._run_pipeline(user_id, store)
-                log.info("indexed %s ✓", user_id)
-            except Exception as exc:
-                log.warning("enzyme pipeline failed for %s, using keyword fallback: %s", user_id, exc)
+            self._run_pipeline(user_id, store)
+            log.info("indexed %s ✓", user_id)
 
-        return {
-            "user_id": user_id,
-            "entries": len(store),
-            "pipeline": "enzyme" if pipeline_ran else "keyword",
-        }
+        return {"user_id": user_id, "entries": len(store)}
 
     def _run_pipeline(self, user_id: str, entries: list[dict[str, Any]]) -> bool:
-        """Run enzyme ingest → init for a user. Returns True on success."""
+        """Run cluster → ingest → init/refresh for a user. Returns True on success."""
         ec = self._get_enzyme_client()
         store = self._get_store()
         collection_id = self._user_collection_id(user_id)
@@ -311,14 +291,39 @@ class EnzymeHosted:
 
         vault_path = str(store.vault_path(collection_id))
 
-        # Ingest all entries
+        # Strip the "entity" field added by connect_user
         clean_entries = [
             {k: v for k, v in e.items() if k != "entity"} for e in entries
         ]
+
+        # Auto-cluster entries to assign tags (unsupervised label discovery).
+        # Tags become entities in the enzyme index, which drive catalyst generation.
+        if len(clean_entries) >= 3:
+            try:
+                assigned = ec.cluster_entries(
+                    clean_entries,
+                    text=lambda e: f"{e.get('title', '')}\n\n{e.get('content', '')}",
+                )
+                clean_entries = assigned.entries
+                log.info("clustered %d entries → %d clusters",
+                         len(clean_entries), len(assigned.clusters))
+            except Exception as exc:
+                log.warning("clustering failed, ingesting without tags: %s", exc)
+
+        # Ingest into the enzyme DB
         ec.ingest(vault=vault_path, entries=clean_entries)
 
-        # Run full indexing pipeline (embed → cluster → catalyze)
-        ec.init(vault=vault_path, quiet=True)
+        # If the vault already has catalysts, refresh (fast — only processes new entries).
+        # Otherwise, run full init (embed + select entities + generate catalysts).
+        try:
+            st = ec.status(vault=vault_path)
+            if st.catalysts > 0:
+                log.info("refreshing %s (existing index: %d catalysts)", user_id, st.catalysts)
+                ec.refresh(vault=vault_path, quiet=True)
+            else:
+                ec.init(vault=vault_path, quiet=True)
+        except Exception:
+            ec.init(vault=vault_path, quiet=True)
         return True
 
     def disconnect_user(self, user_id: str) -> None:
@@ -334,54 +339,26 @@ class EnzymeHosted:
     # -- query --------------------------------------------------------------
 
     def search(self, user_id: str, query: str, limit: int = 10) -> Any:
-        """Search a user's indexed data.
-
-        Uses the full enzyme catalyze pipeline if available, otherwise falls
-        back to keyword search.
-        """
+        """Search a user's indexed data via enzyme catalyze."""
         if not self.is_connected(user_id):
             raise RuntimeError(f"User {user_id!r} is not connected. Call connect_user() first.")
 
-        # Try the real enzyme pipeline first
-        if self._use_pipeline():
-            try:
-                ec = self._get_enzyme_client()
-                collection_id = self._user_collection_id(user_id)
-                store = self._get_store()
-                if store.vault_exists(collection_id):
-                    vault_path = str(store.vault_path(collection_id))
-                    result = ec.catalyze(query, vault=vault_path, limit=limit)
-                    if result.results:
-                        return result
-            except Exception as exc:
-                log.debug("catalyze failed, falling back to keyword search: %s", exc)
-
-        entries = self._user_stores.get(user_id, [])
-        return _search_entries(entries, query, limit)
+        ec = self._get_enzyme_client()
+        collection_id = self._user_collection_id(user_id)
+        store = self._get_store()
+        vault_path = str(store.vault_path(collection_id))
+        return ec.catalyze(query, vault=vault_path, limit=limit)
 
     def overview(self, user_id: str, top: int = 10) -> Any:
-        """Get the structural overview of a user's data.
-
-        Uses petri (entity explorer) if the enzyme pipeline is available.
-        """
+        """Get the structural overview of a user's data via enzyme petri."""
         if not self.is_connected(user_id):
             raise RuntimeError(f"User {user_id!r} is not connected. Call connect_user() first.")
 
-        if self._use_pipeline():
-            try:
-                ec = self._get_enzyme_client()
-                collection_id = self._user_collection_id(user_id)
-                store = self._get_store()
-                if store.vault_exists(collection_id):
-                    vault_path = str(store.vault_path(collection_id))
-                    result = ec.petri(vault=vault_path, top=top)
-                    if result.entities:
-                        return result
-            except Exception as exc:
-                log.debug("petri failed, falling back to overview: %s", exc)
-
-        entries = self._user_stores.get(user_id, [])
-        return _build_overview(entries, top)
+        ec = self._get_enzyme_client()
+        collection_id = self._user_collection_id(user_id)
+        store = self._get_store()
+        vault_path = str(store.vault_path(collection_id))
+        return ec.petri(vault=vault_path, top=top)
 
     # -- dev mode -----------------------------------------------------------
 
@@ -491,7 +468,7 @@ class EnzymeHosted:
                 "app": self.display_name,
                 "entities": list(self._entities.keys()),
                 "connected_users": len(self._connected_users),
-                "pipeline": "enzyme" if self._use_pipeline() else "keyword",
+                "pipeline": "enzyme",
             }
 
         async def _handler(request) -> JSONResponse:
@@ -587,7 +564,7 @@ class EnzymeHosted:
         self,
         port: int = 9460,
         *,
-        users: list[str] | None = None,
+        init_users: list[str] | None = None,
         ngrok: bool = False,
         ngrok_domain: str | None = None,
     ) -> None:
@@ -595,7 +572,7 @@ class EnzymeHosted:
 
         Args:
             port: Local port.
-            users: Whitelist of user IDs. If set, connects them automatically.
+            init_users: User IDs to hydrate + index on startup. Whitelisted for queries.
             ngrok: If True, expose via ngrok tunnel for testing with Claude.
             ngrok_domain: Custom ngrok domain (requires paid plan).
         """
@@ -606,11 +583,11 @@ class EnzymeHosted:
         )
         log.setLevel(logging.INFO)
 
-        if users:
-            for uid in users:
+        if init_users:
+            for uid in init_users:
                 self.connect_user(uid)
 
-        mcp_app = self.as_mcp_app(whitelist=users)
+        mcp_app = self.as_mcp_app(whitelist=init_users)
         url = f"http://localhost:{port}"
 
         print()
@@ -629,13 +606,13 @@ class EnzymeHosted:
                 print(f"    URL: {tunnel_url}/mcp")
 
         print()
-        if users:
-            for uid in users:
+        if init_users:
+            for uid in init_users:
                 count = len(self._user_stores.get(uid, []))
                 print(f"  {uid}: {count} entries")
         print()
 
-        pipeline = "enzyme catalyze" if self._use_pipeline() else "keyword (install enzyme for full pipeline)"
+        pipeline = "enzyme catalyze"
         print(f"  Search:   {pipeline}")
         print(f"  Entities: {list(self._entities.keys())}")
 
@@ -649,8 +626,8 @@ class EnzymeHosted:
 
         base = tunnel_url or url
         user_header = ""
-        if users:
-            user_header = f'\n    -H "X-Enzyme-User: {users[0]}" \\'
+        if init_users:
+            user_header = f'\n    -H "X-Enzyme-User: {init_users[0]}" \\'
 
         print(f"  # Health")
         print(f"  curl {base}/health")

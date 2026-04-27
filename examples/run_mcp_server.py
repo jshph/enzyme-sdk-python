@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
     client.serve(
         port=args.port,
-        users=sorted(entries_by_user.keys()),
+        init_users=sorted(entries_by_user.keys()),
         ngrok=args.ngrok,
         ngrok_domain=args.ngrok_domain,
     )
