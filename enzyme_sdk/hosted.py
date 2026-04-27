@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 
-DEFAULT_BASE_URL = "https://search.enzyme.garden"
+DEFAULT_BASE_URL = "https://app.enzyme.garden"
 
 
 @dataclass

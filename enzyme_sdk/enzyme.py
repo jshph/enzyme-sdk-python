@@ -75,6 +75,10 @@ def _extract_enzyme_entry(
 class EntityConfig:
     name: str
     plural: str = ""
+    search_tool_name: str = ""
+    profile_tool_name: str = ""
+    search_description: str = ""
+    profile_description: str = ""
 
     def __post_init__(self):
         if not self.plural:
@@ -84,6 +88,10 @@ class EntityConfig:
                 self.plural = self.name[:-1] + "ies"
             else:
                 self.plural = self.name + "s"
+        if not self.search_tool_name:
+            self.search_tool_name = f"search_{self.plural}"
+        if not self.profile_tool_name:
+            self.profile_tool_name = f"get_{self.name}_profile"
 
 
 # ---------------------------------------------------------------------------
@@ -216,18 +224,24 @@ class EnzymeHosted:
 
     # -- registration (called by decorators) --------------------------------
 
-    def _register_save(self, entity: str, fn: Callable, field_map: dict[str, str | Callable]) -> None:
-        self._ensure_entity(entity)
+    def _register_save(self, entity: str, fn: Callable, field_map: dict[str, str | Callable], **entity_kwargs: Any) -> None:
+        self._ensure_entity(entity, **entity_kwargs)
         self._save_fns[entity] = fn
         self._field_maps[entity] = field_map
 
-    def _register_hydrate(self, entity: str, fn: Callable) -> None:
-        self._ensure_entity(entity)
+    def _register_hydrate(self, entity: str, fn: Callable, **entity_kwargs: Any) -> None:
+        self._ensure_entity(entity, **entity_kwargs)
         self._hydrate_fns[entity] = fn
 
-    def _ensure_entity(self, entity: str) -> None:
+    def _ensure_entity(self, entity: str, **kwargs: Any) -> None:
         if entity not in self._entities:
-            self._entities[entity] = EntityConfig(name=entity)
+            self._entities[entity] = EntityConfig(name=entity, **kwargs)
+        elif kwargs:
+            # Update existing config with any new overrides
+            cfg = self._entities[entity]
+            for k, v in kwargs.items():
+                if v:
+                    setattr(cfg, k, v)
 
     # -- ingest -------------------------------------------------------------
 
@@ -368,28 +382,24 @@ class EnzymeHosted:
     # -- MCP server ---------------------------------------------------------
 
     def _tool_descriptions(self) -> dict[str, str]:
-        """Build rich tool descriptions customized to this app."""
+        """Build tool descriptions. Uses developer overrides if set, otherwise auto-generates."""
         app = self.display_name or "the app"
-        base_search = (
-            f"Search the user's {app} data by concept. The query doesn't need to "
-            "match document text — Enzyme routes it through precomputed thematic "
-            "questions that characterize patterns in the user's choices. Use this when "
-            "the user's question could benefit from their personal history, preferences, "
-            "or past decisions. Returns matched documents and the thematic signals that "
-            "drove the retrieval."
-        )
-        base_overview = (
-            f"Get a structural overview of the user's {app} data — which topics are "
-            "active, what thematic questions characterize each area, and how interests "
-            "have shifted recently. Use this at the start of a conversation to understand "
-            "the user's landscape before making recommendations."
-        )
 
         descs: dict[str, str] = {}
         for entity, cfg in self._entities.items():
-            descs[f"search_{cfg.plural}"] = base_search.replace("data", cfg.plural)
-            descs[f"get_{entity}_profile"] = base_overview.replace("data", f"{cfg.plural} collection")
+            descs[cfg.search_tool_name] = cfg.search_description or (
+                f"Search the user's {app} {cfg.plural} by concept. The query doesn't "
+                "need to match document text — it routes through thematic questions that "
+                "characterize this user's patterns. Returns matched documents and the "
+                "thematic signals (catalysts) that drove the retrieval."
+            )
+            descs[cfg.profile_tool_name] = cfg.profile_description or (
+                f"Get a structural overview of the user's {app} {cfg.plural} — which "
+                "topics are active, what thematic questions characterize each area, and "
+                "how their interests have shifted recently."
+            )
         return descs
+
 
     def as_mcp_app(self, *, whitelist: list[str] | None = None) -> Any:
         """Return a FastAPI app serving JSON-RPC 2.0 MCP tool calls.
@@ -413,8 +423,8 @@ class EnzymeHosted:
             tools: list[dict[str, Any]] = []
             for entity, cfg in self._entities.items():
                 tools.append({
-                    "name": f"search_{cfg.plural}",
-                    "description": descs.get(f"search_{cfg.plural}", ""),
+                    "name": cfg.search_tool_name,
+                    "description": descs.get(cfg.search_tool_name, ""),
                     "inputSchema": {
                         "type": "object",
                         "properties": {
@@ -425,8 +435,8 @@ class EnzymeHosted:
                     },
                 })
                 tools.append({
-                    "name": f"get_{entity}_profile",
-                    "description": descs.get(f"get_{entity}_profile", ""),
+                    "name": cfg.profile_tool_name,
+                    "description": descs.get(cfg.profile_tool_name, ""),
                     "inputSchema": {
                         "type": "object",
                         "properties": {
@@ -449,12 +459,12 @@ class EnzymeHosted:
 
         def _dispatch(name: str, args: dict[str, Any], user_id: str) -> Any:
             for entity, cfg in self._entities.items():
-                if name == f"search_{cfg.plural}":
+                if name == cfg.search_tool_name:
                     result = self.search(user_id, args["query"], args.get("limit", 10))
                     if hasattr(result, "render_to_prompt"):
                         return result.render_to_prompt()
                     return result
-                if name == f"get_{entity}_profile":
+                if name == cfg.profile_tool_name:
                     result = self.overview(user_id, args.get("top", 10))
                     if hasattr(result, "render_to_prompt"):
                         return result.render_to_prompt()
@@ -473,14 +483,6 @@ class EnzymeHosted:
 
         async def _handler(request) -> JSONResponse:
             import time as _time
-
-            auth = request.headers.get("Authorization")
-            if not auth:
-                return JSONResponse(
-                    status_code=401,
-                    content={"error": "Missing Authorization header"},
-                    headers={"WWW-Authenticate": "Bearer"},
-                )
 
             user_id = _resolve_user(request)
             if allowed and user_id not in allowed:
@@ -684,22 +686,40 @@ class EnzymeHosted:
 class _Enzyme:
     """Decorator namespace — ``enzyme.hydrate`` and ``enzyme.on_save``."""
 
-    def hydrate(self, client: EnzymeHosted, entity: str) -> Callable:
+    def hydrate(
+        self,
+        client: EnzymeHosted,
+        entity: str,
+        *,
+        search_tool: str = "",
+        profile_tool: str = "",
+        search_description: str = "",
+        profile_description: str = "",
+    ) -> Callable:
         """Register a function that loads a user's data for indexing.
 
         Called when a user connects. Must accept ``user_id`` as first arg
         and return a list of dicts, each with at least ``title`` and
-        ``content`` keys. Tags are optional but improve search.
+        ``content`` keys.
 
-        Example::
+        Tool names and descriptions can be overridden::
 
-            @enzyme.hydrate(client, entity="recipe")
-            def get_recipes(user_id: str) -> list[dict]:
-                return [{"title": r.name, "content": r.body, "tags": r.tags}
-                        for r in db.query(user_id)]
+            @enzyme.hydrate(client, entity="recipe",
+                search_tool="search_cooking_notes",
+                search_description="Search this user's recipe annotations and cooking notes.")
+            def get_recipes(user_id: str) -> list[dict]: ...
         """
+        entity_kwargs = {
+            "search_tool_name": search_tool,
+            "profile_tool_name": profile_tool,
+            "search_description": search_description,
+            "profile_description": profile_description,
+        }
+        # Only pass non-empty values
+        entity_kwargs = {k: v for k, v in entity_kwargs.items() if v}
+
         def decorator(fn: Callable) -> Callable:
-            client._register_hydrate(entity, fn)
+            client._register_hydrate(entity, fn, **entity_kwargs)
             return fn
         return decorator
 

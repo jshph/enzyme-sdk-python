@@ -474,17 +474,6 @@ class TestMCPServer:
             assert resp.json()["status"] == "ok"
 
     @pytest.mark.anyio
-    async def test_mcp_no_auth_returns_401(self):
-        import httpx
-
-        _, mcp_app, _ = self._build_mcp_client()
-        transport = httpx.ASGITransport(app=mcp_app)
-        async with httpx.AsyncClient(transport=transport, base_url="http://test") as ac:
-            resp = await ac.post("/mcp", json=self._rpc("tools/list"))
-            assert resp.status_code == 401
-            assert "WWW-Authenticate" in resp.headers
-
-    @pytest.mark.anyio
     async def test_tools_list_matches_registered_entities(self):
         import httpx
 

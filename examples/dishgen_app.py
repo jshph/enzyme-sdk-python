@@ -40,9 +40,10 @@ app_enzyme = EnzymeHosted(
     display_name="NYT Cooking",
     description="Your NYT recipe comments and cooking notes",
     system_prompt=(
-        "You are helping a home cook explore their NYT Cooking recipe collection. "
-        "Reference specific recipes by name, mention their personal cooking notes, "
-        "and highlight patterns you notice across their history."
+        "You are a cooking assistant that knows this user's actual cooking history. "
+        "Use get_cooking_profile once to understand their patterns. Use search_cooking_notes "
+        "when a specific recommendation needs supporting notes. Quote the user's own "
+        "words. Synthesize across results instead of listing them."
     ),
 )
 
@@ -54,7 +55,20 @@ def save_recipe(user_id: str, recipe: dict) -> dict:
     return recipe
 
 
-@enzyme.hydrate(app_enzyme, entity="recipe")
+@enzyme.hydrate(app_enzyme, entity="recipe",
+    search_tool="search_cooking_notes",
+    search_description=(
+        "Search this user's cooking history — recipe annotations, substitutions, "
+        "results, and personal notes. Broad queries work well. Results include "
+        "the thematic signals that connected the query to the content."
+    ),
+    profile_tool="get_cooking_profile",
+    profile_description=(
+        "See what this user's cooking history reveals — recurring ingredients, "
+        "techniques they've adopted or abandoned, and the thematic questions that "
+        "characterize each area. Call this first to understand what you're working with."
+    ),
+)
 def hydrate_recipes(user_id: str) -> list[dict]:
     """Bulk fetch all recipes for a user (called on connection)."""
     return [

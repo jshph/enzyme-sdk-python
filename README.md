@@ -167,3 +167,34 @@ Try a different user to see how the same prompt produces completely different ou
 python examples/prepare_nyt_data.py dimmerswitch
 ENZYME_TEST_USER=dimmerswitch python examples/agent_test.py
 ```
+
+## Serve as an MCP connector
+
+Ship a Claude connector for your app without building MCP infrastructure. Two decorators define the data contract — enzyme handles clustering, catalyst generation, and MCP serving. Claude gets the same catalyst-routed search shown above — "vegetarian dinner for friends" finds the miso-for-butter pattern, not just recipes tagged vegetarian.
+
+```python
+from enzyme_sdk import EnzymeHosted, enzyme
+
+client = EnzymeHosted(display_name="NYT Cooking")
+
+@enzyme.hydrate(client, entity="recipe")
+def get_recipes(user_id: str) -> list[dict]:
+    return [{"title": r.name, "content": r.body} for r in db.query(user_id)]
+
+@enzyme.on_save(client, entity="recipe",
+    title="title", content="instructions", tags="tags")
+def create_recipe(user_id, data):
+    return db.insert(data)  # return value unchanged
+
+client.serve(port=9460, init_users=["user-1", "user-2"])
+```
+
+`serve()` hydrates each user's data, auto-clusters it, builds the catalyst index, and starts a JSON-RPC 2.0 MCP server. Pass `--ngrok` to expose it for Claude:
+
+```bash
+python examples/run_mcp_server.py --ngrok
+```
+
+`examples/dishgen_app.py` shows mounting MCP alongside a CRUD API on the same FastAPI server.
+
+API keys: sign in at [enzyme.garden](https://enzyme.garden/login), create a key at `/settings`, set `ENZYME_API_KEY`. Catalyst generation uses a free-tier LLM — no OpenAI key needed.

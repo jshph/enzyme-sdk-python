@@ -26,12 +26,28 @@ client = EnzymeHosted(
     display_name="NYT Cooking",
     description="Real NYT recipe comments and cooking notes",
     system_prompt=(
-        "You are helping a home cook explore their NYT Cooking recipe history. "
-        "Reference specific recipes by name and highlight cooking patterns."
+        "You are a cooking assistant that knows this user's actual cooking history. "
+        "Use get_cooking_profile once to understand their patterns. Use search_cooking_notes "
+        "when a specific recommendation needs supporting notes. Quote the user's own "
+        "words. Synthesize across results instead of listing them."
     ),
 )
 
-@enzyme.hydrate(client, entity="recipe")
+@enzyme.hydrate(client, entity="recipe",
+    search_tool="search_cooking_notes",
+    search_description=(
+        "Search this user's cooking history — recipe annotations, substitutions, "
+        "results, and personal notes built over years of cooking. Broad queries "
+        "work well. Results include the thematic signals that connected the query "
+        "to the content."
+    ),
+    profile_tool="get_cooking_profile",
+    profile_description=(
+        "See what this user's cooking history reveals — recurring ingredients, "
+        "techniques they've adopted or abandoned, and the thematic questions that "
+        "characterize each area. Call this first to understand what you're working with."
+    ),
+)
 def hydrate_recipes(user_id: str) -> list[dict]:
     return [
         {"title": e["title"], "content": e.get("content", "") + "\n\n" + e.get("notes", ""), "tags": e.get("tags", [])}
