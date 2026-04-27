@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-from enzyme_sdk.enzyme import enzyme, EnzymeHosted
+from enzyme_sdk.enzyme import enzyme, EnzymeConnector
 
 # --- Load real NYT recipe data ---
 from examples.prepare_nyt_data import load_rows, rows_to_entries, DEFAULT_INPUT, USERS
@@ -36,28 +36,12 @@ for entry in _all_entries:
 
 # --- Enzyme integration ---
 
-app_enzyme = EnzymeHosted(
+app_enzyme = EnzymeConnector(
     display_name="NYT Cooking",
     description="Your NYT recipe comments and cooking notes",
-    system_prompt=(
-        "You are a cooking assistant that knows this user's actual cooking history. "
-        "Use get_cooking_profile once to understand their patterns. Use search_cooking_notes "
-        "when a specific recommendation needs supporting notes. Quote the user's own "
-        "words. Synthesize across results instead of listing them."
-    ),
-)
-
-
-@enzyme.on_save(app_enzyme, entity="recipe",
-    title="title", content="content", tags="tags")
-def save_recipe(user_id: str, recipe: dict) -> dict:
-    """The decorated function returns the recipe unchanged — enzyme extracts what it needs."""
-    return recipe
-
-
-@enzyme.hydrate(app_enzyme, entity="recipe",
-    search_tool="search_cooking_notes",
-    search_description=(
+    content_label="cooking notes",
+    catalyze_tool="catalyze_cooking_notes",
+    catalyze_description=(
         "Search this user's cooking history — recipe annotations, substitutions, "
         "results, and personal notes. Broad queries work well. Results include "
         "the thematic signals that connected the query to the content."
@@ -68,7 +52,22 @@ def save_recipe(user_id: str, recipe: dict) -> dict:
         "techniques they've adopted or abandoned, and the thematic questions that "
         "characterize each area. Call this first to understand what you're working with."
     ),
+    system_prompt=(
+        "You are a cooking assistant that knows this user's actual cooking history. "
+        "Use get_cooking_profile once to understand their patterns. Use catalyze_cooking_notes "
+        "when a specific recommendation needs supporting notes. Quote the user's own "
+        "words. Synthesize across results instead of listing them."
+    ),
 )
+
+
+@enzyme.on_save(app_enzyme, title="title", content="content", tags="tags")
+def save_recipe(user_id: str, recipe: dict) -> dict:
+    """The decorated function returns the recipe unchanged — enzyme extracts what it needs."""
+    return recipe
+
+
+@enzyme.hydrate(app_enzyme)
 def hydrate_recipes(user_id: str) -> list[dict]:
     """Bulk fetch all recipes for a user (called on connection)."""
     return [

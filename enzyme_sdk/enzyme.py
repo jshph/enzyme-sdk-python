@@ -1,4 +1,4 @@
-"""Decorator-based hosted integration for Enzyme.
+"""Decorator-based connector integration for Enzyme.
 
 Decorate your existing save/fetch functions. Enzyme turns them into a Claude
 connector — with user isolation and catalyst-based personalization.
@@ -8,16 +8,15 @@ Quick start::
 
     export ENZYME_API_KEY=enz_...   # from enzyme.garden/settings
 
-    from enzyme_sdk import EnzymeHosted, enzyme
+    from enzyme_sdk import EnzymeConnector, enzyme
 
-    client = EnzymeHosted(display_name="DishGen")
+    client = EnzymeConnector(display_name="DishGen")
 
-    @enzyme.hydrate(client, entity="recipe")
+    @enzyme.hydrate(client)
     def get_recipes(user_id: str) -> list[dict]:
         return db.get_recipes(owner=user_id)
 
-    @enzyme.on_save(client, entity="recipe",
-        title="title", content="instructions", tags="tags")
+    @enzyme.on_save(client, title="title", content="instructions", tags="tags")
     def create_recipe(user_id, data):
         return db.insert(data)          # return value unchanged
 
@@ -31,12 +30,17 @@ import functools
 import json
 import logging
 import os
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
-log = logging.getLogger("enzyme.hosted")
+log = logging.getLogger("enzyme.connector")
 
+
+def _tool_slug(value: str) -> str:
+    slug = re.sub(r"[^a-zA-Z0-9]+", "_", value.strip().lower()).strip("_")
+    return slug or "content"
 
 
 
@@ -68,16 +72,16 @@ def _extract_enzyme_entry(
 
 
 # ---------------------------------------------------------------------------
-# EntityConfig
+# CorpusConfig
 # ---------------------------------------------------------------------------
 
 @dataclass
-class EntityConfig:
-    name: str
+class CorpusConfig:
+    name: str = "content"
     plural: str = ""
-    search_tool_name: str = ""
+    catalyze_tool_name: str = ""
     profile_tool_name: str = ""
-    search_description: str = ""
+    catalyze_description: str = ""
     profile_description: str = ""
 
     def __post_init__(self):
@@ -88,10 +92,10 @@ class EntityConfig:
                 self.plural = self.name[:-1] + "ies"
             else:
                 self.plural = self.name + "s"
-        if not self.search_tool_name:
-            self.search_tool_name = f"search_{self.plural}"
+        if not self.catalyze_tool_name:
+            self.catalyze_tool_name = f"catalyze_{_tool_slug(self.plural)}"
         if not self.profile_tool_name:
-            self.profile_tool_name = f"get_{self.name}_profile"
+            self.profile_tool_name = f"get_{_tool_slug(self.name)}_profile"
 
 
 # ---------------------------------------------------------------------------
@@ -99,7 +103,7 @@ class EntityConfig:
 # ---------------------------------------------------------------------------
 
 class DevSession:
-    """Returned by ``EnzymeHosted.dev()`` — explore inline data with no setup.
+    """Returned by ``EnzymeConnector.dev()`` — explore inline data with no setup.
 
     Creates a temporary enzyme vault, ingests the entries, and runs the full
     pipeline so search and overview work immediately.
@@ -155,11 +159,11 @@ class DevSession:
 
 
 # ---------------------------------------------------------------------------
-# EnzymeHosted
+# EnzymeConnector
 # ---------------------------------------------------------------------------
 
-class EnzymeHosted:
-    """Connect your app to Enzyme Hosted.
+class EnzymeConnector:
+    """Connect your app data to Enzyme's MCP-facing integration layer.
 
     Get your API key:
         1. enzyme.garden/login  (GitHub or Google)
@@ -174,18 +178,34 @@ class EnzymeHosted:
         description: str = "",
         logo_url: str = "",
         system_prompt: str = "",
+        content_label: str = "content",
+        catalyze_tool: str = "",
+        profile_tool: str = "",
+        catalyze_description: str = "",
+        profile_description: str = "",
     ) -> None:
         self.api_key = api_key or os.environ.get("ENZYME_API_KEY", "")
         self.display_name = display_name
         self.description = description
         self.logo_url = logo_url
         self.system_prompt = system_prompt
+        self.content_label = content_label
 
         # Registry
-        self._entities: dict[str, EntityConfig] = {}
+        self._corpora: dict[str, CorpusConfig] = {}
         self._save_fns: dict[str, Callable] = {}
         self._hydrate_fns: dict[str, Callable] = {}
         self._field_maps: dict[str, dict[str, str | Callable]] = {}
+        self._default_corpus = "_default"
+        self._ensure_corpus(
+            self._default_corpus,
+            name=content_label,
+            plural=content_label,
+            catalyze_tool_name=catalyze_tool,
+            profile_tool_name=profile_tool,
+            catalyze_description=catalyze_description,
+            profile_description=profile_description,
+        )
 
         # Per-user state
         self._connected_users: set[str] = set()
@@ -224,32 +244,33 @@ class EnzymeHosted:
 
     # -- registration (called by decorators) --------------------------------
 
-    def _register_save(self, entity: str, fn: Callable, field_map: dict[str, str | Callable], **entity_kwargs: Any) -> None:
-        self._ensure_entity(entity, **entity_kwargs)
-        self._save_fns[entity] = fn
-        self._field_maps[entity] = field_map
+    def _register_save(self, fn: Callable, field_map: dict[str, str | Callable]) -> None:
+        corpus = self._default_corpus
+        self._ensure_corpus(corpus)
+        self._save_fns[corpus] = fn
+        self._field_maps[corpus] = field_map
 
-    def _register_hydrate(self, entity: str, fn: Callable, **entity_kwargs: Any) -> None:
-        self._ensure_entity(entity, **entity_kwargs)
-        self._hydrate_fns[entity] = fn
+    def _register_hydrate(self, fn: Callable) -> None:
+        corpus = self._default_corpus
+        self._ensure_corpus(corpus)
+        self._hydrate_fns[corpus] = fn
 
-    def _ensure_entity(self, entity: str, **kwargs: Any) -> None:
-        if entity not in self._entities:
-            self._entities[entity] = EntityConfig(name=entity, **kwargs)
+    def _ensure_corpus(self, corpus: str, **kwargs: Any) -> None:
+        if corpus not in self._corpora:
+            self._corpora[corpus] = CorpusConfig(**({"name": corpus} | kwargs))
         elif kwargs:
             # Update existing config with any new overrides
-            cfg = self._entities[entity]
+            cfg = self._corpora[corpus]
             for k, v in kwargs.items():
                 if v:
                     setattr(cfg, k, v)
 
     # -- ingest -------------------------------------------------------------
 
-    def _queue_ingest(self, user_id: str, entity: str, entry: dict[str, Any]) -> None:
+    def _queue_ingest(self, user_id: str, entry: dict[str, Any]) -> None:
         if user_id not in self._connected_users:
             return
-        enriched = dict(entry, entity=entity)
-        self._user_stores.setdefault(user_id, []).append(enriched)
+        self._user_stores.setdefault(user_id, []).append(dict(entry))
 
         # Ingest into the enzyme DB (fast, no embedding yet — refresh debounces)
         try:
@@ -279,11 +300,11 @@ class EnzymeHosted:
         store: list[dict[str, Any]] = []
         self._user_stores[user_id] = store
 
-        for entity, hydrate_fn in self._hydrate_fns.items():
+        for hydrate_fn in self._hydrate_fns.values():
             entries = hydrate_fn(user_id)
             if entries:
                 for entry in entries:
-                    store.append(dict(entry, entity=entity))
+                    store.append(dict(entry))
 
         # Run enzyme pipeline: ingest → init/refresh
         if store:
@@ -305,10 +326,7 @@ class EnzymeHosted:
 
         vault_path = str(store.vault_path(collection_id))
 
-        # Strip the "entity" field added by connect_user
-        clean_entries = [
-            {k: v for k, v in e.items() if k != "entity"} for e in entries
-        ]
+        clean_entries = list(entries)
 
         # Auto-cluster entries to assign tags (unsupervised label discovery).
         # Tags become entities in the enzyme index, which drive catalyst generation.
@@ -386,8 +404,8 @@ class EnzymeHosted:
         app = self.display_name or "the app"
 
         descs: dict[str, str] = {}
-        for entity, cfg in self._entities.items():
-            descs[cfg.search_tool_name] = cfg.search_description or (
+        for cfg in self._corpora.values():
+            descs[cfg.catalyze_tool_name] = cfg.catalyze_description or (
                 f"Search the user's {app} {cfg.plural} by concept. The query doesn't "
                 "need to match document text — it routes through thematic questions that "
                 "characterize this user's patterns. Returns matched documents and the "
@@ -421,10 +439,10 @@ class EnzymeHosted:
 
         def _build_tools() -> list[dict[str, Any]]:
             tools: list[dict[str, Any]] = []
-            for entity, cfg in self._entities.items():
+            for cfg in self._corpora.values():
                 tools.append({
-                    "name": cfg.search_tool_name,
-                    "description": descs.get(cfg.search_tool_name, ""),
+                    "name": cfg.catalyze_tool_name,
+                    "description": descs.get(cfg.catalyze_tool_name, ""),
                     "inputSchema": {
                         "type": "object",
                         "properties": {
@@ -458,8 +476,8 @@ class EnzymeHosted:
             return None
 
         def _dispatch(name: str, args: dict[str, Any], user_id: str) -> Any:
-            for entity, cfg in self._entities.items():
-                if name == cfg.search_tool_name:
+            for cfg in self._corpora.values():
+                if name == cfg.catalyze_tool_name:
                     result = self.search(user_id, args["query"], args.get("limit", 10))
                     if hasattr(result, "render_to_prompt"):
                         return result.render_to_prompt()
@@ -476,7 +494,7 @@ class EnzymeHosted:
             return {
                 "status": "ok",
                 "app": self.display_name,
-                "entities": list(self._entities.keys()),
+                "content_label": self.content_label,
                 "connected_users": len(self._connected_users),
                 "pipeline": "enzyme",
             }
@@ -616,7 +634,7 @@ class EnzymeHosted:
 
         pipeline = "enzyme catalyze"
         print(f"  Search:   {pipeline}")
-        print(f"  Entities: {list(self._entities.keys())}")
+        print(f"  Content:  {self.content_label}")
 
         if self.system_prompt:
             print(f"  Prompt:   {self.system_prompt[:60]}...")
@@ -641,12 +659,12 @@ class EnzymeHosted:
     -d '{{"jsonrpc":"2.0","id":1,"method":"tools/list"}}'""")
         print()
 
-        for entity, cfg in self._entities.items():
-            print(f"  # Search {cfg.plural}")
+        for cfg in self._corpora.values():
+            print(f"  # Catalyze {cfg.plural}")
             print(f"""  curl -X POST {base}/mcp \\
     -H "Authorization: Bearer dev-token" \\{user_header}
     -H "Content-Type: application/json" \\
-    -d '{{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{{"name":"search_{cfg.plural}","arguments":{{"query":"your query here"}}}}}}'""")
+    -d '{{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{{"name":"{cfg.catalyze_tool_name}","arguments":{{"query":"your query here"}}}}}}'""")
             print()
 
         print("=" * 64)
@@ -674,8 +692,8 @@ class EnzymeHosted:
 
     def __repr__(self) -> str:
         return (
-            f"<EnzymeHosted {self.display_name!r} "
-            f"entities={list(self._entities.keys())} connected={len(self._connected_users)}>"
+            f"<EnzymeConnector {self.display_name!r} "
+            f"content_label={self.content_label!r} connected={len(self._connected_users)}>"
         )
 
 
@@ -688,13 +706,7 @@ class _Enzyme:
 
     def hydrate(
         self,
-        client: EnzymeHosted,
-        entity: str,
-        *,
-        search_tool: str = "",
-        profile_tool: str = "",
-        search_description: str = "",
-        profile_description: str = "",
+        client: EnzymeConnector,
     ) -> Callable:
         """Register a function that loads a user's data for indexing.
 
@@ -702,31 +714,16 @@ class _Enzyme:
         and return a list of dicts, each with at least ``title`` and
         ``content`` keys.
 
-        Tool names and descriptions can be overridden::
-
-            @enzyme.hydrate(client, entity="recipe",
-                search_tool="search_cooking_notes",
-                search_description="Search this user's recipe annotations and cooking notes.")
-            def get_recipes(user_id: str) -> list[dict]: ...
+        Tool names and descriptions are configured on ``EnzymeConnector``.
         """
-        entity_kwargs = {
-            "search_tool_name": search_tool,
-            "profile_tool_name": profile_tool,
-            "search_description": search_description,
-            "profile_description": profile_description,
-        }
-        # Only pass non-empty values
-        entity_kwargs = {k: v for k, v in entity_kwargs.items() if v}
-
         def decorator(fn: Callable) -> Callable:
-            client._register_hydrate(entity, fn, **entity_kwargs)
+            client._register_hydrate(fn)
             return fn
         return decorator
 
     def on_save(
         self,
-        client: EnzymeHosted,
-        entity: str,
+        client: EnzymeConnector,
         *,
         title: str | Callable = "title",
         content: str | Callable = "content",
@@ -749,8 +746,7 @@ class _Enzyme:
 
         Example::
 
-            @enzyme.on_save(client, entity="recipe",
-                title="title", content="instructions", tags="tags")
+            @enzyme.on_save(client, title="title", content="instructions", tags="tags")
             def create_recipe(user_id, data):
                 recipe = db.insert(data)
                 return recipe   # unchanged — enzyme extracts what it needs
@@ -773,9 +769,9 @@ class _Enzyme:
                         entry = field_map["_map"](result)
                     else:
                         entry = _extract_enzyme_entry(result, field_map)
-                    client._queue_ingest(user_id, entity, entry)
+                    client._queue_ingest(user_id, entry)
                 return result
-            client._register_save(entity, wrapper, field_map)
+            client._register_save(wrapper, field_map)
             return wrapper
         return decorator
 

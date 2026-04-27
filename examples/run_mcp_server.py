@@ -10,7 +10,7 @@ import argparse
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from enzyme_sdk.enzyme import enzyme, EnzymeHosted
+from enzyme_sdk.enzyme import enzyme, EnzymeConnector
 from examples.prepare_nyt_data import load_rows, rows_to_entries, DEFAULT_INPUT, USERS
 
 # Load real NYT recipe data
@@ -22,20 +22,12 @@ for entry in all_entries:
     uid = entry["metadata"]["user_key"]
     entries_by_user.setdefault(uid, []).append(entry)
 
-client = EnzymeHosted(
+client = EnzymeConnector(
     display_name="NYT Cooking",
     description="Real NYT recipe comments and cooking notes",
-    system_prompt=(
-        "You are a cooking assistant that knows this user's actual cooking history. "
-        "Use get_cooking_profile once to understand their patterns. Use search_cooking_notes "
-        "when a specific recommendation needs supporting notes. Quote the user's own "
-        "words. Synthesize across results instead of listing them."
-    ),
-)
-
-@enzyme.hydrate(client, entity="recipe",
-    search_tool="search_cooking_notes",
-    search_description=(
+    content_label="cooking notes",
+    catalyze_tool="catalyze_cooking_notes",
+    catalyze_description=(
         "Search this user's cooking history — recipe annotations, substitutions, "
         "results, and personal notes built over years of cooking. Broad queries "
         "work well. Results include the thematic signals that connected the query "
@@ -47,7 +39,15 @@ client = EnzymeHosted(
         "techniques they've adopted or abandoned, and the thematic questions that "
         "characterize each area. Call this first to understand what you're working with."
     ),
+    system_prompt=(
+        "You are a cooking assistant that knows this user's actual cooking history. "
+        "Use get_cooking_profile once to understand their patterns. Use catalyze_cooking_notes "
+        "when a specific recommendation needs supporting notes. Quote the user's own "
+        "words. Synthesize across results instead of listing them."
+    ),
 )
+
+@enzyme.hydrate(client)
 def hydrate_recipes(user_id: str) -> list[dict]:
     return [
         {"title": e["title"], "content": e.get("content", "") + "\n\n" + e.get("notes", ""), "tags": e.get("tags", [])}

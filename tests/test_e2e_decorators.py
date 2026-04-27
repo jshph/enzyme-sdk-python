@@ -24,7 +24,7 @@ REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
 
-from enzyme_sdk.enzyme import EnzymeHosted, EntityConfig, DevSession, enzyme, _Enzyme
+from enzyme_sdk.enzyme import EnzymeConnector, CorpusConfig, DevSession, enzyme, _Enzyme
 
 
 # ---------------------------------------------------------------------------
@@ -63,7 +63,7 @@ def _build_canonical_vault():
     from enzyme_sdk.store import VaultStore
 
     # Ensure ENZYME_HOME is isolated
-    EnzymeHosted._ensure_enzyme_home()
+    EnzymeConnector._ensure_enzyme_home()
 
     ec = EnzymeClient()
     store = VaultStore()
@@ -109,10 +109,10 @@ def _clone_canonical_vault(collection_id: str):
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _make_client(**kwargs) -> EnzymeHosted:
-    defaults = dict(api_key="enz_test", display_name="Test App")
+def _make_client(**kwargs) -> EnzymeConnector:
+    defaults = dict(api_key="enz_test", display_name="Test App", content_label="dishes")
     defaults.update(kwargs)
-    return EnzymeHosted(**defaults)
+    return EnzymeConnector(**defaults)
 
 
 
@@ -120,7 +120,7 @@ def _make_client(**kwargs) -> EnzymeHosted:
 
 
 def _fresh_decorated_client():
-    """Return a fresh EnzymeHosted plus decorated save/hydrate functions backed
+    """Return a fresh EnzymeConnector plus decorated save/hydrate functions backed
     by an in-memory store. The underlying vault is cloned from the canonical
     build so connect_user hits a pre-indexed vault."""
     client = _make_client()
@@ -133,13 +133,13 @@ def _fresh_decorated_client():
     for uid in store:
         _clone_canonical_vault(client._user_collection_id(uid))
 
-    @enzyme.on_save(client, entity="dish", title="title", content="content", tags="tags")
+    @enzyme.on_save(client, title="title", content="content", tags="tags")
     def save_dish(user_id: str, data: dict) -> dict:
         """Persist a dish entry."""
         store.setdefault(user_id, []).append(data)
         return data  # unchanged return
 
-    @enzyme.hydrate(client, entity="dish")
+    @enzyme.hydrate(client)
     def hydrate_dishes(user_id: str) -> list[dict]:
         """Fetch all dishes for a user."""
         return store.get(user_id, [])
@@ -153,51 +153,42 @@ def _fresh_decorated_client():
 
 
 class TestDecoratorRegistration:
-    def test_no_entities_initially(self):
+    def test_default_corpus_initially(self):
         client = _make_client()
-        assert client._entities == {}
+        assert list(client._corpora.keys()) == [client._default_corpus]
         assert client._save_fns == {}
         assert client._hydrate_fns == {}
 
-    def test_on_save_registers_entity_and_function(self):
+    def test_on_save_registers_function(self):
         client = _make_client()
 
-        @enzyme.on_save(client, "note")
+        @enzyme.on_save(client)
         def save_note(user_id: str, data: dict) -> dict:
             return data
 
-        assert "note" in client._entities
-        assert "note" in client._save_fns
-        assert client._save_fns["note"] is save_note
+        assert client._default_corpus in client._save_fns
+        assert client._save_fns[client._default_corpus] is save_note
 
-    def test_hydrate_registers_entity_and_function(self):
+    def test_hydrate_registers_function(self):
         client = _make_client()
 
-        @enzyme.hydrate(client, entity="note")
+        @enzyme.hydrate(client)
         def hydrate_notes(user_id: str) -> list[dict]:
             return []
 
-        assert "note" in client._entities
-        assert "note" in client._hydrate_fns
-        assert client._hydrate_fns["note"] is hydrate_notes
+        assert client._default_corpus in client._hydrate_fns
+        assert client._hydrate_fns[client._default_corpus] is hydrate_notes
 
-    def test_multiple_entities_on_same_client(self):
+    def test_tool_metadata_lives_on_client(self):
         client = _make_client()
-
-        @enzyme.on_save(client, "recipe")
-        def save_recipe(user_id, data):
-            return data
-
-        @enzyme.on_save(client, "bookmark")
-        def save_bookmark(user_id, data):
-            return data
-
-        assert set(client._entities.keys()) == {"recipe", "bookmark"}
+        cfg = client._corpora[client._default_corpus]
+        assert cfg.catalyze_tool_name == "catalyze_dishes"
+        assert cfg.profile_tool_name == "get_dishes_profile"
 
     def test_decorator_preserves_function_name_and_docstring(self):
         client = _make_client()
 
-        @enzyme.on_save(client, "widget")
+        @enzyme.on_save(client)
         def save_widget(user_id: str, data: dict) -> dict:
             """Save a widget for the user."""
             return data
@@ -213,7 +204,7 @@ class TestDecoratorRegistration:
             """Original docstring."""
             return []
 
-        decorated = enzyme.hydrate(client, entity="thing")(original_fn)
+        decorated = enzyme.hydrate(client)(original_fn)
         assert decorated is original_fn
 
 
@@ -260,8 +251,8 @@ class TestUserConnectionLifecycle:
         entries = client._user_stores["alice"]
         # alice has 3 sample entries
         assert len(entries) == 3
-        # Each entry should be enriched with 'entity'
-        assert all(e.get("entity") == "dish" for e in entries)
+        # Entries are stored unchanged; app-level content type is not injected.
+        assert all("entity" not in e for e in entries)
 
     def test_connected_users_property(self):
         client, *_ = _fresh_decorated_client()
@@ -448,7 +439,7 @@ class TestMCPServer:
     """Test the FastAPI MCP server returned by ``as_mcp_app``."""
 
     def _build_mcp_client(self):
-        """Create a client + MCP app and return an (EnzymeHosted, app) pair."""
+        """Create a client + MCP app and return an (EnzymeConnector, app) pair."""
         client, save_dish, hydrate_dishes, store = _fresh_decorated_client()
         client.connect_user("alice")
         mcp_app = client.as_mcp_app(whitelist=["alice"])
@@ -474,7 +465,7 @@ class TestMCPServer:
             assert resp.json()["status"] == "ok"
 
     @pytest.mark.anyio
-    async def test_tools_list_matches_registered_entities(self):
+    async def test_tools_list_matches_registered_corpora(self):
         import httpx
 
         _, mcp_app, _ = self._build_mcp_client()
@@ -489,9 +480,8 @@ class TestMCPServer:
             body = resp.json()
             tools = body["result"]["tools"]
             tool_names = {t["name"] for t in tools}
-            # "dish" entity -> plural "dishes" -> search_dishs, get_dish_profile
-            assert "search_dishs" in tool_names
-            assert "get_dish_profile" in tool_names
+            assert "catalyze_dishes" in tool_names
+            assert "get_dishes_profile" in tool_names
 
     @pytest.mark.anyio
     async def test_tools_call_search_returns_results(self):
@@ -503,7 +493,7 @@ class TestMCPServer:
             resp = await ac.post(
                 "/mcp",
                 json=self._rpc("tools/call", {
-                    "name": "search_dishs",
+                    "name": "catalyze_dishes",
                     "arguments": {"query": "pizza"},
                 }),
                 headers={"Authorization": "Bearer test-token", "X-Enzyme-User": "alice"},
@@ -578,11 +568,11 @@ class TestDishGenIntegration:
         app_enzyme._user_stores.clear()
         return app_enzyme, save_recipe, hydrate_recipes, db
 
-    def test_entities_registered(self):
+    def test_corpus_hooks_registered(self):
         app_enzyme, *_ = self._import_dishgen()
-        assert "recipe" in app_enzyme._entities
-        assert "recipe" in app_enzyme._save_fns
-        assert "recipe" in app_enzyme._hydrate_fns
+        assert app_enzyme._default_corpus in app_enzyme._corpora
+        assert app_enzyme._default_corpus in app_enzyme._save_fns
+        assert app_enzyme._default_corpus in app_enzyme._hydrate_fns
 
     def test_connect_christa_and_search_eggplant(self):
         app_enzyme, _, _, _ = self._import_dishgen()

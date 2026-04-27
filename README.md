@@ -27,25 +27,45 @@ Catalyst match:  "What does the commitment to vegetarianism cost when
 
 The agent's query is generic. The catalyst is specific to *this* user — someone who saves sausage dishes despite cooking vegetarian most of the time. The personalization happened at index time.
 
+## Two integration layers
+
+Use `EnzymeConnector` when you want to expose user-scoped app data to an agent through MCP. It owns user connection lifecycle, hydrate/save hooks, MCP tool names and descriptions, and the local dev server.
+
+Use `EnzymeClient` when you want direct control over vaults: ingest entries, build clusters, refresh the index, call `catalyze()`, and call `petri()` yourself. It has no MCP or app lifecycle opinions.
+
 ## Serve as an MCP connector
 
-Two decorators define the data contract. Enzyme handles clustering, catalyst generation, and MCP serving — Claude gets the same catalyst-routed search: "vegetarian dinner for friends" finds the miso-for-butter pattern, not just recipes tagged vegetarian.
+Configure the MCP tool surface on the client, then use two decorators for the data contract. Enzyme handles clustering, catalyst generation, and MCP serving — Claude gets the same catalyst-routed search: "vegetarian dinner for friends" finds the miso-for-butter pattern, not just recipes tagged vegetarian.
 
 ```python
-from enzyme_sdk import EnzymeHosted, enzyme
+from enzyme_sdk import EnzymeConnector, enzyme
 
-client = EnzymeHosted(display_name="NYT Cooking")
+connector = EnzymeConnector(
+    display_name="NYT Cooking",
+    content_label="cooking notes",
+    catalyze_tool="catalyze_cooking_notes",
+    catalyze_description=(
+        "Search this user's cooking history — recipe annotations, substitutions, "
+        "results, and personal notes. Broad queries work well. Results include "
+        "the thematic signals that connected the query to the content."
+    ),
+    profile_tool="get_cooking_profile",
+    profile_description=(
+        "See what this user's cooking history reveals — recurring ingredients, "
+        "techniques they've adopted or abandoned, and the thematic questions that "
+        "characterize each area."
+    ),
+)
 
-@enzyme.hydrate(client, entity="recipe")
+@enzyme.hydrate(connector)
 def get_recipes(user_id: str) -> list[dict]:
     return [{"title": r.name, "content": r.body} for r in db.query(user_id)]
 
-@enzyme.on_save(client, entity="recipe",
-    title="title", content="instructions", tags="tags")
+@enzyme.on_save(connector, title="title", content="instructions", tags="tags")
 def create_recipe(user_id, data):
     return db.insert(data)  # return value unchanged
 
-client.serve(port=9460, init_users=["user-1", "user-2"])
+connector.serve(port=9460, init_users=["user-1", "user-2"])
 ```
 
 `serve()` hydrates each user's data, auto-clusters it, builds the catalyst index, and starts a JSON-RPC 2.0 MCP server. Pass `--ngrok` to expose it for Claude:
