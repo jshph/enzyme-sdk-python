@@ -27,19 +27,48 @@ Catalyst match:  "What does the commitment to vegetarianism cost when
 
 The agent's query is generic. The catalyst is specific to *this* user — someone who saves sausage dishes despite cooking vegetarian most of the time. The personalization happened at index time.
 
+## Serve as an MCP connector
+
+Two decorators define the data contract. Enzyme handles clustering, catalyst generation, and MCP serving — Claude gets the same catalyst-routed search: "vegetarian dinner for friends" finds the miso-for-butter pattern, not just recipes tagged vegetarian.
+
+```python
+from enzyme_sdk import EnzymeHosted, enzyme
+
+client = EnzymeHosted(display_name="NYT Cooking")
+
+@enzyme.hydrate(client, entity="recipe")
+def get_recipes(user_id: str) -> list[dict]:
+    return [{"title": r.name, "content": r.body} for r in db.query(user_id)]
+
+@enzyme.on_save(client, entity="recipe",
+    title="title", content="instructions", tags="tags")
+def create_recipe(user_id, data):
+    return db.insert(data)  # return value unchanged
+
+client.serve(port=9460, init_users=["user-1", "user-2"])
+```
+
+`serve()` hydrates each user's data, auto-clusters it, builds the catalyst index, and starts a JSON-RPC 2.0 MCP server. Pass `--ngrok` to expose it for Claude:
+
+```bash
+python examples/run_mcp_server.py --ngrok
+```
+
+`examples/dishgen_app.py` shows mounting MCP alongside a CRUD API on the same FastAPI server.
+
+API keys: sign in at [enzyme.garden](https://enzyme.garden/login), create a key at `/settings`, set `ENZYME_API_KEY`. Catalyst generation uses a free-tier LLM — no OpenAI key needed.
+
+## Direct integration
+
+For more control — loading data from CSVs, managing clustering yourself, wiring tools into your own agent harness — use `EnzymeClient` directly.
+
 ### How clusters form
 
 Enzyme can create automatic clusters from entry bodies before ingest. These become readable automatic tags like `auto-cluster-black-rice`. Catalysts are generated from the user's own entries in each cluster; the tag keywords are only a weak display hint.
 
 You can still attach your own labels when you have strong domain structure. For uncurated data, build automatic clusters first and ingest the enriched entries.
 
-## Get started
-
-Here's the full integration we tested — loading 407 recipe comments from a CSV, ingesting them, and wiring up an agent.
-
 ### 1. Load and ingest
-
-Your data comes from a database or CSV:
 
 ```python
 import csv
@@ -167,34 +196,3 @@ Try a different user to see how the same prompt produces completely different ou
 python examples/prepare_nyt_data.py dimmerswitch
 ENZYME_TEST_USER=dimmerswitch python examples/agent_test.py
 ```
-
-## Serve as an MCP connector
-
-Ship a Claude connector for your app without building MCP infrastructure. Two decorators define the data contract — enzyme handles clustering, catalyst generation, and MCP serving. Claude gets the same catalyst-routed search shown above — "vegetarian dinner for friends" finds the miso-for-butter pattern, not just recipes tagged vegetarian.
-
-```python
-from enzyme_sdk import EnzymeHosted, enzyme
-
-client = EnzymeHosted(display_name="NYT Cooking")
-
-@enzyme.hydrate(client, entity="recipe")
-def get_recipes(user_id: str) -> list[dict]:
-    return [{"title": r.name, "content": r.body} for r in db.query(user_id)]
-
-@enzyme.on_save(client, entity="recipe",
-    title="title", content="instructions", tags="tags")
-def create_recipe(user_id, data):
-    return db.insert(data)  # return value unchanged
-
-client.serve(port=9460, init_users=["user-1", "user-2"])
-```
-
-`serve()` hydrates each user's data, auto-clusters it, builds the catalyst index, and starts a JSON-RPC 2.0 MCP server. Pass `--ngrok` to expose it for Claude:
-
-```bash
-python examples/run_mcp_server.py --ngrok
-```
-
-`examples/dishgen_app.py` shows mounting MCP alongside a CRUD API on the same FastAPI server.
-
-API keys: sign in at [enzyme.garden](https://enzyme.garden/login), create a key at `/settings`, set `ENZYME_API_KEY`. Catalyst generation uses a free-tier LLM — no OpenAI key needed.
