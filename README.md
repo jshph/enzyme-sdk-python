@@ -1,6 +1,8 @@
 # Enzyme SDK
 
-Enzyme pre-indexes user content so agents can access patterns the user never articulated. You send structured data in, enzyme generates thematic questions from it at build time, and agents search against those questions instead of raw embeddings.
+Build Claude/MCP connectors for apps where user taste accumulates: saved recipes, playlists, journal entries, reading highlights, bookmarks, places, boards, reviews, and annotations.
+
+Enzyme pre-indexes each user's content so agents can work with the patterns behind the data, not just matching rows. You send structured data in, Enzyme generates thematic questions from it at build time, and agents search against those questions instead of raw document embeddings.
 
 ## What the agent produces
 
@@ -12,11 +14,20 @@ A cooking app user has 407 saved recipes with annotations spanning 6 years. The 
 >
 > A warning from your own notes: your **Red Cabbage and Black Rice** lacked flavor and the cabbage got "lost." Season the hash aggressively.
 
-This isn't template filling. The agent surfaced the black rice recipe because enzyme's index noticed this user keeps returning to black rice across multiple dishes. The warning came from a *different* recipe — enzyme connected the failure to the recommendation because they share a cluster.
+This isn't template filling. The agent surfaced the black rice recipe because Enzyme's index noticed this user keeps returning to black rice across multiple dishes. The warning came from a *different* recipe — Enzyme connected the failure to the recommendation because they share a cluster.
+
+## The connector shape
+
+Point Enzyme at the user's rows. Claude gets two user-scoped tools, with names and descriptions you control:
+
+1. A profile tool — see the user's clusters and the catalysts that describe each area.
+2. A search tool — search the user's history by concept and return the source entries plus the catalysts that routed them.
+
+The result is a Claude connector that understands the user's accumulated taste on day one. A new conversation can start from "what should I cook?", "where should I travel?", or "what should I listen to?" without making the user re-explain years of choices.
 
 ## How it works
 
-Enzyme groups your data into clusters and generates **catalysts** — thematic questions — for each cluster. When the agent queries, it matches against those questions, not document text.
+Enzyme groups your data into clusters and generates **catalysts** — inspectable thematic questions — for each cluster. At query time, the agent matches against those questions, then Enzyme returns the source entries attached to the best-matching catalysts.
 
 ```
 Agent query:     "vegetarian dinner ideas"
@@ -27,15 +38,39 @@ Catalyst match:  "What does the commitment to vegetarianism cost when
 
 The agent's query is generic. The catalyst is specific to *this* user — someone who saves sausage dishes despite cooking vegetarian most of the time. The personalization happened at index time.
 
+## What is a catalyst?
+
+A catalyst is an inspectable question Enzyme generated from one user's data.
+
+You do not write catalysts. They are not tags or hidden prompts. Enzyme creates them while building the index, embeds them, and links each one back to the entries that produced it.
+
+`catalyze()` returns the matched catalysts and the entries they routed:
+
+```text
+Query: "vegetarian dinner ideas"
+
+Routing signals:
+- auto-cluster-black-rice: What makes black rice the user's reliable base
+  when cooking for groups? (routed 2 results)
+
+Matched documents:
+1. Mushroom Hash with Black Rice
+   "now in my repertoire"
+2. Red Cabbage and Black Rice
+   "the cabbage got lost"
+```
+
+The agent can quote the user's own notes and explain why those notes surfaced.
+
 ## Two integration layers
 
-Use `EnzymeConnector` when you want to expose user-scoped app data to an agent through MCP. It owns user connection lifecycle, hydrate/save hooks, MCP tool names and descriptions, and the local dev server.
+Use `EnzymeConnector` when you want to expose user-scoped app data to an agent through MCP. It owns user hydration, save hooks, MCP tool names and descriptions, per-user indexes, and the local dev server.
 
 Use `EnzymeClient` when you want direct control over vaults: ingest entries, build clusters, refresh the index, call `catalyze()`, and call `petri()` yourself. It has no MCP or app lifecycle opinions.
 
 ## Serve as an MCP connector
 
-Configure the MCP tool surface on the client, then use two decorators for the data contract. Enzyme handles clustering, catalyst generation, and MCP serving — Claude gets the same catalyst-routed search: "vegetarian dinner for friends" finds the miso-for-butter pattern, not just recipes tagged vegetarian.
+Configure the MCP tool surface on the connector, then use decorators for the data contract. Enzyme handles hydration, clustering, catalyst generation, and MCP serving. Claude gets catalyst-routed search: "vegetarian dinner for friends" can find the black-rice pattern, not just recipes tagged vegetarian.
 
 ```python
 from enzyme_sdk import EnzymeConnector, enzyme
@@ -76,7 +111,7 @@ python examples/run_mcp_server.py --ngrok
 
 `examples/dishgen_app.py` shows mounting MCP alongside a CRUD API on the same FastAPI server.
 
-API keys: sign in at [enzyme.garden](https://enzyme.garden/login), create a key at `/settings`, set `ENZYME_API_KEY`. Catalyst generation uses a free-tier LLM — no OpenAI key needed.
+API keys for the connector path: sign in at [enzyme.garden](https://enzyme.garden/login), create a key at `/settings`, set `ENZYME_API_KEY`. Catalyst generation uses Enzyme's hosted generation path — no OpenAI key needed for this connector flow.
 
 ## Direct integration
 
@@ -149,7 +184,8 @@ assigned = client.cluster_entries(
 ### 2. Build the index
 
 ```python
-# Embeddings run locally (no API). Catalysts need an LLM — set OPENAI_API_KEY.
+# Embeddings run locally (no API). In direct mode, catalyst generation uses
+# your configured LLM provider — set OPENAI_API_KEY or OPENAI_BASE_URL.
 # ~6s for 400 entries.
 client.init(collection="user-123")
 ```
