@@ -39,23 +39,40 @@ from enzyme_sdk import Activity, CatalystProfile, EnzymeConnector, enzyme
 
 
 @dataclass
-class CookingEvent:
+class UserRecipeComment:
     id: str
     user_id: str
-    kind: str
     recipe_name: str
     comment: str
-    date: str
-    source_tags: list[str]
-    auto_tags: list[str]
+    created_at: str
+    tags: list[str]
 
 @dataclass
-class RecipeComment:
+class AgentObservedPreference:
+    id: str
+    user_id: str
+    topic: str
+    summary: str
+    source_activity_id: str
+    created_at: str
+
+@dataclass
+class PreferenceSubstitution:
     pass
 
 @dataclass
-class ObservedPreference:
+class PreferenceRepeatWorthyRecipe:
     pass
+
+@dataclass
+class PreferenceSweetnessAdjustment:
+    pass
+
+PREFERENCE_COLLECTIONS = {
+    "substitutions": PreferenceSubstitution,
+    "repeat-worthy recipes": PreferenceRepeatWorthyRecipe,
+    "sweetness adjustments": PreferenceSweetnessAdjustment,
+}
 
 connector = EnzymeConnector(
     app_id="nyt-cooking",
@@ -72,34 +89,61 @@ connector = EnzymeConnector(
         "Inspect this user's cooking profile: recurring ingredients, techniques, "
         "cuisines, constraints, and the catalysts that characterize each area."
     ),
-    collections=[RecipeComment, ObservedPreference],
+    collections=[
+        UserRecipeComment,
+        AgentObservedPreference,
+        PreferenceSubstitution,
+        PreferenceRepeatWorthyRecipe,
+        PreferenceSweetnessAdjustment,
+    ],
     catalyst_profiles={
-        RecipeComment: CatalystProfile.PREFERENCE_EVIDENCE,
-        ObservedPreference: CatalystProfile.PREFERENCE_EVIDENCE,
+        UserRecipeComment: CatalystProfile.PREFERENCE_EVIDENCE,
+        AgentObservedPreference: CatalystProfile.PREFERENCE_EVIDENCE,
+        PreferenceSubstitution: CatalystProfile.PREFERENCE_EVIDENCE,
+        PreferenceRepeatWorthyRecipe: CatalystProfile.PREFERENCE_EVIDENCE,
+        PreferenceSweetnessAdjustment: CatalystProfile.PREFERENCE_EVIDENCE,
     },
 )
 
 @enzyme.hydrate(connector)
-def get_activity(user_id: str) -> Iterable[CookingEvent]:
-    return db.load_recipe_activity(user_id)
+def hydrate_recipes(user_id: str) -> Iterable[UserRecipeComment | AgentObservedPreference]:
+    return db.load_recipe_activity_and_observations(user_id)
 
 @enzyme.transform(connector)
-def activity_to_enzyme(event: CookingEvent) -> Activity:
+def recipe_collection(recipe: UserRecipeComment | AgentObservedPreference) -> Activity:
+    if isinstance(recipe, UserRecipeComment):
+        return Activity(
+            title=recipe.recipe_name,
+            content=recipe.comment,
+            created_at=recipe.created_at,
+            source_id=recipe.id,
+            collections=[UserRecipeComment],
+            metadata={
+                "activity_type": "recipe_comment",
+                "recipe_name": recipe.recipe_name,
+                "labels": recipe.tags,
+            },
+        )
+
     return Activity(
-        title=event.recipe_name,
-        content=event.comment,
-        created_at=event.date,
-        source_id=event.id,
-        collections=[RecipeComment],
+        title=f"Observed preference: {recipe.topic}",
+        content=recipe.summary,
+        created_at=recipe.created_at,
+        source_id=recipe.id,
+        collections=[AgentObservedPreference, PREFERENCE_COLLECTIONS[recipe.topic]],
         metadata={
-            "activity_type": event.kind,
-            "labels": [*event.source_tags, *event.auto_tags],
+            "activity_type": "observed_preference",
+            "topic": recipe.topic,
+            "derived_from": recipe.source_activity_id,
         },
     )
 
 @enzyme.on_save(connector)
-def save_activity(user_id: str, event: CookingEvent) -> CookingEvent:
-    return db.save(event)
+def save_activity(
+    user_id: str,
+    recipe: UserRecipeComment | AgentObservedPreference,
+) -> UserRecipeComment | AgentObservedPreference:
+    return db.save(recipe)
 ```
 
 ### Field Mapping
