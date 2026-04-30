@@ -28,7 +28,7 @@ already noticed that pattern across the user's notes.
 ## Install
 
 ```bash
-pip install enzyme-sdk
+pip install -e .
 ```
 
 For local development with the examples:
