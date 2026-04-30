@@ -26,6 +26,7 @@ from enzyme_sdk.hosted import (
     HostedVaultStatus,
 )
 from enzyme_sdk.enzyme import DevSession, EnzymeConnector, enzyme
+from enzyme_sdk.activity import Activity
 from enzyme_sdk.client import (
     CatalyzeResponse,
     CatalyzeResult,
@@ -43,6 +44,7 @@ __all__ = [
     "EnzymeConnector",
     "DevSession",
     "enzyme",
+    "Activity",
     "HostedEnzymeClient",
     "HostedCatalyzeResult",
     "HostedScopeCatalyst",

@@ -35,6 +35,8 @@ from dataclasses import asdict, dataclass, is_dataclass
 from pathlib import Path
 from typing import Any, Callable
 
+from enzyme_sdk.activity import Activity
+
 log = logging.getLogger("enzyme.connector")
 
 
@@ -72,6 +74,8 @@ def _extract_enzyme_entry(
 
 
 def _item_as_dict(item: Any) -> dict[str, Any]:
+    if isinstance(item, Activity):
+        return item.to_entry()
     if isinstance(item, dict):
         return dict(item)
     if is_dataclass(item) and not isinstance(item, type):
@@ -241,6 +245,7 @@ class EnzymeConnector:
         self._corpora: dict[str, CorpusConfig] = {}
         self._save_fns: dict[str, Callable] = {}
         self._hydrate_fns: dict[str, Callable] = {}
+        self._transform_fns: dict[str, Callable] = {}
         self._collection_fns: dict[str, Callable] = {}
         self._field_maps: dict[str, dict[str, str | Callable]] = {}
         self._default_corpus = "_default"
@@ -302,6 +307,11 @@ class EnzymeConnector:
         self._ensure_corpus(corpus)
         self._hydrate_fns[corpus] = fn
 
+    def _register_transform(self, fn: Callable) -> None:
+        corpus = self._default_corpus
+        self._ensure_corpus(corpus)
+        self._transform_fns[corpus] = fn
+
     def _register_collection(self, fn: Callable) -> None:
         corpus = self._default_corpus
         self._ensure_corpus(corpus)
@@ -336,9 +346,11 @@ class EnzymeConnector:
 
     def _entry_from_item(self, item: Any, corpus: str | None = None) -> dict[str, Any]:
         corpus = corpus or self._default_corpus
-        field_map = self._field_maps.get(corpus)
+        transform_fn = self._transform_fns.get(corpus)
 
-        if field_map:
+        if transform_fn:
+            entry = _item_as_dict(transform_fn(item))
+        elif (field_map := self._field_maps.get(corpus)):
             if "_map" in field_map:
                 entry = dict(field_map["_map"](item))
             else:
@@ -347,12 +359,27 @@ class EnzymeConnector:
             entry = _item_as_dict(item)
 
         collection_fn = self._collection_fns.get(corpus)
-        if collection_fn:
+        if collection_fn and "collection" not in entry and "collections" not in entry:
             collections = _collection_values(collection_fn(item))
             if len(collections) == 1:
                 entry["collection"] = collections[0]
             elif collections:
                 entry["collections"] = collections
+
+        if "collection" in entry:
+            collections = _collection_values(entry.get("collection"))
+            if collections:
+                entry["collection"] = collections[0]
+            else:
+                entry.pop("collection", None)
+
+        if "collections" in entry:
+            collections = _collection_values(entry.get("collections"))
+            if collections:
+                entry["collections"] = collections
+                entry.pop("collection", None)
+            else:
+                entry.pop("collections", None)
 
         if "tags" in entry:
             entry["tags"] = _clean_tags(entry.get("tags"))
@@ -362,6 +389,14 @@ class EnzymeConnector:
     def collection_for(self, item: Any, corpus: str | None = None) -> str:
         """Return the connector collection id for a typed source item."""
         corpus = corpus or self._default_corpus
+        transform_fn = self._transform_fns.get(corpus)
+        if transform_fn:
+            entry = _item_as_dict(transform_fn(item))
+            collections = _collection_values(
+                entry.get("collections") or entry.get("collection")
+            )
+            if collections:
+                return collections[0]
         collection_fn = self._collection_fns.get(corpus)
         if collection_fn:
             collections = _collection_values(collection_fn(item))
@@ -886,6 +921,20 @@ class _Enzyme:
                 return result
             client._register_save(wrapper, field_map)
             return wrapper
+        return decorator
+
+    def transform(
+        self,
+        client: EnzymeConnector,
+    ) -> Callable:
+        """Register a typed source-item transform for hydrate and save ingest.
+
+        The transform receives the app-native item returned by ``@hydrate`` or
+        ``@on_save`` and returns an ``Activity`` or an equivalent entry dict.
+        """
+        def decorator(fn: Callable) -> Callable:
+            client._register_transform(fn)
+            return fn
         return decorator
 
     def collection(

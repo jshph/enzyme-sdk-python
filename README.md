@@ -1,19 +1,10 @@
 # Enzyme SDK
 
-Build Claude/MCP connectors for apps where user taste accumulates: saved
-recipes, playlists, journal entries, reading highlights, bookmarks, places,
-boards, reviews, and annotations.
+Enzyme automatically manages your app's user conversations, collections, and agent traces, enabling you to quickly experiment with context-efficient and responsive agent-collaborative UX and MCP integrations.
 
-Enzyme pre-indexes each user's content so agents can retrieve patterns, not
-just matching rows. You send structured data in; Enzyme generates inspectable
-thematic questions, called catalysts, and uses them to route search back to the
-source entries.
+## Example
 
-## What It Enables
-
-A cooking app user has 407 saved recipes with annotations spanning 6 years. The
-agent gets asked: *"I'm hosting a dinner party, a couple friends are vegetarian.
-What should I make?"*
+A cooking app user has 407 saved recipes with annotations spanning 6 years. The agent gets asked: *"I'm hosting a dinner party, a couple friends are vegetarian. What should I make?"*
 
 > You've noted your **Mushroom Hash with Black Rice** is "now in my repertoire"
 > and that it scales well. For a side, your **Orecchiette with Swiss Chard and
@@ -22,8 +13,7 @@ What should I make?"*
 > A warning from your own notes: your **Red Cabbage and Black Rice** lacked
 > flavor and the cabbage got "lost." Season the hash aggressively.
 
-The user never asked for "black rice." Enzyme surfaced it because the index had
-already noticed that pattern across the user's notes.
+The user never asked for "black rice." Enzyme surfaced it because the index had already noticed that pattern across the user's recipe comments.
 
 ## Install
 
@@ -37,29 +27,16 @@ For local development with the examples:
 pip install -e ".[dev,cluster]" openai-agents
 ```
 
-## Choose An API
+## Example: Build an MCP Connector
 
-| Use | API |
-| --- | --- |
-| Build an MCP connector over app data | `EnzymeConnector` |
-| Ingest/search directly from Python | `EnzymeClient` |
-| Query hosted app/user search | `connector.hosted(user_id)` |
-
-`EnzymeConnector` owns user hydration, save hooks, MCP tool names, per-user
-indexes, and the local dev server. `EnzymeClient` is the lower-level API for
-manual ingest, refresh, `catalyze()`, and `petri()`.
-
-## Build A Connector
-
-This example uses the bundled NYT Cooking sample as the throughline. The sample
-rows have `user_key`, `user_id`, `recipe_name`, `comment`, and `date`. They do
-not include source recipe tags, so the example falls back to `event.kind` for
-collection mapping and uses `auto_tags` from clustering.
+This example builds from a sample dataset of NYT Cooking comments. Rows have `user_key`, `user_id`, `recipe_name`, `comment`, and `date`.
 
 ```python
 from dataclasses import dataclass
+from typing import Iterable
 
-from enzyme_sdk import EnzymeConnector, enzyme
+from enzyme_sdk import Activity, EnzymeConnector, enzyme
+
 
 @dataclass
 class CookingEvent:
@@ -77,28 +54,36 @@ connector = EnzymeConnector(
     display_name="NYT Cooking",
     content_label="cooking notes",
     catalyze_tool="catalyze_cooking_notes",
+    catalyze_description=(
+        "Search this user's cooking history by concept: saved recipes, "
+        "annotations, substitutions, outcomes, and personal notes. Results "
+        "include the source notes plus the catalysts that explain why they matched."
+    ),
     profile_tool="get_cooking_profile",
+    profile_description=(
+        "Inspect this user's cooking profile: recurring ingredients, techniques, "
+        "cuisines, constraints, and the catalysts that characterize each area."
+    ),
 )
 
 @enzyme.hydrate(connector)
-def get_activity(user_id: str) -> list[CookingEvent]:
+def get_activity(user_id: str) -> Iterable[CookingEvent]:
     return db.load_recipe_activity(user_id)
 
-@enzyme.collection(connector)
-def activity_collection(event: CookingEvent) -> str | list[str]:
-    if event.source_tags:
-        return [f"recipe/{tag}" for tag in event.source_tags]
-    return event.kind
+@enzyme.transform(connector)
+def activity_to_enzyme(event: CookingEvent) -> Activity:
+    collections = [f"recipe/{tag}" for tag in event.source_tags]
+    return Activity(
+        title=event.recipe_name,
+        content=event.comment,
+        created_at=event.date,
+        tags=[*event.source_tags, *event.auto_tags],
+        source_id=event.id,
+        collections=collections or [event.kind],
+        metadata={"activity_type": event.kind, "user_id": event.user_id},
+    )
 
-@enzyme.on_save(
-    connector,
-    title="recipe_name",
-    content="comment",
-    created_at="date",
-    tags=lambda event: [*event.source_tags, *event.auto_tags],
-    primitive="kind",
-    source_id="id",
-)
+@enzyme.on_save(connector)
 def save_activity(user_id: str, event: CookingEvent) -> CookingEvent:
     return db.save(event)
 ```
@@ -107,17 +92,32 @@ def save_activity(user_id: str, event: CookingEvent) -> CookingEvent:
 
 | Field | Purpose |
 | --- | --- |
-| `@enzyme.collection` | Maps one item to one or more per-user collection labels, such as `recipe/main-dishes`, `message`, or `folder/inbox`. CLI-backed ingest also associates these labels with the document as folder-style catalyst entities. |
+| `@enzyme.transform` | Converts your app-native object into an `Activity` ingest payload. Hydrate and save hooks both use it. |
+| `collection` / `collections` | Maps one item to one or more per-user collection labels, such as `recipe/main-dishes`, `message`, or `folder/inbox`. CLI-backed ingest also associates these labels with the document as folder-style catalyst entities. |
 | `tags` | Adds catalyst entities inside those collections. Use source tags, labels, people, projects, folders, and automatic cluster labels here. |
-| `primitive` + `source_id` | Tells your app how to hydrate a result back into its own UX. |
+| `source_id` + `metadata` | Tells your app how to hydrate an activity back into its own UX. |
 | `created_at` | Enables recency-aware ranking and catalyst context. |
 
 If your app has stable folders, channels, projects, or recipe categories, return
-them from `@enzyme.collection`. If an item belongs to multiple source tags,
-return multiple labels; Enzyme can route through several catalysts and converge
-on the same chunk or document.
+them as `Activity.collection` or `Activity.collections`. If an item belongs to
+multiple source tags, return multiple labels; Enzyme can route through several
+catalysts and converge on the same chunk or document. `@enzyme.collection`
+remains available for older integrations that only need collection labeling,
+but new connectors should prefer one `@enzyme.transform`.
 
-## Serve MCP
+The connector mapping becomes the structured ingest payload that the Enzyme
+binary consumes. `tags` become tag entities. `links` become link entities when
+provided through direct ingest or rendered markdown. `collection`,
+`collections`, and `folder` become folder entities in the Rust index, equivalent
+to folders derived from a markdown file path. Local CLI state lives under
+`~/.enzyme-sdk/collections/<collection-id>/.enzyme/enzyme.db`; the adjacent
+`.enzyme/config.toml` stores collection cache metadata such as
+`collection.index_generation`, which hosted search treats as a cache epoch.
+App users do not need that TOML detail for normal integration, but SDK
+integrators should know that collection labels are the bridge into Enzyme's
+tag/folder/link entity model.
+
+### Serve MCP
 
 ```python
 connector.serve(port=9460, init_users=["user-1", "user-2"])
@@ -148,7 +148,7 @@ scope = connector.hosted("user-123")
 response = scope.catalyze("quick weeknight dinners with ginger", limit=8)
 
 for result in response.results:
-    print(result.primitive, result.source_id, result.title)
+    print(result.source_id, result.title, result.metadata)
 
 overview = scope.petri(top=12)
 status = scope.status()

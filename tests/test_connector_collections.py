@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 import httpx
 
-from enzyme_sdk import EnzymeConnector, enzyme
+from enzyme_sdk import Activity, EnzymeConnector, enzyme
 
 
 @dataclass
@@ -64,6 +64,84 @@ def test_collection_hook_maps_typed_item_schema_to_collection_id():
             "collection": "recipe_comment",
         }
     ]
+
+
+def test_transform_maps_typed_item_to_activity_entry():
+    connector = EnzymeConnector(
+        api_key="enz_test",
+        app_id="nyt-cooking",
+        display_name="NYT Cooking Notes",
+        content_label="cooking activity",
+    )
+
+    @enzyme.transform(connector)
+    def cooking_activity(event: CookingEvent) -> Activity:
+        return Activity(
+            title=event.recipe_name,
+            content=event.comment,
+            tags=event.auto_tags,
+            source_id=event.id,
+            collection=event.kind,
+            metadata={"activity_type": event.kind},
+        )
+
+    @enzyme.on_save(connector)
+    def save_event(user_id: str, event: CookingEvent) -> CookingEvent:
+        return event
+
+    event = CookingEvent(
+        id="comment-1",
+        kind="recipe_comment",
+        recipe_name="Soy-Braised Tofu",
+        comment="Good with extra ginger.",
+        auto_tags=["weeknight", None, "ginger"],
+    )
+
+    connector._connected_users.add("user-123")
+    save_event("user-123", event)
+
+    assert connector.collection_for(event) == "recipe_comment"
+    assert connector._user_stores["user-123"] == [
+        {
+            "title": "Soy-Braised Tofu",
+            "content": "Good with extra ginger.",
+            "tags": ["weeknight", "ginger"],
+            "source_id": "comment-1",
+            "collection": "recipe_comment",
+            "metadata": {"activity_type": "recipe_comment"},
+        }
+    ]
+
+
+def test_transform_collection_takes_precedence_over_legacy_collection_hook():
+    connector = EnzymeConnector(api_key="enz_test", app_id="nyt-cooking")
+
+    @enzyme.collection(connector)
+    def legacy_collection(event: CookingEvent) -> str:
+        return "legacy"
+
+    @enzyme.transform(connector)
+    def cooking_activity(event: CookingEvent) -> dict:
+        return {
+            "title": event.recipe_name,
+            "content": event.comment,
+            "collections": ["recipe/main-dishes", "recipe/weeknight"],
+        }
+
+    event = CookingEvent(
+        id="comment-4",
+        kind="recipe_comment",
+        recipe_name="Noodles",
+        comment="Fast dinner.",
+        auto_tags=[],
+    )
+
+    assert connector._entry_from_item(event) == {
+        "title": "Noodles",
+        "content": "Fast dinner.",
+        "collections": ["recipe/main-dishes", "recipe/weeknight"],
+    }
+    assert connector.collection_for(event) == "recipe/main-dishes"
 
 
 def test_hydrate_uses_registered_item_mapping_for_dataclasses():

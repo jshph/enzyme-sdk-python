@@ -8,13 +8,14 @@ clients for published vault search and app/user scoped product integrations.
 Instead of running the enzyme CLI binary locally, these clients call the hosted
 search API at `app.enzyme.garden`.
 
-`EnzymeConnector` is the product integration surface. Its decorators map a
-typed source item to Enzyme fields, including `.collection(...)` for the
-per-user ingest/cache partition. Hosted app/user search is reached through
+`EnzymeConnector` is the product integration surface. Its decorators hydrate
+app-native items and transform them into Enzyme `Activity` payloads, including
+`collection` or `collections` for the per-user ingest/cache partition. Hosted
+app/user search is reached through
 `connector.hosted(user_id)`, where the service can combine multiple internal
 collections such as recipe comments, saved recipes, conversations, artifacts,
 folders, or emails. Normal `catalyze()` results hide those storage partitions
-and return app-hydratable primitives through `primitive` and `source_id`.
+and return app-hydratable activities with `source_id` and metadata.
 
 `HostedScopeClient` still exists in `enzyme_sdk.hosted` as the low-level HTTP
 transport used by `EnzymeConnector.hosted(...)`; it is not the main integration
@@ -27,7 +28,8 @@ surface.
 
 | File | Purpose |
 |---|---|
-| `enzyme_sdk/enzyme.py` | `EnzymeConnector`, decorators, collection mapping, and hosted scope entry |
+| `enzyme_sdk/enzyme.py` | `EnzymeConnector`, decorators, transform mapping, and hosted scope entry |
+| `enzyme_sdk/activity.py` | `Activity` payload emitted by connector transforms |
 | `enzyme_sdk/hosted.py` | Low-level hosted scope transport and legacy `HostedEnzymeClient` |
 | `tests/test_connector_collections.py` | Unit tests for declarative collection mapping and connector-hosted entry |
 | `tests/test_hosted_scope.py` | Unit tests for app/user scoped hosted API semantics |
@@ -41,7 +43,7 @@ surface.
 ```python
 from dataclasses import dataclass
 
-from enzyme_sdk import EnzymeConnector, enzyme
+from enzyme_sdk import Activity, EnzymeConnector, enzyme
 
 @dataclass
 class CookingEvent:
@@ -60,21 +62,19 @@ connector = EnzymeConnector(
     display_name="NYT Cooking Notes",
 )
 
-@enzyme.collection(connector)
-def cooking_collection(event: CookingEvent) -> str | list[str]:
-    if event.source_tags:
-        return [f"recipe/{tag}" for tag in event.source_tags]
-    return event.kind
+@enzyme.transform(connector)
+def cooking_activity(event: CookingEvent) -> Activity:
+    return Activity(
+        title=event.recipe_name,
+        content=event.comment,
+        created_at=event.date,
+        tags=[*event.source_tags, *event.auto_tags],
+        source_id=event.id,
+        collections=[f"recipe/{tag}" for tag in event.source_tags] or [event.kind],
+        metadata={"activity_type": event.kind},
+    )
 
-@enzyme.on_save(
-    connector,
-    title="recipe_name",
-    content="comment",
-    created_at="date",
-    tags=lambda event: [*event.source_tags, *event.auto_tags],
-    primitive="kind",
-    source_id="id",
-)
+@enzyme.on_save(connector)
 def save_activity(user_id: str, event: CookingEvent) -> CookingEvent:
     return db.save(event)
 
@@ -84,8 +84,8 @@ client = connector.hosted("user_123")
 response = client.catalyze("quick weeknight dinners with ginger", limit=10, register="explore")
 
 for result in response.results:
-    # Hydrate in your app by primitive + source_id.
-    print(result.primitive, result.source_id, result.title)
+    # Hydrate in your app by source_id plus activity metadata.
+    print(result.source_id, result.title, result.metadata)
 
 # Entity overview for the full scope.
 entities = client.petri(top=10, query="launch")
@@ -101,7 +101,7 @@ client.close()  # or use as context manager
 
 Use `EnzymeConnector` when building a cooking app, chat app, email client, CRM,
 research tool, or other application where Enzyme should connect cross-cutting
-primitives across a user's data. Do not expose collection ids in normal
+activities across a user's data. Do not expose collection ids in normal
 user-facing search UI; they are ingest/cache partitions, not relevance
 semantics.
 
