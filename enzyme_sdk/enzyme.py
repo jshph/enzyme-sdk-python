@@ -92,8 +92,27 @@ def _clean_tags(tags: Any) -> list[str]:
 
 
 def _sanitize_collection(value: Any) -> str:
-    slug = re.sub(r"[^a-zA-Z0-9_.-]+", "-", str(value).strip().lower()).strip("-")
+    slug = re.sub(r"[^a-zA-Z0-9_./-]+", "-", str(value).strip().lower()).strip("-")
     return slug or "content"
+
+
+def _collection_values(value: Any) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, str):
+        raw_values = [value]
+    else:
+        try:
+            raw_values = list(value)
+        except TypeError:
+            raw_values = [value]
+
+    values: list[str] = []
+    for raw in raw_values:
+        cleaned = _sanitize_collection(raw)
+        if cleaned and cleaned not in values:
+            values.append(cleaned)
+    return values
 
 
 # ---------------------------------------------------------------------------
@@ -329,7 +348,11 @@ class EnzymeConnector:
 
         collection_fn = self._collection_fns.get(corpus)
         if collection_fn:
-            entry["collection"] = _sanitize_collection(collection_fn(item))
+            collections = _collection_values(collection_fn(item))
+            if len(collections) == 1:
+                entry["collection"] = collections[0]
+            elif collections:
+                entry["collections"] = collections
 
         if "tags" in entry:
             entry["tags"] = _clean_tags(entry.get("tags"))
@@ -341,7 +364,9 @@ class EnzymeConnector:
         corpus = corpus or self._default_corpus
         collection_fn = self._collection_fns.get(corpus)
         if collection_fn:
-            return _sanitize_collection(collection_fn(item))
+            collections = _collection_values(collection_fn(item))
+            if collections:
+                return collections[0]
         return _sanitize_collection(self._corpora.get(corpus, CorpusConfig()).name)
 
     # -- user lifecycle -----------------------------------------------------

@@ -105,6 +105,41 @@ def test_hydrate_uses_registered_item_mapping_for_dataclasses():
     assert connector._user_stores["user-123"][0]["source_id"] == "comment-2"
 
 
+def test_collection_hook_can_map_item_to_multiple_collection_labels():
+    connector = EnzymeConnector(api_key="enz_test", app_id="nyt-cooking")
+
+    @enzyme.collection(connector)
+    def cooking_collections(event: CookingEvent) -> list[str]:
+        return ["recipe/main-dishes", "recipe/weeknight", "recipe/main-dishes"]
+
+    @enzyme.on_save(
+        connector,
+        title="recipe_name",
+        content="comment",
+        tags="auto_tags",
+        primitive="kind",
+        source_id="id",
+    )
+    def save_event(user_id: str, event: CookingEvent) -> CookingEvent:
+        return event
+
+    event = CookingEvent(
+        id="comment-3",
+        kind="recipe_comment",
+        recipe_name="Ginger Noodles",
+        comment="Fast weeknight dinner.",
+        auto_tags=["ginger"],
+    )
+
+    connector._connected_users.add("user-123")
+    save_event("user-123", event)
+
+    entry = connector._user_stores["user-123"][0]
+    assert entry["collections"] == ["recipe/main-dishes", "recipe/weeknight"]
+    assert "collection" not in entry
+    assert connector.collection_for(event) == "recipe/main-dishes"
+
+
 def test_connector_hosted_uses_connector_app_scope_without_public_client_import():
     seen: dict[str, object] = {}
 

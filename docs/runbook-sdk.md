@@ -51,6 +51,7 @@ class CookingEvent:
     recipe_name: str
     comment: str
     date: str
+    source_tags: list[str]
     auto_tags: list[str]
 
 connector = EnzymeConnector(
@@ -60,7 +61,9 @@ connector = EnzymeConnector(
 )
 
 @enzyme.collection(connector)
-def cooking_collection(event: CookingEvent) -> str:
+def cooking_collection(event: CookingEvent) -> str | list[str]:
+    if event.source_tags:
+        return [f"recipe/{tag}" for tag in event.source_tags]
     return event.kind
 
 @enzyme.on_save(
@@ -68,7 +71,7 @@ def cooking_collection(event: CookingEvent) -> str:
     title="recipe_name",
     content="comment",
     created_at="date",
-    tags="auto_tags",
+    tags=lambda event: [*event.source_tags, *event.auto_tags],
     primitive="kind",
     source_id="id",
 )

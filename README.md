@@ -111,9 +111,9 @@ def get_activity(user_id: str) -> list[CookingEvent]:
     return db.load_recipe_activity(user_id)
 
 @enzyme.collection(connector)
-def activity_collection(event: CookingEvent) -> str:
+def activity_collection(event: CookingEvent) -> str | list[str]:
     if event.source_tags:
-        return f"recipe/{event.source_tags[0]}"
+        return [f"recipe/{tag}" for tag in event.source_tags]
     return event.kind
 
 @enzyme.on_save(
@@ -184,9 +184,9 @@ def get_activity(user_id: str) -> list[CookingEvent]:
     return db.load_recipe_activity(user_id)
 
 @enzyme.collection(connector)
-def activity_collection(event: CookingEvent) -> str:
+def activity_collection(event: CookingEvent) -> str | list[str]:
     if event.source_tags:
-        return f"recipe/{event.source_tags[0]}"
+        return [f"recipe/{tag}" for tag in event.source_tags]
     return event.kind
 
 @enzyme.on_save(
@@ -204,10 +204,12 @@ def save_activity(user_id: str, event: CookingEvent) -> CookingEvent:
 
 The mapping has three jobs:
 
-- `@enzyme.collection` maps each dated source item to a per-user collection id,
-  such as `recipe/main-dishes`, `recipe/desserts`, `saved_recipe`, `message`,
-  `artifact`, or `folder/inbox`. This is the ingest, refresh, and cache
-  boundary.
+- `@enzyme.collection` maps each dated source item to one or more per-user
+  collection ids, such as `recipe/main-dishes`, `recipe/desserts`,
+  `saved_recipe`, `message`, `artifact`, or `folder/inbox`. These are ingest,
+  refresh, and cache boundaries. In CLI-backed ingest, collection labels are
+  also associated with the document as folder-style entities, so they can be
+  selected for catalyst generation just like Obsidian folders.
 - `tags=lambda event: [*event.source_tags, *event.auto_tags]` creates entities
   inside those collections, so catalysts can form around recipes, ingredients,
   people, folders, labels, projects, or automatic cluster labels.
@@ -218,10 +220,12 @@ Source tags are optional but valuable. The bundled NYT sample does not include
 recipe tags, only `user_key`, `user_id`, `recipe_name`, `comment`, and `date`,
 so the example falls back to `event.kind` as the collection delimiter and uses
 body clustering to create `auto_tags`. If your product already has stable tags,
-folders, channels, projects, or recipe categories, using one of those as the
-collection delimiter lets Enzyme refresh and cache narrower partitions, compare
-activity within meaningful product areas, and still search across the full
-user scope at query time.
+folders, channels, projects, or recipe categories, using those as collection
+delimiters lets Enzyme refresh and cache narrower partitions, generate
+catalysts under meaningful product areas, and still search across the full user
+scope at query time. If an item belongs to multiple source tags, return multiple
+collection labels; Enzyme can route through several catalysts and converge on
+the same chunk or document.
 
 The collection hook can return a field directly, normalize a field, or combine
 multiple fields:
