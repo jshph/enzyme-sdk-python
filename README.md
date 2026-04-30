@@ -113,6 +113,128 @@ python examples/run_mcp_server.py --ngrok
 
 API keys for the connector path: sign in at [enzyme.garden](https://enzyme.garden/login), create a key at `/settings`, set `ENZYME_API_KEY`. Catalyst generation uses Enzyme's hosted generation path — no OpenAI key needed for this connector flow.
 
+## Mapping app data
+
+`EnzymeConnector` starts from your app's source schema. The important part is
+making the dated item shape explicit, then telling Enzyme which fields define
+collections and which fields define entities inside those collections.
+
+For a chat product, the source data might look like this:
+
+```python
+from dataclasses import dataclass
+from datetime import datetime
+
+@dataclass
+class ChatEvent:
+    id: str
+    user_id: str
+    kind: str              # "message", "thread_summary", "artifact", "feedback"
+    body: str
+    created_at: datetime
+    thread_id: str | None
+    project_id: str | None
+    labels: list[str]
+```
+
+The connector-level hosted API should make collection mapping explicit. The
+target shape is a declarative `.collection` hook over your typed item:
+
+```python
+from enzyme_sdk import EnzymeConnector, enzyme
+
+connector = EnzymeConnector(
+    app_id="acme-chat",
+    display_name="Acme Chat",
+    content_label="workspace activity",
+)
+
+@enzyme.hydrate(connector)
+def get_activity(user_id: str) -> list[ChatEvent]:
+    return db.load_activity(user_id)
+
+@enzyme.collection(connector)
+def activity_collection(event: ChatEvent) -> str:
+    return event.kind
+
+@enzyme.on_save(
+    connector,
+    title=lambda event: event.thread_id or event.kind,
+    content="body",
+    created_at="created_at",
+    tags=lambda event: [event.project_id, *event.labels],
+    primitive="kind",
+    source_id="id",
+)
+def save_activity(user_id: str, event: ChatEvent) -> ChatEvent:
+    return db.save(event)
+```
+
+The mapping has three jobs:
+
+- `@enzyme.collection` maps each dated source item to a per-user collection id,
+  such as `messages`, `thread_summary`, `artifact`, or `feedback`. This is the
+  ingest, refresh, and cache boundary.
+- `tags=lambda event: [event.project_id, *event.labels]` creates entities
+  inside those collections, so catalysts can form around projects, labels,
+  folders, people, or automatic cluster labels.
+- `primitive="kind"` and `source_id="id"` tell your app how to hydrate the
+  result back into its own UX.
+
+The collection hook can return a field directly, normalize a field, or combine
+multiple fields:
+
+```python
+@enzyme.collection(connector)
+def email_collection(message: EmailMessage) -> str:
+    return message.folder.lower()  # inbox, sent, archive
+```
+
+If the same source field is also useful as a retrieval entity, pass it through
+`tags` too. For example, an email `folder` can define the collection boundary,
+while `labels`, `people`, and `project_id` become entities catalysts form
+around.
+
+Hosted search uses the same connector semantics. The hosted service composes
+the user's collections into one app/user scope:
+
+```python
+from enzyme_sdk import HostedScopeClient
+
+scope = HostedScopeClient(
+    api_key="enz_...",
+    app_id="acme-chat",
+    user_id="user-123",
+)
+
+response = scope.catalyze("what changed after the pricing discussion?", limit=8)
+
+for result in response.results:
+    # Your app owns hydration and UX.
+    print(result.primitive, result.source_id, result.title)
+
+overview = scope.petri(top=12)
+status = scope.status()
+```
+
+`catalyze()` still searches the full app/user scope. It does not take a public
+collection selector, and normal results do not expose storage collection ids.
+Results should be hydrated through app fields:
+
+```text
+primitive = "message" | "thread" | "artifact" | "recipe_note"
+source_id = your app's stable row/document id
+```
+
+Use `status()` for internal health and debugging; it can show the participating
+collections, counts, and cache epochs. Treat those as ingest/cache partitions,
+not as user-facing relevance semantics.
+
+In the NYT Cooking example, the raw sample data has no source tags. It has
+`user_key`, `user_id`, `recipe_name`, `comment`, and `date`. The example derives
+`auto_tags` from body clustering, then ingests a user's dated recipe comments
+with those labels so catalysts have entities to form around.
+
 ## Direct integration
 
 For more control — loading data from CSVs, managing clustering yourself, wiring tools into your own agent harness — use `EnzymeClient` directly.
