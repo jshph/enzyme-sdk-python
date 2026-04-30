@@ -1,0 +1,141 @@
+"""Unit tests for connector-level item collection mapping."""
+
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass
+
+import httpx
+
+from enzyme_sdk import EnzymeConnector, enzyme
+
+
+@dataclass
+class CookingEvent:
+    id: str
+    kind: str
+    recipe_name: str
+    comment: str
+    auto_tags: list[str]
+
+
+def test_collection_hook_maps_typed_item_schema_to_collection_id():
+    connector = EnzymeConnector(
+        api_key="enz_test",
+        app_id="nyt-cooking",
+        display_name="NYT Cooking Notes",
+        content_label="cooking activity",
+    )
+
+    @enzyme.collection(connector)
+    def cooking_collection(event: CookingEvent) -> str:
+        return event.kind
+
+    @enzyme.on_save(
+        connector,
+        title="recipe_name",
+        content="comment",
+        tags="auto_tags",
+        primitive="kind",
+        source_id="id",
+    )
+    def save_event(user_id: str, event: CookingEvent) -> CookingEvent:
+        return event
+
+    event = CookingEvent(
+        id="comment-1",
+        kind="recipe_comment",
+        recipe_name="Soy-Braised Tofu",
+        comment="Good with extra ginger.",
+        auto_tags=["weeknight", None, "ginger"],
+    )
+
+    connector._connected_users.add("user-123")
+    save_event("user-123", event)
+
+    assert connector.collection_for(event) == "recipe_comment"
+    assert connector._user_stores["user-123"] == [
+        {
+            "title": "Soy-Braised Tofu",
+            "content": "Good with extra ginger.",
+            "tags": ["weeknight", "ginger"],
+            "primitive": "recipe_comment",
+            "source_id": "comment-1",
+            "collection": "recipe_comment",
+        }
+    ]
+
+
+def test_hydrate_uses_registered_item_mapping_for_dataclasses():
+    connector = EnzymeConnector(api_key="enz_test", app_id="nyt-cooking")
+
+    @enzyme.collection(connector)
+    def cooking_collection(event: CookingEvent) -> str:
+        return event.kind
+
+    @enzyme.on_save(
+        connector,
+        title="recipe_name",
+        content="comment",
+        tags="auto_tags",
+        primitive="kind",
+        source_id="id",
+    )
+    def save_event(user_id: str, event: CookingEvent) -> CookingEvent:
+        return event
+
+    @enzyme.hydrate(connector)
+    def hydrate_events(user_id: str) -> list[CookingEvent]:
+        return [
+            CookingEvent(
+                id="comment-2",
+                kind="recipe_comment",
+                recipe_name="Miso Soup",
+                comment="Reliable weekday version.",
+                auto_tags=["weekday"],
+            )
+        ]
+
+    connector._run_pipeline = lambda user_id, entries: True
+
+    status = connector.connect_user("user-123")
+
+    assert status == {"user_id": "user-123", "entries": 1}
+    assert connector._user_stores["user-123"][0]["collection"] == "recipe_comment"
+    assert connector._user_stores["user-123"][0]["source_id"] == "comment-2"
+
+
+def test_connector_hosted_uses_connector_app_scope_without_public_client_import():
+    seen: dict[str, object] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen["path"] = request.url.path
+        seen["body"] = json.loads(request.content.decode())
+        return httpx.Response(
+            200,
+            json={
+                "scope": "nyt-cooking/user-123",
+                "query": "ginger weeknight dinners",
+                "catalysts": [],
+                "results": [],
+                "total": 0,
+            },
+        )
+
+    http_client = httpx.Client(
+        transport=httpx.MockTransport(handler),
+        base_url="https://search.test/v1/scopes/nyt-cooking/user-123",
+    )
+    connector = EnzymeConnector(api_key="enz_test", app_id="nyt-cooking")
+
+    with connector.hosted("user-123", base_url="https://search.test", http_client=http_client) as scope:
+        response = scope.catalyze("ginger weeknight dinners", limit=3)
+
+    assert seen["path"] == "/v1/scopes/nyt-cooking/user-123/catalyze"
+    assert seen["body"] == {
+        "query": "ginger weeknight dinners",
+        "limit": 3,
+        "register": "explore",
+        "debug": False,
+    }
+    assert response.scope == "nyt-cooking/user-123"

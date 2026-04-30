@@ -31,7 +31,7 @@ import json
 import logging
 import os
 import re
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass, is_dataclass
 from pathlib import Path
 from typing import Any, Callable
 
@@ -69,6 +69,31 @@ def _extract_enzyme_entry(
         else:
             entry[enzyme_field] = getattr(result, accessor, "" if enzyme_field != "tags" else [])
     return entry
+
+
+def _item_as_dict(item: Any) -> dict[str, Any]:
+    if isinstance(item, dict):
+        return dict(item)
+    if is_dataclass(item) and not isinstance(item, type):
+        return asdict(item)
+    if hasattr(item, "model_dump"):
+        return item.model_dump()
+    if hasattr(item, "dict") and callable(item.dict):
+        return item.dict()
+    return dict(vars(item))
+
+
+def _clean_tags(tags: Any) -> list[str]:
+    if tags is None:
+        return []
+    if isinstance(tags, str):
+        tags = [tags]
+    return [str(tag) for tag in tags if tag not in (None, "")]
+
+
+def _sanitize_collection(value: Any) -> str:
+    slug = re.sub(r"[^a-zA-Z0-9_.-]+", "-", str(value).strip().lower()).strip("-")
+    return slug or "content"
 
 
 # ---------------------------------------------------------------------------
@@ -174,6 +199,7 @@ class EnzymeConnector:
     def __init__(
         self,
         api_key: str | None = None,
+        app_id: str = "",
         display_name: str = "",
         description: str = "",
         logo_url: str = "",
@@ -185,6 +211,7 @@ class EnzymeConnector:
         profile_description: str = "",
     ) -> None:
         self.api_key = api_key or os.environ.get("ENZYME_API_KEY", "")
+        self.app_id = app_id or _tool_slug(display_name or content_label)
         self.display_name = display_name
         self.description = description
         self.logo_url = logo_url
@@ -195,6 +222,7 @@ class EnzymeConnector:
         self._corpora: dict[str, CorpusConfig] = {}
         self._save_fns: dict[str, Callable] = {}
         self._hydrate_fns: dict[str, Callable] = {}
+        self._collection_fns: dict[str, Callable] = {}
         self._field_maps: dict[str, dict[str, str | Callable]] = {}
         self._default_corpus = "_default"
         self._ensure_corpus(
@@ -255,6 +283,11 @@ class EnzymeConnector:
         self._ensure_corpus(corpus)
         self._hydrate_fns[corpus] = fn
 
+    def _register_collection(self, fn: Callable) -> None:
+        corpus = self._default_corpus
+        self._ensure_corpus(corpus)
+        self._collection_fns[corpus] = fn
+
     def _ensure_corpus(self, corpus: str, **kwargs: Any) -> None:
         if corpus not in self._corpora:
             self._corpora[corpus] = CorpusConfig(**({"name": corpus} | kwargs))
@@ -282,6 +315,35 @@ class EnzymeConnector:
         except Exception as exc:
             log.debug("incremental ingest failed: %s", exc)
 
+    def _entry_from_item(self, item: Any, corpus: str | None = None) -> dict[str, Any]:
+        corpus = corpus or self._default_corpus
+        field_map = self._field_maps.get(corpus)
+
+        if field_map:
+            if "_map" in field_map:
+                entry = dict(field_map["_map"](item))
+            else:
+                entry = _extract_enzyme_entry(item, field_map)
+        else:
+            entry = _item_as_dict(item)
+
+        collection_fn = self._collection_fns.get(corpus)
+        if collection_fn:
+            entry["collection"] = _sanitize_collection(collection_fn(item))
+
+        if "tags" in entry:
+            entry["tags"] = _clean_tags(entry.get("tags"))
+
+        return entry
+
+    def collection_for(self, item: Any, corpus: str | None = None) -> str:
+        """Return the connector collection id for a typed source item."""
+        corpus = corpus or self._default_corpus
+        collection_fn = self._collection_fns.get(corpus)
+        if collection_fn:
+            return _sanitize_collection(collection_fn(item))
+        return _sanitize_collection(self._corpora.get(corpus, CorpusConfig()).name)
+
     # -- user lifecycle -----------------------------------------------------
 
     def _user_collection_id(self, user_id: str) -> str:
@@ -300,11 +362,11 @@ class EnzymeConnector:
         store: list[dict[str, Any]] = []
         self._user_stores[user_id] = store
 
-        for hydrate_fn in self._hydrate_fns.values():
+        for corpus, hydrate_fn in self._hydrate_fns.items():
             entries = hydrate_fn(user_id)
             if entries:
                 for entry in entries:
-                    store.append(dict(entry))
+                    store.append(self._entry_from_item(entry, corpus))
 
         # Run enzyme pipeline: ingest → init/refresh
         if store:
@@ -391,6 +453,26 @@ class EnzymeConnector:
         store = self._get_store()
         vault_path = str(store.vault_path(collection_id))
         return ec.petri(vault=vault_path, top=top)
+
+    def hosted(
+        self,
+        user_id: str,
+        *,
+        base_url: str | None = None,
+        timeout: float = 30.0,
+        http_client: Any = None,
+    ) -> Any:
+        """Return a hosted app/user search handle derived from this connector."""
+        from enzyme_sdk.hosted import DEFAULT_BASE_URL, HostedScopeClient
+
+        return HostedScopeClient(
+            api_key=self.api_key,
+            app_id=self.app_id,
+            user_id=user_id,
+            base_url=base_url or DEFAULT_BASE_URL,
+            timeout=timeout,
+            http_client=http_client,
+        )
 
     # -- dev mode -----------------------------------------------------------
 
@@ -728,6 +810,9 @@ class _Enzyme:
         title: str | Callable = "title",
         content: str | Callable = "content",
         tags: str | Callable | None = "tags",
+        created_at: str | Callable | None = None,
+        primitive: str | Callable | None = None,
+        source_id: str | Callable | None = None,
         metadata: str | Callable | None = None,
         map: Callable | None = None,
     ) -> Callable:
@@ -757,6 +842,12 @@ class _Enzyme:
             field_map = {"title": title, "content": content}
             if tags is not None:
                 field_map["tags"] = tags
+            if created_at is not None:
+                field_map["created_at"] = created_at
+            if primitive is not None:
+                field_map["primitive"] = primitive
+            if source_id is not None:
+                field_map["source_id"] = source_id
             if metadata is not None:
                 field_map["metadata"] = metadata
 
@@ -765,14 +856,21 @@ class _Enzyme:
             def wrapper(user_id: str, *args: Any, **kwargs: Any) -> Any:
                 result = fn(user_id, *args, **kwargs)
                 if client.is_connected(user_id) and result is not None:
-                    if "_map" in field_map:
-                        entry = field_map["_map"](result)
-                    else:
-                        entry = _extract_enzyme_entry(result, field_map)
+                    entry = client._entry_from_item(result)
                     client._queue_ingest(user_id, entry)
                 return result
             client._register_save(wrapper, field_map)
             return wrapper
+        return decorator
+
+    def collection(
+        self,
+        client: EnzymeConnector,
+    ) -> Callable:
+        """Register how a typed source item maps to a connector collection."""
+        def decorator(fn: Callable) -> Callable:
+            client._register_collection(fn)
+            return fn
         return decorator
 
     # Keep backwards compat alias

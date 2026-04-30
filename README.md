@@ -73,9 +73,22 @@ Use `EnzymeClient` when you want direct control over vaults: ingest entries, bui
 Configure the MCP tool surface on the connector, then use decorators for the data contract. Enzyme handles hydration, clustering, catalyst generation, and MCP serving. Claude gets catalyst-routed search: "vegetarian dinner for friends" can find the black-rice pattern, not just recipes tagged vegetarian.
 
 ```python
+from dataclasses import dataclass
+
 from enzyme_sdk import EnzymeConnector, enzyme
 
+@dataclass
+class CookingEvent:
+    id: str
+    user_id: str
+    kind: str
+    recipe_name: str
+    comment: str
+    date: str
+    auto_tags: list[str]
+
 connector = EnzymeConnector(
+    app_id="nyt-cooking",
     display_name="NYT Cooking",
     content_label="cooking notes",
     catalyze_tool="catalyze_cooking_notes",
@@ -93,12 +106,24 @@ connector = EnzymeConnector(
 )
 
 @enzyme.hydrate(connector)
-def get_recipes(user_id: str) -> list[dict]:
-    return [{"title": r.name, "content": r.body} for r in db.query(user_id)]
+def get_activity(user_id: str) -> list[CookingEvent]:
+    return db.load_recipe_activity(user_id)
 
-@enzyme.on_save(connector, title="title", content="instructions", tags="tags")
-def create_recipe(user_id, data):
-    return db.insert(data)  # return value unchanged
+@enzyme.collection(connector)
+def activity_collection(event: CookingEvent) -> str:
+    return event.kind
+
+@enzyme.on_save(
+    connector,
+    title="recipe_name",
+    content="comment",
+    created_at="date",
+    tags="auto_tags",
+    primitive="kind",
+    source_id="id",
+)
+def save_activity(user_id: str, event: CookingEvent) -> CookingEvent:
+    return db.save(event)  # return value unchanged
 
 connector.serve(port=9460, init_users=["user-1", "user-2"])
 ```
@@ -119,65 +144,66 @@ API keys for the connector path: sign in at [enzyme.garden](https://enzyme.garde
 making the dated item shape explicit, then telling Enzyme which fields define
 collections and which fields define entities inside those collections.
 
-For a chat product, the source data might look like this:
+Using the NYT Cooking sample as the throughline, the source data starts as
+dated recipe comments. The raw export has no tags, so the app derives
+`auto_tags` with body clustering before handing rows to Enzyme:
 
 ```python
 from dataclasses import dataclass
-from datetime import datetime
 
 @dataclass
-class ChatEvent:
+class CookingEvent:
     id: str
     user_id: str
-    kind: str              # "message", "thread_summary", "artifact", "feedback"
-    body: str
-    created_at: datetime
-    thread_id: str | None
-    project_id: str | None
-    labels: list[str]
+    kind: str              # "recipe_comment", later maybe "saved_recipe"
+    recipe_name: str
+    comment: str
+    date: str
+    auto_tags: list[str]
 ```
 
-The connector-level hosted API should make collection mapping explicit. The
-target shape is a declarative `.collection` hook over your typed item:
+The connector API makes collection mapping explicit. The `.collection` hook is
+the declarative bridge from your item schema to Enzyme's per-user ingest and
+cache partitions:
 
 ```python
 from enzyme_sdk import EnzymeConnector, enzyme
 
 connector = EnzymeConnector(
-    app_id="acme-chat",
-    display_name="Acme Chat",
-    content_label="workspace activity",
+    app_id="nyt-cooking",
+    display_name="NYT Cooking Notes",
+    content_label="cooking activity",
 )
 
 @enzyme.hydrate(connector)
-def get_activity(user_id: str) -> list[ChatEvent]:
-    return db.load_activity(user_id)
+def get_activity(user_id: str) -> list[CookingEvent]:
+    return db.load_recipe_activity(user_id)
 
 @enzyme.collection(connector)
-def activity_collection(event: ChatEvent) -> str:
+def activity_collection(event: CookingEvent) -> str:
     return event.kind
 
 @enzyme.on_save(
     connector,
-    title=lambda event: event.thread_id or event.kind,
-    content="body",
-    created_at="created_at",
-    tags=lambda event: [event.project_id, *event.labels],
+    title="recipe_name",
+    content="comment",
+    created_at="date",
+    tags="auto_tags",
     primitive="kind",
     source_id="id",
 )
-def save_activity(user_id: str, event: ChatEvent) -> ChatEvent:
+def save_activity(user_id: str, event: CookingEvent) -> CookingEvent:
     return db.save(event)
 ```
 
 The mapping has three jobs:
 
 - `@enzyme.collection` maps each dated source item to a per-user collection id,
-  such as `messages`, `thread_summary`, `artifact`, or `feedback`. This is the
-  ingest, refresh, and cache boundary.
-- `tags=lambda event: [event.project_id, *event.labels]` creates entities
-  inside those collections, so catalysts can form around projects, labels,
-  folders, people, or automatic cluster labels.
+  such as `recipe_comment`, `saved_recipe`, `message`, `artifact`, or
+  `folder/inbox`. This is the ingest, refresh, and cache boundary.
+- `tags="auto_tags"` creates entities inside those collections, so catalysts
+  can form around recipes, ingredients, people, folders, labels, projects, or
+  automatic cluster labels.
 - `primitive="kind"` and `source_id="id"` tell your app how to hydrate the
   result back into its own UX.
 
@@ -196,18 +222,12 @@ while `labels`, `people`, and `project_id` become entities catalysts form
 around.
 
 Hosted search uses the same connector semantics. The hosted service composes
-the user's collections into one app/user scope:
+the user's collections into one app/user scope, and callers enter through the
+connector instead of constructing a separate hosted client abstraction:
 
 ```python
-from enzyme_sdk import HostedScopeClient
-
-scope = HostedScopeClient(
-    api_key="enz_...",
-    app_id="acme-chat",
-    user_id="user-123",
-)
-
-response = scope.catalyze("what changed after the pricing discussion?", limit=8)
+scope = connector.hosted("user-123")
+response = scope.catalyze("quick weeknight dinners with ginger", limit=8)
 
 for result in response.results:
     # Your app owns hydration and UX.

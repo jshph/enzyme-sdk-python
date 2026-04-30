@@ -1,18 +1,24 @@
 # Runbook: enzyme-sdk (Python SDK)
 
-Python SDK providing hosted Enzyme clients for published vault search and
-app/user scoped product integrations.
+Python SDK providing the connector integration surface plus hosted Enzyme
+clients for published vault search and app/user scoped product integrations.
 
 ## What It Does
 
 Instead of running the enzyme CLI binary locally, these clients call the hosted
 search API at `app.enzyme.garden`.
 
-`HostedScopeClient` is the product integration surface. It searches across one
-application user's scope, where the service can combine multiple internal ingest
-collections such as conversations, interactions, artifacts, folders, or emails.
-Normal `catalyze()` results hide those storage partitions and return
-app-hydratable primitives through `primitive` and `source_id`.
+`EnzymeConnector` is the product integration surface. Its decorators map a
+typed source item to Enzyme fields, including `.collection(...)` for the
+per-user ingest/cache partition. Hosted app/user search is reached through
+`connector.hosted(user_id)`, where the service can combine multiple internal
+collections such as recipe comments, saved recipes, conversations, artifacts,
+folders, or emails. Normal `catalyze()` results hide those storage partitions
+and return app-hydratable primitives through `primitive` and `source_id`.
+
+`HostedScopeClient` still exists in `enzyme_sdk.hosted` as the low-level HTTP
+transport used by `EnzymeConnector.hosted(...)`; it is not the main integration
+surface.
 
 `HostedEnzymeClient` remains the legacy published-vault surface for
 `/v1/vaults/{slug}`.
@@ -21,7 +27,9 @@ app-hydratable primitives through `primitive` and `source_id`.
 
 | File | Purpose |
 |---|---|
-| `enzyme_sdk/hosted.py` | `HostedScopeClient` and legacy `HostedEnzymeClient` |
+| `enzyme_sdk/enzyme.py` | `EnzymeConnector`, decorators, collection mapping, and hosted scope entry |
+| `enzyme_sdk/hosted.py` | Low-level hosted scope transport and legacy `HostedEnzymeClient` |
+| `tests/test_connector_collections.py` | Unit tests for declarative collection mapping and connector-hosted entry |
 | `tests/test_hosted_scope.py` | Unit tests for app/user scoped hosted API semantics |
 | `tests/test_hosted.py` | Legacy published-vault integration tests (require local search service running) |
 | `pyproject.toml` | Package config — `enzyme-sdk` on PyPI |
@@ -31,17 +39,46 @@ app-hydratable primitives through `primitive` and `source_id`.
 ### Product integrations
 
 ```python
-from enzyme_sdk.hosted import HostedScopeClient
+from dataclasses import dataclass
 
-client = HostedScopeClient(
+from enzyme_sdk import EnzymeConnector, enzyme
+
+@dataclass
+class CookingEvent:
+    id: str
+    user_id: str
+    kind: str
+    recipe_name: str
+    comment: str
+    date: str
+    auto_tags: list[str]
+
+connector = EnzymeConnector(
     api_key="enz_...",
-    app_id="chat-app",
-    user_id="user_123",
-    base_url="https://app.enzyme.garden",  # default
+    app_id="nyt-cooking",
+    display_name="NYT Cooking Notes",
 )
 
+@enzyme.collection(connector)
+def cooking_collection(event: CookingEvent) -> str:
+    return event.kind
+
+@enzyme.on_save(
+    connector,
+    title="recipe_name",
+    content="comment",
+    created_at="date",
+    tags="auto_tags",
+    primitive="kind",
+    source_id="id",
+)
+def save_activity(user_id: str, event: CookingEvent) -> CookingEvent:
+    return db.save(event)
+
+client = connector.hosted("user_123")
+
 # Global catalyst-mediated search across the user's app scope.
-response = client.catalyze("customer handoff", limit=10, register="explore")
+response = client.catalyze("quick weeknight dinners with ginger", limit=10, register="explore")
 
 for result in response.results:
     # Hydrate in your app by primitive + source_id.
@@ -59,10 +96,11 @@ client.refresh()
 client.close()  # or use as context manager
 ```
 
-Use `HostedScopeClient` when building a chat app, email client, CRM, research
-tool, or other application where Enzyme should connect cross-cutting primitives
-across a user's data. Do not expose collection ids in normal user-facing search
-UI; they are ingest/cache partitions, not relevance semantics.
+Use `EnzymeConnector` when building a cooking app, chat app, email client, CRM,
+research tool, or other application where Enzyme should connect cross-cutting
+primitives across a user's data. Do not expose collection ids in normal
+user-facing search UI; they are ingest/cache partitions, not relevance
+semantics.
 
 ### Published vaults
 
@@ -104,10 +142,10 @@ Dependencies: `httpx`, `fastapi`, `uvicorn`, `pydantic`.
 
 ## Testing
 
-Scoped SDK unit tests do not require a running service:
+Scoped SDK and connector mapping unit tests do not require a running service:
 
 ```bash
-pytest tests/test_hosted_scope.py -q
+pytest tests/test_connector_collections.py tests/test_hosted_scope.py -q
 ```
 
 Tests require a local search service with a published vault:
