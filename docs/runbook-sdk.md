@@ -15,7 +15,7 @@ app/user search is reached through
 `connector.hosted(user_id)`, where the service can combine multiple internal
 collections such as recipe comments, saved recipes, conversations, artifacts,
 folders, or emails. Normal `catalyze()` results hide those storage partitions
-and return app-hydratable activities with `source_id` and metadata.
+and return app-hydratable activities with `source_id`.
 
 `HostedScopeClient` still exists in `enzyme_sdk.hosted` as the low-level HTTP
 transport used by `EnzymeConnector.hosted(...)`; it is not the main integration
@@ -68,10 +68,12 @@ def cooking_activity(event: CookingEvent) -> Activity:
         title=event.recipe_name,
         content=event.comment,
         created_at=event.date,
-        tags=[*event.source_tags, *event.auto_tags],
         source_id=event.id,
         collections=[f"recipe/{tag}" for tag in event.source_tags] or [event.kind],
-        metadata={"activity_type": event.kind},
+        metadata={
+            "activity_type": event.kind,
+            "labels": [*event.source_tags, *event.auto_tags],
+        },
     )
 
 @enzyme.on_save(connector)
@@ -84,8 +86,8 @@ client = connector.hosted("user_123")
 response = client.catalyze("quick weeknight dinners with ginger", limit=10, register="explore")
 
 for result in response.results:
-    # Hydrate in your app by source_id plus activity metadata.
-    print(result.source_id, result.title, result.metadata)
+    # Hydrate in your app by source_id.
+    print(result.source_id, result.title)
 
 # Entity overview for the full scope.
 entities = client.petri(top=10, query="launch")

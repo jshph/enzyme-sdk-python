@@ -79,10 +79,12 @@ def test_transform_maps_typed_item_to_activity_entry():
         return Activity(
             title=event.recipe_name,
             content=event.comment,
-            tags=event.auto_tags,
             source_id=event.id,
-            collection=event.kind,
-            metadata={"activity_type": event.kind},
+            collections=[event.kind],
+            metadata={
+                "activity_type": event.kind,
+                "labels": [tag for tag in event.auto_tags if tag],
+            },
         )
 
     @enzyme.on_save(connector)
@@ -104,11 +106,13 @@ def test_transform_maps_typed_item_to_activity_entry():
     assert connector._user_stores["user-123"] == [
         {
             "title": "Soy-Braised Tofu",
-            "content": "Good with extra ginger.",
-            "tags": ["weeknight", "ginger"],
+            "content": (
+                'Good with extra ginger.\n\n'
+                'Metadata: {"activity_type": "recipe_comment", '
+                '"labels": ["weeknight", "ginger"]}'
+            ),
             "source_id": "comment-1",
-            "collection": "recipe_comment",
-            "metadata": {"activity_type": "recipe_comment"},
+            "collections": ["recipe_comment"],
         }
     ]
 
@@ -142,6 +146,25 @@ def test_transform_collection_takes_precedence_over_legacy_collection_hook():
         "collections": ["recipe/main-dishes", "recipe/weeknight"],
     }
     assert connector.collection_for(event) == "recipe/main-dishes"
+
+
+def test_activity_folds_metadata_into_content_string():
+    entry = Activity(
+        title="Preference",
+        content="User prefers ginger in weeknight recipes.",
+        collections=["agent/observed-preferences"],
+        metadata={"kind": "observed_preference", "signals": ["ginger", "weeknight"]},
+    ).to_entry()
+
+    assert entry == {
+        "title": "Preference",
+        "content": (
+            'User prefers ginger in weeknight recipes.\n\n'
+            'Metadata: {"kind": "observed_preference", '
+            '"signals": ["ginger", "weeknight"]}'
+        ),
+        "collections": ["agent/observed-preferences"],
+    }
 
 
 def test_hydrate_uses_registered_item_mapping_for_dataclasses():

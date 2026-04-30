@@ -9,20 +9,20 @@ Usage:
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass
 import os
 import sys
+from dataclasses import dataclass
 from typing import Iterable
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from enzyme_sdk.enzyme import EnzymeConnector, enzyme
 from enzyme_sdk.activity import Activity
+from enzyme_sdk.enzyme import EnzymeConnector, enzyme
 from examples.prepare_nyt_data import DEFAULT_INPUT, USERS, load_rows, rows_to_entries
 
 
 @dataclass
-class RecipeComment:
+class UserRecipeComment:
     id: str
     user_id: str
     recipe_name: str
@@ -32,12 +32,12 @@ class RecipeComment:
 
 
 @dataclass
-class ObservedPreference:
+class AgentObservedPreference:
     id: str
     user_id: str
     topic: str
     summary: str
-    evidence: str
+    source_activity_id: str
     created_at: str
 
 
@@ -77,8 +77,9 @@ client = EnzymeConnector(
 
 
 @enzyme.hydrate(client)
-def hydrate_recipes(user_id: str) -> Iterable[RecipeComment | ObservedPreference]:
-    activities: list[RecipeComment | ObservedPreference] = []
+def hydrate_recipes(user_id: str) -> Iterable[UserRecipeComment | AgentObservedPreference]:
+    activities: list[UserRecipeComment | AgentObservedPreference] = []
+
     for entry in entries_by_user.get(user_id, []):
         metadata = entry["metadata"]
         recipe_name = metadata["recipe_name"]
@@ -86,7 +87,7 @@ def hydrate_recipes(user_id: str) -> Iterable[RecipeComment | ObservedPreference
         comment = entry.get("notes", "")
         source_id = f"recipe-comment:{metadata['user_id']}:{recipe_name}"
         activities.append(
-            RecipeComment(
+            UserRecipeComment(
                 id=source_id,
                 user_id=metadata["user_id"],
                 recipe_name=recipe_name,
@@ -96,14 +97,37 @@ def hydrate_recipes(user_id: str) -> Iterable[RecipeComment | ObservedPreference
             )
         )
 
-        if "substitut" in comment.lower() or "instead" in comment.lower():
+        lowered = comment.lower()
+        if "substitut" in lowered or "instead" in lowered:
             activities.append(
-                ObservedPreference(
-                    id=f"observed-preference:{metadata['user_id']}:{recipe_name}",
+                AgentObservedPreference(
+                    id=f"observed-preference:{metadata['user_id']}:{recipe_name}:substitutions",
                     user_id=metadata["user_id"],
                     topic="substitutions",
-                    summary=f"{user_id} adapts {recipe_name} based on available ingredients.",
-                    evidence=comment,
+                    summary=f"{user_id} often adapts {recipe_name} around available ingredients.",
+                    source_activity_id=source_id,
+                    created_at=created_at,
+                )
+            )
+        if "again" in lowered or "keeper" in lowered or "repertoire" in lowered:
+            activities.append(
+                AgentObservedPreference(
+                    id=f"observed-preference:{metadata['user_id']}:{recipe_name}:repeat",
+                    user_id=metadata["user_id"],
+                    topic="repeat-worthy recipes",
+                    summary=f"{user_id} marked {recipe_name} as worth returning to.",
+                    source_activity_id=source_id,
+                    created_at=created_at,
+                )
+            )
+        if "too sweet" in lowered or "less sugar" in lowered:
+            activities.append(
+                AgentObservedPreference(
+                    id=f"observed-preference:{metadata['user_id']}:{recipe_name}:sweetness",
+                    user_id=metadata["user_id"],
+                    topic="sweetness adjustments",
+                    summary=f"{user_id} tends to reduce sweetness in {recipe_name}.",
+                    source_activity_id=source_id,
                     created_at=created_at,
                 )
             )
@@ -111,33 +135,31 @@ def hydrate_recipes(user_id: str) -> Iterable[RecipeComment | ObservedPreference
 
 
 @enzyme.transform(client)
-def recipe_collection(recipe: RecipeComment | ObservedPreference) -> Activity:
-    if isinstance(recipe, RecipeComment):
+def recipe_collection(recipe: UserRecipeComment | AgentObservedPreference) -> Activity:
+    if isinstance(recipe, UserRecipeComment):
         return Activity(
             title=recipe.recipe_name,
             content=recipe.comment,
             created_at=recipe.created_at,
-            tags=recipe.tags,
             source_id=recipe.id,
-            collection="recipe/comments",
+            collections=["recipe/comments"],
             metadata={
                 "activity_type": "recipe_comment",
-                "user_id": recipe.user_id,
                 "recipe_name": recipe.recipe_name,
+                "labels": recipe.tags,
             },
         )
 
     return Activity(
         title=f"Observed preference: {recipe.topic}",
-        content=f"{recipe.summary}\n\nEvidence: {recipe.evidence}",
+        content=recipe.summary,
         created_at=recipe.created_at,
-        tags=[recipe.topic, "observed-preference"],
         source_id=recipe.id,
-        collection="agent/observed-preferences",
+        collections=["agent/observed-preferences"],
         metadata={
             "activity_type": "observed_preference",
-            "user_id": recipe.user_id,
             "topic": recipe.topic,
+            "derived_from": recipe.source_activity_id,
         },
     )
 

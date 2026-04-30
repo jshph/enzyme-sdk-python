@@ -77,10 +77,12 @@ def activity_to_enzyme(event: CookingEvent) -> Activity:
         title=event.recipe_name,
         content=event.comment,
         created_at=event.date,
-        tags=[*event.source_tags, *event.auto_tags],
         source_id=event.id,
         collections=collections or [event.kind],
-        metadata={"activity_type": event.kind, "user_id": event.user_id},
+        metadata={
+            "activity_type": event.kind,
+            "labels": [*event.source_tags, *event.auto_tags],
+        },
     )
 
 @enzyme.on_save(connector)
@@ -93,15 +95,15 @@ def save_activity(user_id: str, event: CookingEvent) -> CookingEvent:
 | Field | Purpose |
 | --- | --- |
 | `@enzyme.transform` | Converts your app-native object into an `Activity` ingest payload. Hydrate and save hooks both use it. |
-| `collection` / `collections` | Maps one item to one or more per-user collection labels, such as `recipe/main-dishes`, `message`, or `folder/inbox`. CLI-backed ingest also associates these labels with the document as folder-style catalyst entities. |
-| `tags` | Adds catalyst entities inside those collections. Use source tags, labels, people, projects, folders, and automatic cluster labels here. |
-| `source_id` + `metadata` | Tells your app how to hydrate an activity back into its own UX. |
+| `collections` | Maps one item to one or more per-user collection labels, such as `recipe/main-dishes`, `message`, or `folder/inbox`. CLI-backed ingest also associates these labels with the document as folder-style catalyst entities. |
+| `source_id` | Tells your app how to hydrate an activity back into its own UX. |
+| `content` + `metadata` | Body text plus small structured context; the SDK folds both into the string Enzyme ingests. |
 | `created_at` | Enables recency-aware ranking and catalyst context. |
 
 If your app has stable folders, channels, projects, or recipe categories, return
-them as `Activity.collection` or `Activity.collections`. If an item belongs to
-multiple source tags, return multiple labels; Enzyme can route through several
-catalysts and converge on the same chunk or document. `@enzyme.collection`
+them as `Activity.collections`. If an item belongs to multiple source labels,
+return multiple collections; Enzyme can route through several catalysts and
+converge on the same chunk or document. `@enzyme.collection`
 remains available for older integrations that only need collection labeling,
 but new connectors should prefer one `@enzyme.transform`.
 
@@ -148,7 +150,7 @@ scope = connector.hosted("user-123")
 response = scope.catalyze("quick weeknight dinners with ginger", limit=8)
 
 for result in response.results:
-    print(result.source_id, result.title, result.metadata)
+    print(result.source_id, result.title)
 
 overview = scope.petri(top=12)
 status = scope.status()
