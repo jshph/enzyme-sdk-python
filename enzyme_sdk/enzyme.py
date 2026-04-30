@@ -35,7 +35,12 @@ from dataclasses import asdict, dataclass, is_dataclass
 from pathlib import Path
 from typing import Any, Callable
 
-from enzyme_sdk.activity import Activity
+from enzyme_sdk.activity import (
+    Activity,
+    ActivityCollection,
+    CatalystProfile,
+    collection_id,
+)
 
 log = logging.getLogger("enzyme.connector")
 
@@ -117,6 +122,67 @@ def _collection_values(value: Any) -> list[str]:
         if cleaned and cleaned not in values:
             values.append(cleaned)
     return values
+
+
+def _toml_string(value: str) -> str:
+    return json.dumps(value)
+
+
+def _toml_entity_ref(entity_ref: str, profile: str | None = None) -> str:
+    if profile:
+        return (
+            "{ "
+            f"{_toml_string(entity_ref)} = "
+            f"{{ profile = {_toml_string(profile)} }}"
+            " }"
+        )
+    return _toml_string(entity_ref)
+
+
+def _toml_vault_section(
+    vault_key: str,
+    collection_ids: list[str],
+    profile_by_collection: dict[str, str] | None = None,
+) -> str:
+    profiles = profile_by_collection or {}
+    refs = ", ".join(
+        _toml_entity_ref(f"folder:{collection_id}", profiles.get(collection_id))
+        for collection_id in collection_ids
+    )
+    return (
+        f"[vaults.{_toml_string(vault_key)}]\n"
+        f"entities = [{refs}]\n"
+    )
+
+
+def _replace_toml_vault_section(existing: str, vault_key: str, section: str) -> str:
+    header = f"[vaults.{_toml_string(vault_key)}]"
+    lines = existing.splitlines()
+    output: list[str] = []
+    index = 0
+    replaced = False
+
+    while index < len(lines):
+        if lines[index].strip() == header:
+            if output and output[-1].strip():
+                output.append("")
+            output.extend(section.rstrip().splitlines())
+            replaced = True
+            index += 1
+            while index < len(lines) and not (
+                lines[index].startswith("[") and lines[index].strip().endswith("]")
+            ):
+                index += 1
+            continue
+        output.append(lines[index])
+        index += 1
+
+    if not replaced:
+        if output and output[-1].strip():
+            output.append("")
+        output.extend(section.rstrip().splitlines())
+
+    return "\n".join(output).rstrip() + "\n"
 
 
 # ---------------------------------------------------------------------------
@@ -232,6 +298,8 @@ class EnzymeConnector:
         profile_tool: str = "",
         catalyze_description: str = "",
         profile_description: str = "",
+        collections: list[ActivityCollection] | None = None,
+        catalyst_profiles: dict[ActivityCollection, CatalystProfile] | None = None,
     ) -> None:
         self.api_key = api_key or os.environ.get("ENZYME_API_KEY", "")
         self.app_id = app_id or _tool_slug(display_name or content_label)
@@ -247,6 +315,14 @@ class EnzymeConnector:
         self._hydrate_fns: dict[str, Callable] = {}
         self._transform_fns: dict[str, Callable] = {}
         self._collection_fns: dict[str, Callable] = {}
+        self._activity_collections = {
+            collection_id(collection)
+            for collection in (collections or [])
+        }
+        self._catalyst_profiles = {
+            collection_id(collection): profile.value
+            for collection, profile in (catalyst_profiles or {}).items()
+        }
         self._field_maps: dict[str, dict[str, str | Callable]] = {}
         self._default_corpus = "_default"
         self._ensure_corpus(
@@ -384,6 +460,18 @@ class EnzymeConnector:
         if "tags" in entry:
             entry["tags"] = _clean_tags(entry.get("tags"))
 
+        if self._activity_collections:
+            unknown = [
+                collection
+                for collection in entry.get("collections", [])
+                if collection not in self._activity_collections
+            ]
+            if unknown:
+                raise ValueError(
+                    "Unknown Activity collection(s): "
+                    + ", ".join(sorted(set(unknown)))
+                )
+
         return entry
 
     def collection_for(self, item: Any, corpus: str | None = None) -> str:
@@ -466,6 +554,7 @@ class EnzymeConnector:
 
         # Ingest into the enzyme DB
         ec.ingest(vault=vault_path, entries=clean_entries)
+        self._write_collection_entities_config(Path(vault_path), clean_entries)
 
         # If the vault already has catalysts, refresh (fast — only processes new entries).
         # Otherwise, run full init (embed + select entities + generate catalysts).
@@ -479,6 +568,34 @@ class EnzymeConnector:
         except Exception:
             ec.init(vault=vault_path, quiet=True)
         return True
+
+    def _write_collection_entities_config(
+        self,
+        vault_path: Path,
+        entries: list[dict[str, Any]],
+    ) -> None:
+        collections: list[str] = []
+        for entry in entries:
+            collections.extend(_collection_values(entry.get("collections")))
+            collections.extend(_collection_values(entry.get("collection")))
+
+        collection_ids = list(dict.fromkeys(collections))
+        if not collection_ids:
+            return
+
+        enzyme_home = Path(os.environ.get("ENZYME_HOME", Path.home() / ".enzyme"))
+        enzyme_home.mkdir(parents=True, exist_ok=True)
+        config_path = enzyme_home / "config.toml"
+        vault_key = str(vault_path.resolve())
+        section = _toml_vault_section(
+            vault_key,
+            collection_ids,
+            self._catalyst_profiles,
+        )
+
+        existing = config_path.read_text(encoding="utf-8") if config_path.exists() else ""
+        body = _replace_toml_vault_section(existing, vault_key, section)
+        config_path.write_text(body, encoding="utf-8")
 
     def disconnect_user(self, user_id: str) -> None:
         self._connected_users.discard(user_id)

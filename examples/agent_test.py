@@ -1,31 +1,38 @@
-"""End-to-end example: prepared entries -> auto tags -> ingest -> agent.
+"""End-to-end example: decorated connector -> Enzyme index -> agent.
 
 Run:
-    python examples/prepare_nyt_data.py es
     python examples/agent_test.py
 """
 
 from __future__ import annotations
 
 import asyncio
-import json
 import os
 import shutil
 import sys
 import tempfile
+from collections import Counter
 from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from dotenv import load_dotenv
 
-load_dotenv(Path(__file__).resolve().parents[1] / ".env")
+def _load_env(path: Path) -> None:
+    if not path.exists():
+        return
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
 
-from agents import Agent, ModelSettings, Runner, function_tool
-from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
-from openai import AsyncOpenAI
+
+_load_env(Path(__file__).resolve().parents[1] / ".env")
 
 from enzyme_sdk import EnzymeClient
+from enzyme_sdk.client import EnzymeError
+from enzyme_sdk.store import VaultStore
 
 
 ENZYME_BIN = os.environ.get("ENZYME_BIN", "enzyme")
@@ -33,60 +40,59 @@ USER = os.environ.get("ENZYME_TEST_USER", "es")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 OPENAI_BASE_URL = os.environ.get("OPENAI_BASE_URL")
 MODEL = os.environ.get("OPENAI_MODEL", "gpt-4.1-mini")
-DATA_PATH = Path(
-    os.environ.get(
-        "ENZYME_NYT_DATA",
-        Path(tempfile.gettempdir()) / f"nyt_{USER}_data.json",
-    )
-)
-GRANULARITY = os.environ.get("ENZYME_CLUSTER_GRANULARITY", "balanced")
-
-
-def entry_text(entry: dict) -> str:
-    return f"{entry['title']}\n\n{entry['notes']}"
-
-
-def load_entries() -> tuple[list[dict], list[dict]]:
-    if not DATA_PATH.exists():
-        raise FileNotFoundError(
-            f"{DATA_PATH} not found. Run: python examples/prepare_nyt_data.py {USER}"
-        )
-    data = json.loads(DATA_PATH.read_text(encoding="utf-8"))
-    return data["cluster_entries"], data["entries"]
+HOST_ENZYME_HOME = Path(os.environ.get("ENZYME_HOME", Path.home() / ".enzyme"))
 
 
 SYSTEM_PROMPT = """\
 You are a cooking assistant that knows this user's actual cooking history.
 
-Use get_overview once to understand the user's clusters and catalysts. Use
-explore once when a specific recommendation needs supporting recipe notes.
-Quote the user's own words. Synthesize across results instead of listing them.
-Do not call tools more than twice total.
+Call get_overview first to understand the user's catalysts. Then call explore
+with a query informed by that overview before recommending dishes.
+
+Do not recommend any dish unless it is supported by matched recipe notes from
+explore. Quote at least two specific recipe names or user notes from explore.
+Synthesize across results instead of listing them. Use exactly these two tool
+calls unless a tool fails.
 """
 
 
-enzyme = EnzymeClient(enzyme_bin=ENZYME_BIN)
+def make_tools(connector, user_id: str):
+    try:
+        from agents import function_tool
+    except ModuleNotFoundError as exc:
+        raise SystemExit(
+            "Missing example dependency 'openai-agents'. "
+            "Install with: pip install -e '.[dev,cluster,examples]'"
+        ) from exc
 
-
-def make_tools(vault: Path):
     @function_tool(
         name_override="explore",
         description_override=EnzymeClient.tool_description("catalyze"),
     )
     def explore(query: str) -> str:
-        return enzyme.catalyze(query, vault=vault).render_to_prompt()
+        return connector.search(user_id, query).render_to_prompt()
 
     @function_tool(
         name_override="get_overview",
         description_override=EnzymeClient.tool_description("petri"),
     )
     def get_overview() -> str:
-        return enzyme.petri(vault=vault, top=15).render_to_prompt()
+        return connector.overview(user_id, top=15).render_to_prompt()
 
     return [explore, get_overview]
 
 
-def make_agent(vault: Path) -> Agent:
+def make_agent(connector, user_id: str):
+    try:
+        from agents import Agent, ModelSettings
+        from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
+        from openai import AsyncOpenAI
+    except ModuleNotFoundError as exc:
+        raise SystemExit(
+            "Missing example dependency 'openai-agents'. "
+            "Install with: pip install -e '.[dev,cluster,examples]'"
+        ) from exc
+
     client_kwargs = {"api_key": OPENAI_API_KEY}
     if OPENAI_BASE_URL:
         client_kwargs["base_url"] = OPENAI_BASE_URL
@@ -99,63 +105,105 @@ def make_agent(vault: Path) -> Agent:
         name="Cooking assistant",
         model=model,
         instructions=SYSTEM_PROMPT,
-        tools=make_tools(vault),
+        tools=make_tools(connector, user_id),
         model_settings=ModelSettings(tool_choice="auto", temperature=0.7),
     )
 
 
 async def main():
     run_root = Path(tempfile.mkdtemp(prefix="enzyme-sdk-nyt-"))
-    vault = run_root / f"nyt-{USER}"
-    home = run_root / "home"
-    os.environ["HOME"] = str(home)
+    os.environ["HOME"] = str(run_root / "home")
+    os.environ["ENZYME_HOME"] = str(run_root / "enzyme-home")
+    enzyme_home = Path(os.environ["ENZYME_HOME"])
+    enzyme_home.mkdir(parents=True, exist_ok=True)
+    auth_src = HOST_ENZYME_HOME / "auth.json"
+    if auth_src.exists():
+        shutil.copy2(auth_src, enzyme_home / "auth.json")
 
     try:
-        cluster_entries, entries = load_entries()
-        print(f"Loaded {len(cluster_entries)} cluster entries from {DATA_PATH}")
-        print(f"Selected {len(entries)} entries for {USER!r}")
+        from examples.run_mcp_server import client, hydrate_recipes
 
-        cluster_index = enzyme.build_entry_cluster_index(
-            cluster_entries,
-            text=entry_text,
-            granularity=GRANULARITY,
+        client._enzyme_client = EnzymeClient(enzyme_bin=ENZYME_BIN)
+        client._store = VaultStore(run_root / "collections")
+        client._collections_base = Path(client._store.base_path)
+
+        activities = list(hydrate_recipes(USER))
+        counts = Counter(type(activity).__name__ for activity in activities)
+        print(f"Hydrated {sum(counts.values())} activities for {USER!r}:", flush=True)
+        for name, count in sorted(counts.items()):
+            print(f"  {name}: {count}", flush=True)
+
+        entries = [client._entry_from_item(activity) for activity in activities]
+        collections = Counter(
+            collection
+            for entry in entries
+            for collection in entry.get("collections", [])
         )
-        assigned = cluster_index.assign(
-            entries,
-            text=entry_text,
-            target_field="auto_tags",
+        print("Activity collections:", flush=True)
+        for name, count in sorted(collections.items()):
+            print(f"  {name}: {count}", flush=True)
+
+        print("Building index via EnzymeConnector decorators...", flush=True)
+        try:
+            status = client.connect_user(USER)
+        except EnzymeError as exc:
+            raise SystemExit(
+                f"Could not build the local Enzyme index: {exc}\n"
+                "Run `enzyme login`, then rerun this example."
+            ) from exc
+        print(f"Indexed {status['entries']} activities")
+
+        overview = client.overview(USER, top=15)
+        print(
+            f"Catalyzed overview: {overview.total_entities} entities, "
+            f"{sum(len(e.catalysts) for e in overview.entities)} catalysts shown"
         )
-        ingest_entries = [
-            {
-                "title": entry["title"],
-                "content": entry["content"],
-                "notes": entry["notes"],
-                "tags": entry.get("auto_tags", []),
-                "created_at": entry["created_at"],
-                "metadata": entry["metadata"],
-            }
-            for entry in assigned.entries
+        for entity in overview.entities[:5]:
+            print(
+                f"  {entity.entity_type}: {entity.name} "
+                f"({len(entity.catalysts)} catalysts)"
+            )
+
+        observation_entities = [
+            entity for entity in overview.entities
+            if "observed" in entity.name or "preference" in entity.name
         ]
+        observation_catalysts = sum(len(entity.catalysts) for entity in observation_entities)
+        print(
+            "Observed-preference catalyst coverage: "
+            f"{len(observation_entities)} entities, {observation_catalysts} catalysts shown"
+        )
 
-        print(f"Built {len(cluster_index.clusters)} automatic clusters")
-        print(f"Assigned auto tags to {len({a.entry_index for a in assigned.assignments})} entries")
+        if not OPENAI_API_KEY:
+            raise SystemExit("OPENAI_API_KEY is required for the agent response step.")
 
-        result = enzyme.ingest(vault=vault, entries=ingest_entries)
-        print(f"Ingested {result['documents_ingested']} documents in {result['duration_ms']}ms")
-
-        print("Building index...")
-        init_result = enzyme.init(vault=vault)
-        if init_result:
-            print(f"  Catalysts: {init_result.get('catalysts_generated', 0)}")
-            print(f"  Duration: {init_result.get('duration_ms', 0)}ms")
+        try:
+            from agents import Runner
+        except ModuleNotFoundError as exc:
+            raise SystemExit(
+                "Missing example dependency 'openai-agents'. "
+                "Install with: pip install -e '.[dev,cluster,examples]'"
+            ) from exc
 
         user_msg = (
             "I'm hosting a dinner party this weekend for 6 people. "
             "A couple of them are vegetarian. What should I make?"
         )
+        grounding_query = (
+            "vegetarian dinner party recipes repeat-worthy seasonal vegetables "
+            "make ahead substitutions served for dinner"
+        )
+        grounding = client.search(USER, grounding_query, limit=8)
         print(f"\nUser: {user_msg}\n")
 
-        result = await Runner.run(make_agent(vault), input=user_msg)
+        grounded_input = (
+            f"{user_msg}\n\n"
+            "Use this Enzyme overview and search evidence before answering.\n\n"
+            f"{overview.render_to_prompt()}\n\n"
+            f"{grounding.render_to_prompt()}"
+        )
+
+        result = await Runner.run(make_agent(client, USER), input=grounded_input)
         print(f"Agent:\n{result.final_output}\n")
     finally:
         shutil.rmtree(run_root, ignore_errors=True)

@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 import httpx
 
-from enzyme_sdk import Activity, EnzymeConnector, enzyme
+from enzyme_sdk import Activity, CatalystProfile, EnzymeConnector, enzyme
 
 
 @dataclass
@@ -80,7 +80,7 @@ def test_transform_maps_typed_item_to_activity_entry():
             title=event.recipe_name,
             content=event.comment,
             source_id=event.id,
-            collections=[event.kind],
+            collections=[CookingEvent],
             metadata={
                 "activity_type": event.kind,
                 "labels": [tag for tag in event.auto_tags if tag],
@@ -102,7 +102,7 @@ def test_transform_maps_typed_item_to_activity_entry():
     connector._connected_users.add("user-123")
     save_event("user-123", event)
 
-    assert connector.collection_for(event) == "recipe_comment"
+    assert connector.collection_for(event) == "cooking-event"
     assert connector._user_stores["user-123"] == [
         {
             "title": "Soy-Braised Tofu",
@@ -111,8 +111,9 @@ def test_transform_maps_typed_item_to_activity_entry():
                 'Metadata: {"activity_type": "recipe_comment", '
                 '"labels": ["weeknight", "ginger"]}'
             ),
+            "id": "comment-1",
             "source_id": "comment-1",
-            "collections": ["recipe_comment"],
+            "collections": ["cooking-event"],
         }
     ]
 
@@ -152,7 +153,7 @@ def test_activity_folds_metadata_into_content_string():
     entry = Activity(
         title="Preference",
         content="User prefers ginger in weeknight recipes.",
-        collections=["agent/observed-preferences"],
+        collections=[CookingEvent],
         metadata={"kind": "observed_preference", "signals": ["ginger", "weeknight"]},
     ).to_entry()
 
@@ -163,8 +164,37 @@ def test_activity_folds_metadata_into_content_string():
             'Metadata: {"kind": "observed_preference", '
             '"signals": ["ginger", "weeknight"]}'
         ),
-        "collections": ["agent/observed-preferences"],
+        "collections": ["cooking-event"],
     }
+
+
+def test_connector_writes_collections_as_curated_folder_entities(tmp_path, monkeypatch):
+    monkeypatch.setenv("ENZYME_HOME", str(tmp_path / "enzyme-home"))
+    connector = EnzymeConnector(
+        api_key="enz_test",
+        app_id="nyt-cooking",
+        catalyst_profiles={
+            CookingEvent: CatalystProfile.PREFERENCE_EVIDENCE,
+        },
+    )
+    vault_path = tmp_path / "vault"
+    vault_path.mkdir()
+
+    connector._write_collection_entities_config(
+        vault_path,
+        [
+            {"collections": ["cooking-event", "agent-observed-preferences"]},
+            {"collections": ["cooking-event", "preference-substitutions"]},
+        ],
+    )
+
+    config = (tmp_path / "enzyme-home" / "config.toml").read_text(encoding="utf-8")
+    assert f'[vaults."{vault_path.resolve()}"]' in config
+    assert (
+        'entities = [{ "folder:cooking-event" = { profile = "preference_evidence" } }, '
+        '"folder:agent-observed-preferences", '
+        '"folder:preference-substitutions"]'
+    ) in config
 
 
 def test_hydrate_uses_registered_item_mapping_for_dataclasses():

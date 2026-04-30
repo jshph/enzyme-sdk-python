@@ -24,7 +24,7 @@ pip install -e .
 For local development with the examples:
 
 ```bash
-pip install -e ".[dev,cluster]" openai-agents
+pip install -e ".[dev,cluster,examples]"
 ```
 
 ## Example: Build an MCP Connector

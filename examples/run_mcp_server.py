@@ -16,7 +16,7 @@ from typing import Iterable
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from enzyme_sdk.activity import Activity
+from enzyme_sdk.activity import Activity, CatalystProfile
 from enzyme_sdk.enzyme import EnzymeConnector, enzyme
 from examples.prepare_nyt_data import DEFAULT_INPUT, USERS, load_rows, rows_to_entries
 
@@ -39,6 +39,28 @@ class AgentObservedPreference:
     summary: str
     source_activity_id: str
     created_at: str
+
+
+@dataclass
+class PreferenceSubstitution:
+    pass
+
+
+@dataclass
+class PreferenceRepeatWorthyRecipe:
+    pass
+
+
+@dataclass
+class PreferenceSweetnessAdjustment:
+    pass
+
+
+PREFERENCE_COLLECTIONS = {
+    "substitutions": PreferenceSubstitution,
+    "repeat-worthy recipes": PreferenceRepeatWorthyRecipe,
+    "sweetness adjustments": PreferenceSweetnessAdjustment,
+}
 
 
 # Load real NYT recipe data
@@ -73,6 +95,20 @@ client = EnzymeConnector(
         "when a specific recommendation needs supporting notes. Quote the user's own "
         "words. Synthesize across results instead of listing them."
     ),
+    collections=[
+        UserRecipeComment,
+        AgentObservedPreference,
+        PreferenceSubstitution,
+        PreferenceRepeatWorthyRecipe,
+        PreferenceSweetnessAdjustment,
+    ],
+    catalyst_profiles={
+        UserRecipeComment: CatalystProfile.PREFERENCE_EVIDENCE,
+        AgentObservedPreference: CatalystProfile.PREFERENCE_EVIDENCE,
+        PreferenceSubstitution: CatalystProfile.PREFERENCE_EVIDENCE,
+        PreferenceRepeatWorthyRecipe: CatalystProfile.PREFERENCE_EVIDENCE,
+        PreferenceSweetnessAdjustment: CatalystProfile.PREFERENCE_EVIDENCE,
+    },
 )
 
 
@@ -142,7 +178,7 @@ def recipe_collection(recipe: UserRecipeComment | AgentObservedPreference) -> Ac
             content=recipe.comment,
             created_at=recipe.created_at,
             source_id=recipe.id,
-            collections=["recipe/comments"],
+            collections=[UserRecipeComment],
             metadata={
                 "activity_type": "recipe_comment",
                 "recipe_name": recipe.recipe_name,
@@ -155,7 +191,10 @@ def recipe_collection(recipe: UserRecipeComment | AgentObservedPreference) -> Ac
         content=recipe.summary,
         created_at=recipe.created_at,
         source_id=recipe.id,
-        collections=["agent/observed-preferences"],
+        collections=[
+            AgentObservedPreference,
+            PREFERENCE_COLLECTIONS[recipe.topic],
+        ],
         metadata={
             "activity_type": "observed_preference",
             "topic": recipe.topic,
