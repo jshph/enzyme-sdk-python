@@ -35,7 +35,7 @@ This example builds from a sample dataset of NYT Cooking comments. Rows have `us
 from dataclasses import dataclass
 from typing import Iterable
 
-from enzyme_sdk import Activity, EnzymeConnector, enzyme
+from enzyme_sdk import Activity, CatalystProfile, EnzymeConnector, enzyme
 
 
 @dataclass
@@ -48,6 +48,14 @@ class CookingEvent:
     date: str
     source_tags: list[str]
     auto_tags: list[str]
+
+@dataclass
+class RecipeComment:
+    pass
+
+@dataclass
+class ObservedPreference:
+    pass
 
 connector = EnzymeConnector(
     app_id="nyt-cooking",
@@ -64,6 +72,11 @@ connector = EnzymeConnector(
         "Inspect this user's cooking profile: recurring ingredients, techniques, "
         "cuisines, constraints, and the catalysts that characterize each area."
     ),
+    collections=[RecipeComment, ObservedPreference],
+    catalyst_profiles={
+        RecipeComment: CatalystProfile.PREFERENCE_EVIDENCE,
+        ObservedPreference: CatalystProfile.PREFERENCE_EVIDENCE,
+    },
 )
 
 @enzyme.hydrate(connector)
@@ -72,13 +85,12 @@ def get_activity(user_id: str) -> Iterable[CookingEvent]:
 
 @enzyme.transform(connector)
 def activity_to_enzyme(event: CookingEvent) -> Activity:
-    collections = [f"recipe/{tag}" for tag in event.source_tags]
     return Activity(
         title=event.recipe_name,
         content=event.comment,
         created_at=event.date,
         source_id=event.id,
-        collections=collections or [event.kind],
+        collections=[RecipeComment],
         metadata={
             "activity_type": event.kind,
             "labels": [*event.source_tags, *event.auto_tags],
@@ -95,29 +107,30 @@ def save_activity(user_id: str, event: CookingEvent) -> CookingEvent:
 | Field | Purpose |
 | --- | --- |
 | `@enzyme.transform` | Converts your app-native object into an `Activity` ingest payload. Hydrate and save hooks both use it. |
-| `collections` | Maps one item to one or more per-user collection labels, such as `recipe/main-dishes`, `message`, or `folder/inbox`. CLI-backed ingest also associates these labels with the document as folder-style catalyst entities. |
+| `collections` | Maps one item to one or more per-user activity classes. Enzyme stores them as stable collection ids, such as `recipe-comment`, `observed-preference`, `message`, or `folder-inbox`. CLI-backed ingest also associates these ids with the document as folder-style catalyst entities. |
+| `catalyst_profiles` | Optionally tells catalyst generation how to treat a collection, for example preference evidence, operational traces, or decision traces. |
 | `source_id` | Tells your app how to hydrate an activity back into its own UX. |
 | `content` + `metadata` | Body text plus small structured context; the SDK folds both into the string Enzyme ingests. |
 | `created_at` | Enables recency-aware ranking and catalyst context. |
 
-If your app has stable folders, channels, projects, or recipe categories, return
-them as `Activity.collections`. If an item belongs to multiple source labels,
-return multiple collections; Enzyme can route through several catalysts and
-converge on the same chunk or document. `@enzyme.collection`
-remains available for older integrations that only need collection labeling,
-but new connectors should prefer one `@enzyme.transform`.
+If your app has distinct activity types, such as recipe comments, saved
+recipes, agent-observed preferences, messages, projects, or artifacts, model
+them as small typed collection classes and return those classes from
+`Activity.collections`. If an item belongs to multiple activity collections,
+return multiple classes; Enzyme can route through several catalysts and converge
+on the same chunk or document. `@enzyme.collection` remains available for older
+integrations that only need collection labeling, but new connectors should
+prefer one `@enzyme.transform`.
 
 The connector mapping becomes the structured ingest payload that the Enzyme
 binary consumes. `tags` become tag entities. `links` become link entities when
 provided through direct ingest or rendered markdown. `collection`,
-`collections`, and `folder` become folder entities in the Rust index, equivalent
-to folders derived from a markdown file path. Local CLI state lives under
-`~/.enzyme-sdk/collections/<collection-id>/.enzyme/enzyme.db`; the adjacent
-`.enzyme/config.toml` stores collection cache metadata such as
-`collection.index_generation`, which hosted search treats as a cache epoch.
-App users do not need that TOML detail for normal integration, but SDK
-integrators should know that collection labels are the bridge into Enzyme's
-tag/folder/link entity model.
+`collections`, and `folder` become folder entities in the Rust index,
+equivalent to folders derived from a markdown file path. For connector-backed
+local runs, the SDK also writes configured collection entities and catalyst
+profiles into Enzyme's local config so the CLI can generate catalysts around
+the same activity boundaries your app uses. SDK integrators should know that
+collection ids are the bridge into Enzyme's tag/folder/link entity model.
 
 ### Serve MCP
 
@@ -220,19 +233,17 @@ the user's own source text.
 ## Run The Example
 
 ```bash
-python examples/prepare_nyt_data.py es
 python examples/agent_test.py
 ```
 
 `examples/nyt_sample_comments.json` includes comments for three sample users.
-`prepare_nyt_data.py` prepares cluster labels across all three users and writes
-one selected user's ingest file. `agent_test.py` builds an agent over that
-user's indexed recipe notes.
+`agent_test.py` hydrates the decorated connector from `examples/run_mcp_server.py`,
+prints the typed activity collection counts, builds a temporary local index,
+and then runs an agent over that user's indexed recipe notes.
 
 Use `OPENAI_MODEL` to change models. Set `OPENAI_BASE_URL` for a compatible
 provider.
 
 ```bash
-python examples/prepare_nyt_data.py dimmerswitch
 ENZYME_TEST_USER=dimmerswitch python examples/agent_test.py
 ```
