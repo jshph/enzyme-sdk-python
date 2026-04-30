@@ -85,6 +85,7 @@ class CookingEvent:
     recipe_name: str
     comment: str
     date: str
+    source_tags: list[str]
     auto_tags: list[str]
 
 connector = EnzymeConnector(
@@ -111,6 +112,8 @@ def get_activity(user_id: str) -> list[CookingEvent]:
 
 @enzyme.collection(connector)
 def activity_collection(event: CookingEvent) -> str:
+    if event.source_tags:
+        return f"recipe/{event.source_tags[0]}"
     return event.kind
 
 @enzyme.on_save(
@@ -118,7 +121,7 @@ def activity_collection(event: CookingEvent) -> str:
     title="recipe_name",
     content="comment",
     created_at="date",
-    tags="auto_tags",
+    tags=lambda event: [*event.source_tags, *event.auto_tags],
     primitive="kind",
     source_id="id",
 )
@@ -159,6 +162,7 @@ class CookingEvent:
     recipe_name: str
     comment: str
     date: str
+    source_tags: list[str] # if your app has them; the bundled sample does not
     auto_tags: list[str]
 ```
 
@@ -181,6 +185,8 @@ def get_activity(user_id: str) -> list[CookingEvent]:
 
 @enzyme.collection(connector)
 def activity_collection(event: CookingEvent) -> str:
+    if event.source_tags:
+        return f"recipe/{event.source_tags[0]}"
     return event.kind
 
 @enzyme.on_save(
@@ -188,7 +194,7 @@ def activity_collection(event: CookingEvent) -> str:
     title="recipe_name",
     content="comment",
     created_at="date",
-    tags="auto_tags",
+    tags=lambda event: [*event.source_tags, *event.auto_tags],
     primitive="kind",
     source_id="id",
 )
@@ -199,13 +205,23 @@ def save_activity(user_id: str, event: CookingEvent) -> CookingEvent:
 The mapping has three jobs:
 
 - `@enzyme.collection` maps each dated source item to a per-user collection id,
-  such as `recipe_comment`, `saved_recipe`, `message`, `artifact`, or
-  `folder/inbox`. This is the ingest, refresh, and cache boundary.
-- `tags="auto_tags"` creates entities inside those collections, so catalysts
-  can form around recipes, ingredients, people, folders, labels, projects, or
-  automatic cluster labels.
+  such as `recipe/main-dishes`, `recipe/desserts`, `saved_recipe`, `message`,
+  `artifact`, or `folder/inbox`. This is the ingest, refresh, and cache
+  boundary.
+- `tags=lambda event: [*event.source_tags, *event.auto_tags]` creates entities
+  inside those collections, so catalysts can form around recipes, ingredients,
+  people, folders, labels, projects, or automatic cluster labels.
 - `primitive="kind"` and `source_id="id"` tell your app how to hydrate the
   result back into its own UX.
+
+Source tags are optional but valuable. The bundled NYT sample does not include
+recipe tags, only `user_key`, `user_id`, `recipe_name`, `comment`, and `date`,
+so the example falls back to `event.kind` as the collection delimiter and uses
+body clustering to create `auto_tags`. If your product already has stable tags,
+folders, channels, projects, or recipe categories, using one of those as the
+collection delimiter lets Enzyme refresh and cache narrower partitions, compare
+activity within meaningful product areas, and still search across the full
+user scope at query time.
 
 The collection hook can return a field directly, normalize a field, or combine
 multiple fields:
