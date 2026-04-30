@@ -1,6 +1,10 @@
 # Enzyme SDK
 
-Enzyme automatically manages your app's user conversations, collections, and agent traces, enabling you to quickly experiment with context-efficient and responsive agent-collaborative UX and MCP integrations.
+With the Enzyme SDK, you can automatically manage your app's user conversations, collections, and agent traces, enabling you to quickly experiment with context-efficient and responsive agent-collaborative UX and MCP integrations.
+
+Enzyme is the most performant context graph builder by a wide margin. It indexes and retrieves relevant context at near-constant time complexity as your collection of agent traces and accumulated user data grows, whether it's 50 records per user or 20,000.
+
+This SDK is **in beta** and is subject to change. Please raise issues or reach out to support@enzyme.garden to discuss your use case.
 
 ## Example
 
@@ -162,19 +166,7 @@ recipes, agent-observed preferences, messages, projects, or artifacts, model
 them as small typed collection classes and return those classes from
 `Activity.collections`. If an item belongs to multiple activity collections,
 return multiple classes; Enzyme can route through several catalysts and converge
-on the same chunk or document. `@enzyme.collection` remains available for older
-integrations that only need collection labeling, but new connectors should
-prefer one `@enzyme.transform`.
-
-The connector mapping becomes the structured ingest payload that the Enzyme
-binary consumes. `tags` become tag entities. `links` become link entities when
-provided through direct ingest or rendered markdown. `collection`,
-`collections`, and `folder` become folder entities in the Rust index,
-equivalent to folders derived from a markdown file path. For connector-backed
-local runs, the SDK also writes configured collection entities and catalyst
-profiles into Enzyme's local config so the CLI can generate catalysts around
-the same activity boundaries your app uses. SDK integrators should know that
-collection ids are the bridge into Enzyme's tag/folder/link entity model.
+on the same chunk or document.
 
 ### Serve MCP
 
@@ -216,42 +208,6 @@ status = scope.status()
 `catalyze()` searches the full app/user scope. It does not take a public
 collection selector, and normal results do not expose storage collection ids.
 Use `status()` for internal health, collection counts, and cache epochs.
-
-## Use The Direct Client
-
-Use `EnzymeClient` when you want lower-level control over ingest, clustering,
-and agent wiring.
-
-```python
-from enzyme_sdk import EnzymeClient
-
-client = EnzymeClient.ensure_installed()
-
-entries = [
-    {
-        "title": recipe["recipe_name"].replace("-", " ").title(),
-        "notes": recipe["comment"],
-        "tags": recipe.get("source_tags", []) + recipe.get("auto_tags", []),
-        "collections": [f"recipe/{tag}" for tag in recipe.get("source_tags", [])],
-        "created_at": recipe["date"],
-    }
-    for recipe in user_recipes
-]
-
-client.ingest(collection="user-123", entries=entries)
-client.init(collection="user-123")
-
-results = client.catalyze("vegetarian dinner ideas", collection="user-123")
-overview = client.petri(collection="user-123")
-```
-
-Automatic clusters are optional. For uncurated data, build cluster labels first
-and include them in `tags`:
-
-```python
-cluster_index = client.build_entry_cluster_index(all_recipes, text=recipe_text)
-assigned = cluster_index.assign(user_recipes, text=recipe_text, target_field="auto_tags")
-```
 
 ## What Comes Back
 
